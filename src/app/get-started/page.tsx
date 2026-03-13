@@ -161,8 +161,6 @@ export default function GetStartedPage() {
     setError(null)
 
     try {
-      alert('DEBUG: Starting signup...')
-
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
@@ -174,8 +172,6 @@ export default function GetStartedPage() {
         },
       })
 
-      alert(`DEBUG: signUp returned. error=${signUpError?.message || 'none'}, session=${!!signUpData.session}, user=${!!signUpData.user}`)
-
       if (signUpError) {
         setError(
           signUpError.message === 'User already registered'
@@ -185,20 +181,13 @@ export default function GetStartedPage() {
         return
       }
 
-      if (signUpData.session) {
-        try {
-          if (signUpData.user) {
-            await saveOnboardingData(signUpData.user.id)
-          }
-        } catch (saveErr) {
-          console.error('Failed to save onboarding data:', saveErr)
-        }
-        alert('DEBUG: Redirecting to dashboard...')
+      if (signUpData.session && signUpData.user) {
+        // Small delay to let the handle_new_user trigger create the profile row
+        await new Promise((r) => setTimeout(r, 300))
+        await saveOnboardingData(signUpData.user.id)
         window.location.href = '/dashboard'
         return
       }
-
-      alert('DEBUG: No session — showing email confirmation')
 
       // No session means email confirmation is required
       sessionStorage.setItem(
@@ -207,7 +196,7 @@ export default function GetStartedPage() {
       )
       setEmailConfirmation(signupEmail)
     } catch (err) {
-      alert(`DEBUG: Caught error: ${err}`)
+      console.error('Signup error:', err)
       setError('Something went wrong. Please try again.')
     } finally {
       setIsSubmitting(false)

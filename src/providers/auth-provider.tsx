@@ -57,18 +57,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (data) {
         setProfile(data as Profile);
       } else {
-        // Profile doesn't exist — create it as a fallback
-        const { data: newProfile } = await supabase
+        // Profile doesn't exist yet — the handle_new_user trigger may still be creating it.
+        // Wait briefly and retry the select before attempting an insert.
+        await new Promise((r) => setTimeout(r, 500));
+        const { data: retryData } = await supabase
           .from("profiles")
-          .insert({
-            id: userId,
-            email: email ?? "",
-            subscription_status: "free",
-          })
           .select("*")
-          .single();
+          .eq("id", userId)
+          .maybeSingle();
 
-        setProfile((newProfile as Profile) ?? null);
+        if (retryData) {
+          setProfile(retryData as Profile);
+        } else {
+          // Still no profile — create one, ignoring conflicts from trigger race
+          const { data: newProfile } = await supabase
+            .from("profiles")
+            .upsert(
+              {
+                id: userId,
+                email: email ?? "",
+                subscription_status: "free",
+              },
+              { onConflict: "id", ignoreDuplicates: true }
+            )
+            .select("*")
+            .single();
+
+          setProfile((newProfile as Profile) ?? null);
+        }
       }
     },
     [supabase]
