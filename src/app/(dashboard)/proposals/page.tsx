@@ -49,27 +49,29 @@ export default function ProposalsPage() {
 
   const fetchData = useCallback(async () => {
     setLoading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      const [proposalsRes, vendorsRes] = await Promise.all([
+        supabase
+          .from('proposals')
+          .select('id, file_name, file_url, scan_status, extracted_total_price, created_at, vendor_id, vendors(id, name)')
+          .order('created_at', { ascending: false }),
+        supabase.from('vendors').select('id, name').order('name'),
+      ])
+
+      if (proposalsRes.data) {
+        setProposals(proposalsRes.data as unknown as Proposal[])
+      }
+      if (vendorsRes.data) {
+        setVendors(vendorsRes.data)
+      }
+    } catch (err) {
+      console.error('Proposals fetch error:', err)
+    } finally {
       setLoading(false)
-      return
     }
-
-    const [proposalsRes, vendorsRes] = await Promise.all([
-      supabase
-        .from('proposals')
-        .select('id, file_name, file_url, scan_status, extracted_total_price, created_at, vendor_id, vendors(id, name)')
-        .order('created_at', { ascending: false }),
-      supabase.from('vendors').select('id, name').order('name'),
-    ])
-
-    if (proposalsRes.data) {
-      setProposals(proposalsRes.data as unknown as Proposal[])
-    }
-    if (vendorsRes.data) {
-      setVendors(vendorsRes.data)
-    }
-    setLoading(false)
   }, [supabase])
 
   useEffect(() => {
