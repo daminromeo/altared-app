@@ -72,8 +72,8 @@ export async function POST(request: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${appUrl}/dashboard/settings/billing?success=true`,
-      cancel_url: `${appUrl}/dashboard/settings/billing?canceled=true`,
+      success_url: `${appUrl}/settings?tab=billing&success=true`,
+      cancel_url: `${appUrl}/settings?tab=billing&canceled=true`,
       metadata: {
         userId: user.id,
       },
