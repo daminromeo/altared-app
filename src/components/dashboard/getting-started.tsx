@@ -7,8 +7,7 @@ import {
   Circle,
   Users,
   DollarSign,
-  Share2,
-  FileText,
+  ListTodo,
   X,
   ChevronDown,
   ChevronUp,
@@ -21,8 +20,7 @@ interface GettingStartedProps {
   hasVendors: boolean
   hasBudget: boolean
   hasBookedVendor: boolean
-  hasSharedLink: boolean
-  hasProposal: boolean
+  hasTask: boolean
 }
 
 interface ChecklistItem {
@@ -40,8 +38,7 @@ export function GettingStarted({
   hasVendors,
   hasBudget,
   hasBookedVendor,
-  hasSharedLink,
-  hasProposal,
+  hasTask,
 }: GettingStartedProps) {
   const [dismissed, setDismissed] = useState(true) // default hidden to avoid flash
   const [collapsed, setCollapsed] = useState(false)
@@ -76,20 +73,12 @@ export function GettingStarted({
       icon: CheckCircle2,
     },
     {
-      id: 'share',
-      label: 'Share with your partner or family',
-      description: 'Send a magic link to get feedback',
-      href: '/settings?tab=sharing',
-      completed: hasSharedLink,
-      icon: Share2,
-    },
-    {
-      id: 'proposal',
-      label: 'Upload a proposal',
-      description: 'Add a vendor proposal or contract',
-      href: '/proposals/upload',
-      completed: hasProposal,
-      icon: FileText,
+      id: 'task',
+      label: 'Add a task',
+      description: 'Create your first to-do or reminder',
+      href: '/tasks',
+      completed: hasTask,
+      icon: ListTodo,
     },
   ]
 

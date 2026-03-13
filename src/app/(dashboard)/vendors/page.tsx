@@ -480,6 +480,12 @@ export default function VendorsPage() {
   const fetchVendors = useCallback(async () => {
     setLoading(true);
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
       let query = supabase
         .from('vendors')
         .select('*, vendor_categories(*)');

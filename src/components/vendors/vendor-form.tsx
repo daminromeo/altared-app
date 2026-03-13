@@ -329,6 +329,8 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
   }, [fetchCategories]);
 
   useEffect(() => {
+    if (!open) return;
+
     if (vendor) {
       reset({
         name: vendor.name ?? '',
@@ -365,7 +367,7 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
       setCustomCategoryName('');
       setSelectedSource('');
     }
-  }, [vendor, reset]);
+  }, [open, vendor, reset]);
 
   const otherCategory = categories.find((c) => c.name === 'Other');
   const isOtherSelected = selectedCategory === otherCategory?.id;

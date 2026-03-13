@@ -113,6 +113,12 @@ export default function TasksPage() {
   const fetchTasks = useCallback(async () => {
     setLoading(true)
     try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        setLoading(false)
+        return
+      }
+
       const { data, error } = await supabase
         .from('reminders')
         .select('*, vendors(id, name, company_name, vendor_categories(name, icon))')

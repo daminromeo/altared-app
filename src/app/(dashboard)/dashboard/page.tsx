@@ -52,8 +52,7 @@ interface DashboardData {
     hasVendors: boolean
     hasBudget: boolean
     hasBookedVendor: boolean
-    hasSharedLink: boolean
-    hasProposal: boolean
+    hasTask: boolean
   }
   upcomingPayments: UpcomingPayment[]
 }
@@ -87,7 +86,6 @@ export default function DashboardPage() {
         remindersResult,
         activitiesResult,
         proposalsResult,
-        shareLinksResult,
       ] = await Promise.all([
         // Profile for budget and date
         supabase
@@ -124,13 +122,6 @@ export default function DashboardPage() {
           .from('proposals')
           .select('id', { count: 'exact', head: true })
           .eq('user_id', user.id),
-
-        // Share links (for checklist)
-        supabase
-          .from('partner_share_links')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('is_active', true),
       ])
 
       // Compute stats
@@ -204,8 +195,7 @@ export default function DashboardPage() {
           hasVendors: vendors.length > 0,
           hasBudget: (profileData?.total_budget || 0) > 0,
           hasBookedVendor: vendors.some((v) => v.status === 'booked'),
-          hasSharedLink: (shareLinksResult.count || 0) > 0,
-          hasProposal: (proposalsResult.count || 0) > 0,
+          hasTask: (remindersResult.data || []).length > 0,
         },
         upcomingPayments: vendors
           .filter(
