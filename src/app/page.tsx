@@ -139,7 +139,7 @@ const plans = [
       "Message & communication log",
     ],
     cta: "Get Started Free",
-    href: "/signup",
+    href: "/get-started",
     highlighted: false,
   },
   {
