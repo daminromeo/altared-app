@@ -69,56 +69,60 @@ export default function SettingsPage() {
 
   const fetchProfile = useCallback(async () => {
     setLoading(true);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-    if (!user) {
-      setLoading(false);
-      return;
-    }
+      if (!user) {
+        return;
+      }
 
-    // Use maybeSingle() to avoid error when profile doesn't exist
-    const { data } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (data) {
-      setProfile(data as ProfileData);
-    } else {
-      // Profile doesn't exist yet — wait for trigger, then retry
-      await new Promise((r) => setTimeout(r, 500));
-      const { data: retryData } = await supabase
+      // Use maybeSingle() to avoid error when profile doesn't exist
+      const { data } = await supabase
         .from("profiles")
         .select("*")
         .eq("id", user.id)
         .maybeSingle();
 
-      if (retryData) {
-        setProfile(retryData as ProfileData);
+      if (data) {
+        setProfile(data as ProfileData);
       } else {
-        const { data: newProfile } = await supabase
+        // Profile doesn't exist yet — wait for trigger, then retry
+        await new Promise((r) => setTimeout(r, 500));
+        const { data: retryData } = await supabase
           .from("profiles")
-          .upsert(
-            {
-              id: user.id,
-              email: user.email ?? "",
-              full_name: user.user_metadata?.full_name ?? null,
-              subscription_status: "free",
-            },
-            { onConflict: "id", ignoreDuplicates: true }
-          )
           .select("*")
-          .single();
+          .eq("id", user.id)
+          .maybeSingle();
 
-        if (newProfile) {
-          setProfile(newProfile as ProfileData);
+        if (retryData) {
+          setProfile(retryData as ProfileData);
+        } else {
+          const { data: newProfile } = await supabase
+            .from("profiles")
+            .upsert(
+              {
+                id: user.id,
+                email: user.email ?? "",
+                full_name: user.user_metadata?.full_name ?? null,
+                subscription_status: "free",
+              },
+              { onConflict: "id", ignoreDuplicates: true }
+            )
+            .select("*")
+            .single();
+
+          if (newProfile) {
+            setProfile(newProfile as ProfileData);
+          }
         }
       }
+    } catch (err) {
+      console.error("Settings profile fetch error:", err);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   }, [supabase]);
 
   useEffect(() => {

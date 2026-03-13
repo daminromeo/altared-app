@@ -82,6 +82,7 @@ export default function BudgetPage() {
   const [customCategoryName, setCustomCategoryName] = useState('')
 
   const fetchData = useCallback(async () => {
+    try {
     // Ensure auth session is established before querying RLS-protected tables
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -157,7 +158,11 @@ export default function BudgetPage() {
     if (catsRes.data) setCategories(catsRes.data as VendorCategory[])
     if (vendorsRes.data) setVendors(vendorsRes.data)
     if (settingsRes.data) setTotalBudget(settingsRes.data.total_budget ?? 0)
-    setLoading(false)
+    } catch (err) {
+      console.error('Budget fetch error:', err)
+    } finally {
+      setLoading(false)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
