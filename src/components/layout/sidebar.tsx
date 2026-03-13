@@ -95,17 +95,8 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* Bottom section */}
-      <div className="border-t border-border p-4">
-        {!collapsed && (
-          <div className="rounded-lg bg-[#FAF8F5] p-3">
-            <p className="text-xs font-medium text-[#2D2D2D]">Need help?</p>
-            <p className="mt-1 text-xs text-[#7A7A7A]">
-              Check our guide for tips on managing your vendors.
-            </p>
-          </div>
-        )}
-      </div>
+      {/* Bottom spacer */}
+      <div className="border-t border-border p-2" />
     </aside>
   )
 }

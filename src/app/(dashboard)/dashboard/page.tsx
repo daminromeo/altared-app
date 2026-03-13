@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/providers/auth-provider'
 import { toast } from 'sonner'
 import { StatsCards } from '@/components/dashboard/stats-cards'
 import { VendorPipeline, type BookingPaymentInfo } from '@/components/dashboard/vendor-pipeline'
@@ -58,6 +59,7 @@ interface DashboardData {
 }
 
 export default function DashboardPage() {
+  const { user: authUser, isLoading: authLoading } = useAuth()
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -66,18 +68,12 @@ export default function DashboardPage() {
   const supabase = useMemo(() => createClient(), [])
 
   const fetchDashboardData = useCallback(async () => {
+    if (!authUser) return
     try {
       setLoading(true)
       setError(null)
 
-      const {
-        data: { user },
-      } = await supabase.auth.getUser()
-
-      if (!user) {
-        setLoading(false)
-        return
-      }
+      const user = authUser
 
       // Fetch all dashboard data in parallel
       const [
@@ -223,7 +219,7 @@ export default function DashboardPage() {
     } finally {
       setLoading(false)
     }
-  }, [supabase])
+  }, [authUser, supabase])
 
   useEffect(() => {
     fetchDashboardData()

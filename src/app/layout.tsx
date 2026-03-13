@@ -21,6 +21,9 @@ export const metadata: Metadata = {
   title: "Altared - Wedding Vendor Comparison & Management",
   description:
     "Compare vendors, scan proposals with AI, and manage your wedding budget — all in one place.",
+  icons: {
+    icon: "/icon.svg",
+  },
   openGraph: {
     title: "Altared - Your Wedding, Perfectly Organized",
     description:

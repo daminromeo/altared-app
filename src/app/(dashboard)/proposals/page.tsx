@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react'
 import Link from 'next/link'
 import { Plus, FileText, Search } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/providers/auth-provider'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -38,6 +39,7 @@ interface Vendor {
 }
 
 export default function ProposalsPage() {
+  const { user: authUser, isLoading: authLoading } = useAuth()
   const { isFreePlan, canUseFeature } = useSubscription()
   const supabase = useMemo(() => createClient(), [])
   const [proposals, setProposals] = useState<Proposal[]>([])
@@ -48,11 +50,9 @@ export default function ProposalsPage() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const fetchData = useCallback(async () => {
+    if (!authUser) return
     setLoading(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-
       const [proposalsRes, vendorsRes] = await Promise.all([
         supabase
           .from('proposals')
@@ -72,7 +72,7 @@ export default function ProposalsPage() {
     } finally {
       setLoading(false)
     }
-  }, [supabase])
+  }, [authUser, supabase])
 
   useEffect(() => {
     fetchData()

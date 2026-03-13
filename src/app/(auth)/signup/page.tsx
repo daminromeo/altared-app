@@ -345,8 +345,8 @@ export default function SignupPage() {
               }}
             >
               By creating an account, you agree to our{' '}
-              <span className="underline underline-offset-4">Terms of Service</span> and{' '}
-              <span className="underline underline-offset-4">Privacy Policy</span>.
+              <a href="/terms" className="underline underline-offset-4 hover:text-[#2D2D2D]">Terms of Service</a> and{' '}
+              <a href="/privacy" className="underline underline-offset-4 hover:text-[#2D2D2D]">Privacy Policy</a>.
             </p>
 
             {/* Link to login */}

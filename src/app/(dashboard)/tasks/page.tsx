@@ -17,6 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/providers/auth-provider'
 import { toast } from 'sonner'
 import { TaskForm, type TaskData } from '@/components/tasks/task-form'
 import { getVendorEmoji } from '@/lib/vendor-icons'
@@ -100,6 +101,7 @@ function isOverdue(dateStr: string): boolean {
 type FilterView = 'all' | 'upcoming' | 'overdue' | 'completed'
 
 export default function TasksPage() {
+  const { user: authUser, isLoading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const [tasks, setTasks] = useState<TaskData[]>([])
   const [loading, setLoading] = useState(true)
@@ -111,14 +113,9 @@ export default function TasksPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
   const fetchTasks = useCallback(async () => {
+    if (!authUser) return
     setLoading(true)
     try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        setLoading(false)
-        return
-      }
-
       const { data, error } = await supabase
         .from('reminders')
         .select('*, vendors(id, name, company_name, vendor_categories(name, icon))')
@@ -132,7 +129,7 @@ export default function TasksPage() {
     } finally {
       setLoading(false)
     }
-  }, [supabase])
+  }, [authUser, supabase])
 
   useEffect(() => {
     fetchTasks()

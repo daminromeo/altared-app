@@ -4,6 +4,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react'
 import { toast } from 'sonner'
 import { Plus, DollarSign } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { useAuth } from '@/providers/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -69,6 +70,7 @@ const emptyForm: NewItemForm = {
 }
 
 export default function BudgetPage() {
+  const { user: authUser, isLoading: authLoading } = useAuth()
   const { isFreePlan } = useSubscription()
   const supabase = useMemo(() => createClient(), [])
   const [budgetItems, setBudgetItems] = useState<RawBudgetItem[]>([])
@@ -82,13 +84,8 @@ export default function BudgetPage() {
   const [customCategoryName, setCustomCategoryName] = useState('')
 
   const fetchData = useCallback(async () => {
+    if (!authUser) return
     try {
-    // Ensure auth session is established before querying RLS-protected tables
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      setLoading(false)
-      return
-    }
 
     const [itemsRes, catsRes, vendorsRes, settingsRes, bookedVendorsRes] = await Promise.all([
       supabase
@@ -163,8 +160,7 @@ export default function BudgetPage() {
     } finally {
       setLoading(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [authUser, supabase])
 
   useEffect(() => {
     fetchData()

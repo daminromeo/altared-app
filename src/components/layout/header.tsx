@@ -2,6 +2,7 @@
 
 import { usePathname } from 'next/navigation'
 import { UserMenu } from '@/components/layout/user-menu'
+import { useAuth } from '@/providers/auth-provider'
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -33,7 +34,9 @@ interface HeaderProps {
 export function Header({ userProfile }: HeaderProps) {
   const pathname = usePathname()
   const title = getPageTitle(pathname)
-  const weddingName = userProfile?.wedding_name
+  const { profile: authProfile } = useAuth()
+  // Prefer auth context (reactive on client) over server prop (static after SSR)
+  const weddingName = authProfile?.wedding_name ?? userProfile?.wedding_name
 
   return (
     <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-white px-4 lg:px-6">

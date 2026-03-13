@@ -61,6 +61,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { createClient } from '@/lib/supabase/client';
+import { useAuth } from '@/providers/auth-provider';
 import { useSubscription, useCheckout } from '@/lib/hooks/use-subscription';
 import { PLANS } from '@/lib/stripe/config';
 import { toast } from 'sonner';
@@ -409,6 +410,7 @@ function VendorLimitModal({
 export default function VendorsPage() {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
+  const { user: authUser, isLoading: authLoading } = useAuth();
   const { getComparisonVendorLimit, isFreePlan, canUseFeature, plan } = useSubscription();
   const vendorCheckout = useCheckout();
 
@@ -514,14 +516,9 @@ export default function VendorsPage() {
   const [selectedForCompare, setSelectedForCompare] = useState<Set<string>>(new Set());
 
   const fetchVendors = useCallback(async () => {
+    if (!authUser) return;
     setLoading(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
       let query = supabase
         .from('vendors')
         .select('*, vendor_categories(*)');
@@ -552,7 +549,7 @@ export default function VendorsPage() {
     } finally {
       setLoading(false);
     }
-  }, [filterCategories, filterStatus, priceMin, priceMax, sortField, sortDirection]);
+  }, [authUser, filterCategories, filterStatus, priceMin, priceMax, sortField, sortDirection]);
 
   const fetchCategories = useCallback(async () => {
     const { data } = await supabase

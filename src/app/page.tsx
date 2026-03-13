@@ -851,20 +851,20 @@ export default function LandingPage() {
               </h4>
               <ul className="space-y-2">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/privacy"
                     className="text-sm text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
                   >
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    href="/terms"
                     className="text-sm text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
                   >
                     Terms of Service
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

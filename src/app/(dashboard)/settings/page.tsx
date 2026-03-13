@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLANS } from "@/lib/stripe/config";
 import { usePortalSession, useCheckout, useSubscription } from "@/lib/hooks/use-subscription";
+import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,6 +63,7 @@ export default function SettingsPage() {
   const [notificationsLoading, setNotificationsLoading] = useState(true);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
+  const { user: authUser, isLoading: authLoading, refreshProfile: refreshAuthProfile } = useAuth();
   const portalSession = usePortalSession();
   const checkout = useCheckout();
   const { data: subscriptionData } = useSubscription();
@@ -69,21 +71,14 @@ export default function SettingsPage() {
   // ── Fetch profile ─────────────────────────────────────────────────────────
 
   const fetchProfile = useCallback(async () => {
+    if (!authUser) return;
     setLoading(true);
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        return;
-      }
-
       // Use maybeSingle() to avoid error when profile doesn't exist
       const { data } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", user.id)
+        .eq("id", authUser.id)
         .maybeSingle();
 
       if (data) {
@@ -94,7 +89,7 @@ export default function SettingsPage() {
         const { data: retryData } = await supabase
           .from("profiles")
           .select("*")
-          .eq("id", user.id)
+          .eq("id", authUser.id)
           .maybeSingle();
 
         if (retryData) {
@@ -104,9 +99,9 @@ export default function SettingsPage() {
             .from("profiles")
             .upsert(
               {
-                id: user.id,
-                email: user.email ?? "",
-                full_name: user.user_metadata?.full_name ?? null,
+                id: authUser.id,
+                email: authUser.email ?? "",
+                full_name: authUser.user_metadata?.full_name ?? null,
                 subscription_status: "free",
               },
               { onConflict: "id", ignoreDuplicates: true }
@@ -124,7 +119,7 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  }, [supabase]);
+  }, [authUser, supabase]);
 
   useEffect(() => {
     fetchProfile();
@@ -180,6 +175,8 @@ export default function SettingsPage() {
       setSaveMessage("Changes saved successfully!");
       setProfile((p) => (p ? { ...p, avatar_url: avatarUrl } : p));
       setAvatarFile(null);
+      // Refresh auth context so header wedding name updates without page reload
+      refreshAuthProfile();
     }
 
     setSaving(false);
