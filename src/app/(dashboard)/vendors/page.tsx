@@ -306,7 +306,6 @@ function VendorLimitModal({
           </DialogDescription>
           <p className="mt-1 text-center text-xs text-[#7A7A7A]">
             You currently have {currentCount} vendor{currentCount !== 1 ? 's' : ''} ({currentCount} of {vendorLimit} used).
-            Deleting a vendor frees up a slot.
           </p>
         </DialogHeader>
 
@@ -375,6 +374,7 @@ export default function VendorsPage() {
   const router = useRouter();
   const supabase = useMemo(() => createClient(), []);
   const { getComparisonVendorLimit, isFreePlan, canUseFeature, plan } = useSubscription();
+  const vendorCheckout = useCheckout();
 
   // View state
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -858,12 +858,17 @@ export default function VendorsPage() {
               Share Link
             </button>
           ) : (
-            <Link
-              href="/settings?tab=billing"
+            <button
+              type="button"
+              disabled={vendorCheckout.isPending}
+              onClick={() => {
+                const priceId = PLANS.pro.stripePriceIdMonthly;
+                if (priceId) vendorCheckout.mutate({ priceId });
+              }}
               className="inline-flex w-full shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#C9A96E] px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-[#B8985D] sm:w-auto"
             >
-              Upgrade to Pro
-            </Link>
+              {vendorCheckout.isPending ? 'Loading...' : 'Upgrade to Pro'}
+            </button>
           )}
           <button
             type="button"

@@ -52,8 +52,8 @@ export const PLANS: Record<string, SubscriptionPlan> = {
     description: "Everything you need to manage your wedding vendors",
     priceMonthly: 9.99,
     priceYearly: 99,
-    stripePriceIdMonthly: process.env.STRIPE_PRO_MONTHLY_PRICE_ID ?? "",
-    stripePriceIdYearly: process.env.STRIPE_PRO_YEARLY_PRICE_ID ?? "",
+    stripePriceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PRO_MONTHLY_PRICE_ID ?? process.env.STRIPE_PRO_MONTHLY_PRICE_ID ?? "",
+    stripePriceIdYearly: process.env.NEXT_PUBLIC_STRIPE_PRO_YEARLY_PRICE_ID ?? process.env.STRIPE_PRO_YEARLY_PRICE_ID ?? "",
     features: [
       { text: "Up to 50 vendors", included: true },
       { text: "Full budget tracking", included: true },
@@ -77,8 +77,8 @@ export const PLANS: Record<string, SubscriptionPlan> = {
     description: "Unlimited access with premium features",
     priceMonthly: 19.99,
     priceYearly: 199,
-    stripePriceIdMonthly: process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID ?? "",
-    stripePriceIdYearly: process.env.STRIPE_PREMIUM_YEARLY_PRICE_ID ?? "",
+    stripePriceIdMonthly: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_MONTHLY_PRICE_ID ?? process.env.STRIPE_PREMIUM_MONTHLY_PRICE_ID ?? "",
+    stripePriceIdYearly: process.env.NEXT_PUBLIC_STRIPE_PREMIUM_YEARLY_PRICE_ID ?? process.env.STRIPE_PREMIUM_YEARLY_PRICE_ID ?? "",
     features: [
       { text: "Unlimited vendors", included: true },
       { text: "Full budget tracking", included: true },

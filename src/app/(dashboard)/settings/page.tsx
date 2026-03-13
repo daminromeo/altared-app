@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLANS } from "@/lib/stripe/config";
-import { usePortalSession } from "@/lib/hooks/use-subscription";
+import { usePortalSession, useCheckout } from "@/lib/hooks/use-subscription";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -62,6 +62,7 @@ export default function SettingsPage() {
   const [notificationsLoading, setNotificationsLoading] = useState(true);
 
   const portalSession = usePortalSession();
+  const checkout = useCheckout();
 
   // ── Fetch profile ─────────────────────────────────────────────────────────
 
@@ -551,9 +552,13 @@ export default function SettingsPage() {
                 {profile?.subscription_status === "free" && (
                   <Button
                     className="bg-[#C9A96E] text-white hover:bg-[#B8985D]"
-                    onClick={() => window.location.href = "/settings?upgrade=true"}
+                    disabled={checkout.isPending}
+                    onClick={() => {
+                      const priceId = PLANS.pro.stripePriceIdMonthly;
+                      if (priceId) checkout.mutate({ priceId });
+                    }}
                   >
-                    Upgrade to Pro
+                    {checkout.isPending ? "Loading..." : "Upgrade to Pro"}
                   </Button>
                 )}
 
@@ -561,9 +566,13 @@ export default function SettingsPage() {
                   <>
                     <Button
                       className="bg-[#C9A96E] text-white hover:bg-[#B8985D]"
-                      onClick={() => window.location.href = "/settings?upgrade=premium"}
+                      disabled={checkout.isPending}
+                      onClick={() => {
+                        const priceId = PLANS.premium.stripePriceIdMonthly;
+                        if (priceId) checkout.mutate({ priceId });
+                      }}
                     >
-                      Upgrade to Premium
+                      {checkout.isPending ? "Loading..." : "Upgrade to Premium"}
                     </Button>
                     <Button
                       variant="outline"
