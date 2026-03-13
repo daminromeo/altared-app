@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLANS } from "@/lib/stripe/config";
-import { usePortalSession, useCheckout } from "@/lib/hooks/use-subscription";
+import { usePortalSession, useCheckout, useSubscription } from "@/lib/hooks/use-subscription";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -64,6 +64,7 @@ export default function SettingsPage() {
 
   const portalSession = usePortalSession();
   const checkout = useCheckout();
+  const { data: subscriptionData } = useSubscription();
 
   // ── Fetch profile ─────────────────────────────────────────────────────────
 
@@ -493,6 +494,22 @@ export default function SettingsPage() {
                       /month
                     </span>
                   </p>
+                )}
+
+                {subscriptionData?.cancelAtPeriodEnd && subscriptionData?.currentPeriodEnd && (
+                  <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2">
+                    <p className="text-sm text-amber-800">
+                      Your subscription is set to cancel on{" "}
+                      <span className="font-semibold">
+                        {new Date(subscriptionData.currentPeriodEnd).toLocaleDateString("en-US", {
+                          month: "long",
+                          day: "numeric",
+                          year: "numeric",
+                        })}
+                      </span>
+                      . You&apos;ll retain access to Pro features until then.
+                    </p>
+                  </div>
                 )}
               </div>
 
