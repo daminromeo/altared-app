@@ -104,42 +104,27 @@ export default function GetStartedPage() {
   }
 
   async function saveOnboardingData(userId: string) {
-    const { error: profileError } = await supabase
+    await supabase
       .from('profiles')
-      .update({
-        full_name: weddingDetails.yourName,
-        partner_name: weddingDetails.partnerName,
-        wedding_date: weddingDetails.weddingDate
-          ? weddingDetails.weddingDate.toISOString().split('T')[0]
-          : null,
-        wedding_location: weddingDetails.location || null,
-        estimated_guest_count:
-          weddingDetails.guestCount === '' ? null : Number(weddingDetails.guestCount),
-        wedding_name: weddingDetails.weddingName || null,
-        total_budget: budgetData.totalBudget,
-        onboarding_completed: true,
-      })
-      .eq('id', userId)
-
-    // If update failed (profile doesn't exist yet), try insert
-    if (profileError) {
-      await supabase.from('profiles').insert({
-        id: userId,
-        email: '',
-        full_name: weddingDetails.yourName,
-        partner_name: weddingDetails.partnerName,
-        wedding_date: weddingDetails.weddingDate
-          ? weddingDetails.weddingDate.toISOString().split('T')[0]
-          : null,
-        wedding_location: weddingDetails.location || null,
-        estimated_guest_count:
-          weddingDetails.guestCount === '' ? null : Number(weddingDetails.guestCount),
-        wedding_name: weddingDetails.weddingName || null,
-        total_budget: budgetData.totalBudget,
-        onboarding_completed: true,
-        subscription_status: 'free',
-      })
-    }
+      .upsert(
+        {
+          id: userId,
+          email: signupEmail,
+          full_name: weddingDetails.yourName,
+          partner_name: weddingDetails.partnerName,
+          wedding_date: weddingDetails.weddingDate
+            ? weddingDetails.weddingDate.toISOString().split('T')[0]
+            : null,
+          wedding_location: weddingDetails.location || null,
+          estimated_guest_count:
+            weddingDetails.guestCount === '' ? null : Number(weddingDetails.guestCount),
+          wedding_name: weddingDetails.weddingName || null,
+          total_budget: budgetData.totalBudget,
+          onboarding_completed: true,
+          subscription_status: 'free',
+        },
+        { onConflict: 'id' }
+      )
   }
 
   async function onSubmitSignup() {

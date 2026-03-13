@@ -385,19 +385,19 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
       let categoryId = selectedCategory || null;
       if (isOtherSelected && customCategoryName.trim()) {
         const trimmedName = customCategoryName.trim();
-        // Check if a category with this name already exists
+        // Check if a category with this name already exists (global or user's own)
         const { data: existing } = await supabase
           .from('vendor_categories')
           .select('id')
           .ilike('name', trimmedName)
-          .single();
+          .maybeSingle();
 
         if (existing) {
           categoryId = existing.id;
         } else {
           const { data: created, error: catErr } = await supabase
             .from('vendor_categories')
-            .insert({ name: trimmedName, icon: 'plus', default_budget_percentage: 0, sort_order: 99 })
+            .insert({ name: trimmedName, icon: 'plus', default_budget_percentage: 0, sort_order: 99, user_id: user.id })
             .select('id')
             .single();
           if (catErr) {

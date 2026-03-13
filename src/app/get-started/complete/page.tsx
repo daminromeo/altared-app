@@ -31,41 +31,27 @@ export default function GetStartedCompletePage() {
         try {
           const { weddingDetails, budgetData } = JSON.parse(raw)
 
-          // Try update first (profile may exist from trigger)
-          const { error: updateError } = await supabase
+          // Upsert profile with onboarding data
+          await supabase
             .from('profiles')
-            .update({
-              full_name: weddingDetails.yourName || null,
-              partner_name: weddingDetails.partnerName || null,
-              wedding_date: weddingDetails.weddingDate
-                ? new Date(weddingDetails.weddingDate).toISOString().split('T')[0]
-                : null,
-              wedding_location: weddingDetails.location || null,
-              estimated_guest_count:
-                weddingDetails.guestCount === '' ? null : Number(weddingDetails.guestCount),
-              total_budget: budgetData.totalBudget,
-              onboarding_completed: true,
-            })
-            .eq('id', user.id)
-
-          // If update failed (no profile row), insert
-          if (updateError) {
-            await supabase.from('profiles').insert({
-              id: user.id,
-              email: user.email ?? '',
-              full_name: weddingDetails.yourName || null,
-              partner_name: weddingDetails.partnerName || null,
-              wedding_date: weddingDetails.weddingDate
-                ? new Date(weddingDetails.weddingDate).toISOString().split('T')[0]
-                : null,
-              wedding_location: weddingDetails.location || null,
-              estimated_guest_count:
-                weddingDetails.guestCount === '' ? null : Number(weddingDetails.guestCount),
-              total_budget: budgetData.totalBudget,
-              onboarding_completed: true,
-              subscription_status: 'free',
-            })
-          }
+            .upsert(
+              {
+                id: user.id,
+                email: user.email ?? '',
+                full_name: weddingDetails.yourName || null,
+                partner_name: weddingDetails.partnerName || null,
+                wedding_date: weddingDetails.weddingDate
+                  ? new Date(weddingDetails.weddingDate).toISOString().split('T')[0]
+                  : null,
+                wedding_location: weddingDetails.location || null,
+                estimated_guest_count:
+                  weddingDetails.guestCount === '' ? null : Number(weddingDetails.guestCount),
+                total_budget: budgetData.totalBudget,
+                onboarding_completed: true,
+                subscription_status: 'free',
+              },
+              { onConflict: 'id' }
+            )
 
           sessionStorage.removeItem('onboarding_data')
         } catch {

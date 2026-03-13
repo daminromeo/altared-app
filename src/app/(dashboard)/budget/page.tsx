@@ -82,6 +82,13 @@ export default function BudgetPage() {
   const [customCategoryName, setCustomCategoryName] = useState('')
 
   const fetchData = useCallback(async () => {
+    // Ensure auth session is established before querying RLS-protected tables
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      setLoading(false)
+      return
+    }
+
     const [itemsRes, catsRes, vendorsRes, settingsRes, bookedVendorsRes] = await Promise.all([
       supabase
         .from('budget_items')
@@ -259,14 +266,14 @@ export default function BudgetPage() {
         .from('vendor_categories')
         .select('id')
         .ilike('name', trimmedName)
-        .single()
+        .maybeSingle()
 
       if (existing) {
         categoryId = existing.id
       } else {
         const { data: created, error: catErr } = await supabase
           .from('vendor_categories')
-          .insert({ name: trimmedName, icon: 'plus', default_budget_percentage: 0, sort_order: 99 })
+          .insert({ name: trimmedName, icon: 'plus', default_budget_percentage: 0, sort_order: 99, user_id: user.id })
           .select('id')
           .single()
         if (catErr) {
