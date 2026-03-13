@@ -38,7 +38,7 @@ interface Vendor {
 }
 
 export default function ProposalsPage() {
-  const { isFreePlan } = useSubscription()
+  const { isFreePlan, canUseFeature } = useSubscription()
   const supabase = useMemo(() => createClient(), [])
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [vendors, setVendors] = useState<Vendor[]>([])

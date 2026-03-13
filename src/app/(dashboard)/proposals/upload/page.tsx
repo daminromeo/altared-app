@@ -20,6 +20,8 @@ import {
   ProposalScanResults,
   type ScanResultData,
 } from '@/components/proposals/proposal-scan-results'
+import { useSubscription } from '@/lib/hooks/use-subscription'
+import { UpgradePrompt } from '@/components/upgrade-prompt'
 
 interface Vendor {
   id: string
@@ -31,6 +33,7 @@ type UploadStage = 'select' | 'uploading' | 'scanning' | 'results' | 'error'
 export default function UploadProposalPage() {
   const supabase = useMemo(() => createClient(), [])
   const router = useRouter()
+  const { canUseFeature, isLoading: subLoading } = useSubscription()
 
   const [file, setFile] = useState<File | null>(null)
   const [vendors, setVendors] = useState<Vendor[]>([])
@@ -178,6 +181,30 @@ export default function UploadProposalPage() {
   function handleSaved() {
     toast.success('Proposal confirmed and saved')
     router.push('/proposals')
+  }
+
+  // Gate behind subscription
+  if (!subLoading && !canUseFeature('proposal_scanning')) {
+    return (
+      <div className="mx-auto max-w-2xl space-y-6">
+        <div className="flex items-center gap-3">
+          <Link href="/proposals">
+            <Button variant="ghost" size="icon-sm" className="text-[#7A7A7A]">
+              <ArrowLeft className="size-4" />
+            </Button>
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-[#2D2D2D]">
+              Upload Proposal
+            </h1>
+          </div>
+        </div>
+        <UpgradePrompt
+          title="AI Proposal Scanning"
+          description="Upload vendor proposals and let AI automatically extract pricing, services, payment schedules, and contract terms. Upgrade to Pro to unlock this feature."
+        />
+      </div>
+    )
   }
 
   return (

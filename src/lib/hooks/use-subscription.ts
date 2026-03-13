@@ -18,13 +18,15 @@ type Feature =
   | "comparison_scoring"
   | "comparison_ai"
   | "reminders"
-  | "partner_sharing";
+  | "partner_sharing"
+  | "proposal_scanning";
 
 const FEATURE_PLAN_MAP: Record<Feature, SubscriptionPlan["id"][]> = {
   comparison_scoring: ["pro", "premium"],
   comparison_ai: ["pro", "premium"],
   reminders: ["pro", "premium"],
   partner_sharing: ["pro", "premium"],
+  proposal_scanning: ["pro", "premium"],
 };
 
 const COMPARISON_VENDOR_LIMITS: Record<SubscriptionPlan["id"], number> = {
