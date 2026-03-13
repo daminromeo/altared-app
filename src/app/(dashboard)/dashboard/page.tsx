@@ -75,7 +75,10 @@ export default function DashboardPage() {
         data: { user },
       } = await supabase.auth.getUser()
 
-      if (!user) return
+      if (!user) {
+        setLoading(false)
+        return
+      }
 
       // Fetch all dashboard data in parallel
       const [

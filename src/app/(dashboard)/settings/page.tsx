@@ -86,20 +86,34 @@ export default function SettingsPage() {
     if (data) {
       setProfile(data as ProfileData);
     } else {
-      // Profile doesn't exist — create it as a fallback
-      const { data: newProfile } = await supabase
+      // Profile doesn't exist yet — wait for trigger, then retry
+      await new Promise((r) => setTimeout(r, 500));
+      const { data: retryData } = await supabase
         .from("profiles")
-        .insert({
-          id: user.id,
-          email: user.email ?? "",
-          full_name: user.user_metadata?.full_name ?? null,
-          subscription_status: "free",
-        })
         .select("*")
-        .single();
+        .eq("id", user.id)
+        .maybeSingle();
 
-      if (newProfile) {
-        setProfile(newProfile as ProfileData);
+      if (retryData) {
+        setProfile(retryData as ProfileData);
+      } else {
+        const { data: newProfile } = await supabase
+          .from("profiles")
+          .upsert(
+            {
+              id: user.id,
+              email: user.email ?? "",
+              full_name: user.user_metadata?.full_name ?? null,
+              subscription_status: "free",
+            },
+            { onConflict: "id", ignoreDuplicates: true }
+          )
+          .select("*")
+          .single();
+
+        if (newProfile) {
+          setProfile(newProfile as ProfileData);
+        }
       }
     }
     setLoading(false);
