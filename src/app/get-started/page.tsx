@@ -168,7 +168,12 @@ export default function GetStartedPage() {
       })
 
       if (signUpError) {
-        setError(signUpError.message)
+        console.error('Supabase signUp error:', signUpError.message, signUpError)
+        setError(
+          signUpError.message === 'User already registered'
+            ? 'An account with this email already exists. Please sign in instead.'
+            : signUpError.message
+        )
         setIsSubmitting(false)
         return
       }
