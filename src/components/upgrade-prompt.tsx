@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Lock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useCheckout } from '@/lib/hooks/use-subscription';
@@ -20,12 +21,19 @@ export function UpgradePrompt({
 }: UpgradePromptProps) {
   const checkout = useCheckout();
   const targetPlan = PLANS[plan];
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
   function handleUpgrade() {
-    if (targetPlan.stripePriceIdMonthly) {
-      checkout.mutate({ priceId: targetPlan.stripePriceIdMonthly });
+    const priceId = billingPeriod === 'yearly'
+      ? targetPlan.stripePriceIdYearly
+      : targetPlan.stripePriceIdMonthly;
+    if (priceId) {
+      checkout.mutate({ priceId });
     }
   }
+
+  const price = billingPeriod === 'yearly' ? targetPlan.priceYearly : targetPlan.priceMonthly;
+  const period = billingPeriod === 'yearly' ? 'year' : 'month';
 
   if (compact) {
     return (
@@ -52,12 +60,38 @@ export function UpgradePrompt({
         <p className="font-semibold text-[#2D2D2D]">{title}</p>
         <p className="mt-1 text-sm text-[#7A7A7A]">{description}</p>
       </div>
+      {/* Billing period toggle */}
+      <div className="flex items-center gap-1 rounded-lg bg-white/60 p-1">
+        <button
+          type="button"
+          onClick={() => setBillingPeriod('monthly')}
+          className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
+            billingPeriod === 'monthly'
+              ? 'bg-white text-[#2D2D2D] shadow-sm'
+              : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
+          }`}
+        >
+          Monthly
+        </button>
+        <button
+          type="button"
+          onClick={() => setBillingPeriod('yearly')}
+          className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
+            billingPeriod === 'yearly'
+              ? 'bg-white text-[#2D2D2D] shadow-sm'
+              : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
+          }`}
+        >
+          Yearly
+          <span className="ml-1 text-[10px] text-[#8B9F82]">Save ~17%</span>
+        </button>
+      </div>
       <Button
         onClick={handleUpgrade}
         disabled={checkout.isPending}
         className="bg-[#C9A96E] hover:bg-[#B8985D] text-white"
       >
-        {checkout.isPending ? 'Loading...' : `Upgrade to ${targetPlan.name}`}
+        {checkout.isPending ? 'Loading...' : `Upgrade to ${targetPlan.name} — $${price}/${period}`}
       </Button>
     </div>
   );

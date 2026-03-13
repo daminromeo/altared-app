@@ -284,8 +284,17 @@ function VendorLimitModal({
   currentCount: number;
 }) {
   const checkout = useCheckout();
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
   const proPlan = PLANS.pro;
   const premiumPlan = PLANS.premium;
+
+  function getPriceId(plan: typeof proPlan) {
+    return billingPeriod === 'yearly' ? plan.stripePriceIdYearly : plan.stripePriceIdMonthly;
+  }
+
+  function getPrice(plan: typeof proPlan) {
+    return billingPeriod === 'yearly' ? plan.priceYearly : plan.priceMonthly;
+  }
 
   function handleUpgrade(priceId: string) {
     if (priceId) {
@@ -309,12 +318,39 @@ function VendorLimitModal({
           </p>
         </DialogHeader>
 
-        <div className="mt-2 space-y-3">
+        {/* Billing period toggle */}
+        <div className="mt-2 flex items-center justify-center gap-1 rounded-lg bg-[#FAF8F5] p-1">
+          <button
+            type="button"
+            onClick={() => setBillingPeriod('monthly')}
+            className={`rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
+              billingPeriod === 'monthly'
+                ? 'bg-white text-[#2D2D2D] shadow-sm'
+                : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
+            }`}
+          >
+            Monthly
+          </button>
+          <button
+            type="button"
+            onClick={() => setBillingPeriod('yearly')}
+            className={`rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
+              billingPeriod === 'yearly'
+                ? 'bg-white text-[#2D2D2D] shadow-sm'
+                : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
+            }`}
+          >
+            Yearly
+            <span className="ml-1 text-[10px] text-[#8B9F82]">Save ~17%</span>
+          </button>
+        </div>
+
+        <div className="mt-1 space-y-3">
           {/* Pro plan option */}
           {vendorLimit < proPlan.limits.vendors && (
             <button
               type="button"
-              onClick={() => handleUpgrade(proPlan.stripePriceIdMonthly)}
+              onClick={() => handleUpgrade(getPriceId(proPlan))}
               disabled={checkout.isPending}
               className="flex w-full items-center gap-4 rounded-xl border border-[#8B9F82] bg-[#8B9F82]/5 p-4 text-left transition-all hover:bg-[#8B9F82]/10"
             >
@@ -330,8 +366,8 @@ function VendorLimitModal({
                 </p>
               </div>
               <div className="shrink-0 text-right">
-                <p className="text-lg font-bold text-[#2D2D2D]">${proPlan.priceMonthly}</p>
-                <p className="text-[10px] text-[#7A7A7A]">/month</p>
+                <p className="text-lg font-bold text-[#2D2D2D]">${getPrice(proPlan)}</p>
+                <p className="text-[10px] text-[#7A7A7A]">/{billingPeriod === 'yearly' ? 'year' : 'month'}</p>
               </div>
             </button>
           )}
@@ -339,7 +375,7 @@ function VendorLimitModal({
           {/* Premium plan option */}
           <button
             type="button"
-            onClick={() => handleUpgrade(premiumPlan.stripePriceIdMonthly)}
+            onClick={() => handleUpgrade(getPriceId(premiumPlan))}
             disabled={checkout.isPending}
             className="flex w-full items-center gap-4 rounded-xl border border-[#E8E4DF] bg-white p-4 text-left transition-all hover:border-[#C9A96E]/40 hover:bg-[#C9A96E]/5"
           >
@@ -350,8 +386,8 @@ function VendorLimitModal({
               </p>
             </div>
             <div className="shrink-0 text-right">
-              <p className="text-lg font-bold text-[#2D2D2D]">${premiumPlan.priceMonthly}</p>
-              <p className="text-[10px] text-[#7A7A7A]">/month</p>
+              <p className="text-lg font-bold text-[#2D2D2D]">${getPrice(premiumPlan)}</p>
+              <p className="text-[10px] text-[#7A7A7A]">/{billingPeriod === 'yearly' ? 'year' : 'month'}</p>
             </div>
           </button>
         </div>

@@ -60,6 +60,7 @@ export default function SettingsPage() {
     }
   );
   const [notificationsLoading, setNotificationsLoading] = useState(true);
+  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
   const portalSession = usePortalSession();
   const checkout = useCheckout();
@@ -547,6 +548,35 @@ export default function SettingsPage() {
 
               <Separator className="bg-[#E8E4DF]" />
 
+              {/* Billing period toggle */}
+              {(profile?.subscription_status === "free" || profile?.subscription_status === "pro") && (
+                <div className="flex items-center gap-1 rounded-lg bg-[#FAF8F5] p-1 w-fit">
+                  <button
+                    type="button"
+                    onClick={() => setBillingPeriod('monthly')}
+                    className={`rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
+                      billingPeriod === 'monthly'
+                        ? 'bg-white text-[#2D2D2D] shadow-sm'
+                        : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
+                    }`}
+                  >
+                    Monthly
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBillingPeriod('yearly')}
+                    className={`rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
+                      billingPeriod === 'yearly'
+                        ? 'bg-white text-[#2D2D2D] shadow-sm'
+                        : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
+                    }`}
+                  >
+                    Yearly
+                    <span className="ml-1 text-[10px] text-[#8B9F82]">Save ~17%</span>
+                  </button>
+                </div>
+              )}
+
               {/* Actions */}
               <div className="flex flex-wrap gap-3">
                 {profile?.subscription_status === "free" && (
@@ -554,11 +584,13 @@ export default function SettingsPage() {
                     className="bg-[#C9A96E] text-white hover:bg-[#B8985D]"
                     disabled={checkout.isPending}
                     onClick={() => {
-                      const priceId = PLANS.pro.stripePriceIdMonthly;
+                      const priceId = billingPeriod === 'yearly'
+                        ? PLANS.pro.stripePriceIdYearly
+                        : PLANS.pro.stripePriceIdMonthly;
                       if (priceId) checkout.mutate({ priceId });
                     }}
                   >
-                    {checkout.isPending ? "Loading..." : "Upgrade to Pro"}
+                    {checkout.isPending ? "Loading..." : `Upgrade to Pro — $${billingPeriod === 'yearly' ? PLANS.pro.priceYearly + '/yr' : PLANS.pro.priceMonthly + '/mo'}`}
                   </Button>
                 )}
 
@@ -568,11 +600,13 @@ export default function SettingsPage() {
                       className="bg-[#C9A96E] text-white hover:bg-[#B8985D]"
                       disabled={checkout.isPending}
                       onClick={() => {
-                        const priceId = PLANS.premium.stripePriceIdMonthly;
+                        const priceId = billingPeriod === 'yearly'
+                          ? PLANS.premium.stripePriceIdYearly
+                          : PLANS.premium.stripePriceIdMonthly;
                         if (priceId) checkout.mutate({ priceId });
                       }}
                     >
-                      {checkout.isPending ? "Loading..." : "Upgrade to Premium"}
+                      {checkout.isPending ? "Loading..." : `Upgrade to Premium — $${billingPeriod === 'yearly' ? PLANS.premium.priceYearly + '/yr' : PLANS.premium.priceMonthly + '/mo'}`}
                     </Button>
                     <Button
                       variant="outline"
