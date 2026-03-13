@@ -3,9 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
 import { createClient } from '@/lib/supabase/client'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -35,8 +33,6 @@ const signupSchema = z.object({
       'Password must include uppercase, lowercase, and a number'
     ),
 })
-
-type SignupFormValues = z.infer<typeof signupSchema>
 
 export default function GetStartedPage() {
   const router = useRouter()
@@ -69,14 +65,9 @@ export default function GetStartedPage() {
   })
 
   // Step 4 form
-  const {
-    register,
-    handleSubmit,
-    formState: { errors: formErrors },
-  } = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
-    defaultValues: { email: '', password: '' },
-  })
+  const [signupEmail, setSignupEmail] = useState('')
+  const [signupPassword, setSignupPassword] = useState('')
+  const [formErrors, setFormErrors] = useState<Record<string, { message?: string }>>({})
 
   const handleWeddingDetailsChange = useCallback(
     (data: WeddingDetailsData) => setWeddingDetails(data),
@@ -151,14 +142,28 @@ export default function GetStartedPage() {
     }
   }
 
-  async function onSubmitSignup(data: SignupFormValues) {
+  async function onSubmitSignup() {
+    // Validate manually
+    const result = signupSchema.safeParse({ email: signupEmail, password: signupPassword })
+    if (!result.success) {
+      const fieldErrors: Record<string, { message?: string }> = {}
+      for (const issue of result.error.issues) {
+        const field = issue.path[0] as string
+        if (!fieldErrors[field]) {
+          fieldErrors[field] = { message: issue.message }
+        }
+      }
+      setFormErrors(fieldErrors)
+      return
+    }
+    setFormErrors({})
     setIsSubmitting(true)
     setError(null)
 
     try {
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
+        email: signupEmail,
+        password: signupPassword,
         options: {
           data: {
             full_name: weddingDetails.yourName,
@@ -204,7 +209,7 @@ export default function GetStartedPage() {
         'onboarding_data',
         JSON.stringify({ weddingDetails, budgetData, vendorCategories })
       )
-      setEmailConfirmation(data.email)
+      setEmailConfirmation(signupEmail)
       setIsSubmitting(false)
     } catch (err) {
       console.error('Signup error:', err)
@@ -474,7 +479,10 @@ export default function GetStartedPage() {
                 weddingName={weddingDetails.yourName}
                 error={error}
                 formErrors={formErrors}
-                register={register}
+                email={signupEmail}
+                password={signupPassword}
+                onEmailChange={setSignupEmail}
+                onPasswordChange={setSignupPassword}
                 isLoading={isSubmitting}
                 isGoogleLoading={isGoogleLoading}
                 onGoogleSignIn={handleGoogleSignIn}
@@ -533,7 +541,7 @@ export default function GetStartedPage() {
                 <Button
                   type="button"
                   size="lg"
-                  onClick={handleSubmit(onSubmitSignup)}
+                  onClick={onSubmitSignup}
                   disabled={isSubmitting}
                   className="min-w-[140px]"
                   style={{
@@ -586,7 +594,10 @@ interface StepCreateAccountProps {
   weddingName: string
   error: string | null
   formErrors: Record<string, { message?: string }>
-  register: ReturnType<typeof useForm<SignupFormValues>>['register']
+  email: string
+  password: string
+  onEmailChange: (value: string) => void
+  onPasswordChange: (value: string) => void
   isLoading: boolean
   isGoogleLoading: boolean
   onGoogleSignIn: () => void
@@ -596,7 +607,10 @@ function StepCreateAccount({
   weddingName,
   error,
   formErrors,
-  register,
+  email,
+  password,
+  onEmailChange,
+  onPasswordChange,
   isLoading,
   isGoogleLoading,
   onGoogleSignIn,
@@ -722,7 +736,8 @@ function StepCreateAccount({
               borderColor: formErrors.email ? undefined : '#E5E2DD',
             }}
             aria-invalid={!!formErrors.email}
-            {...register('email')}
+            value={email}
+            onChange={(e) => onEmailChange(e.target.value)}
           />
           {formErrors.email && (
             <p className="text-xs text-destructive" style={{ fontFamily: "'DM Sans', sans-serif" }}>
@@ -752,7 +767,8 @@ function StepCreateAccount({
               borderColor: formErrors.password ? undefined : '#E5E2DD',
             }}
             aria-invalid={!!formErrors.password}
-            {...register('password')}
+            value={password}
+            onChange={(e) => onPasswordChange(e.target.value)}
           />
           {formErrors.password && (
             <p className="text-xs text-destructive" style={{ fontFamily: "'DM Sans', sans-serif" }}>
