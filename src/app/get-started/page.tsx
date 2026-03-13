@@ -179,18 +179,24 @@ export default function GetStartedPage() {
       }
 
       // If there's a session, the user is immediately authenticated (email confirmation disabled)
+      console.log('signUp result:', { session: !!signUpData.session, user: !!signUpData.user })
+
       if (signUpData.session) {
         try {
           if (signUpData.user) {
+            console.log('Saving onboarding data for user:', signUpData.user.id)
             await saveOnboardingData(signUpData.user.id)
+            console.log('Onboarding data saved successfully')
           }
         } catch (saveErr) {
           console.error('Failed to save onboarding data:', saveErr)
-          // Continue to dashboard anyway — profile can be updated later
         }
+        console.log('Navigating to dashboard...')
         router.push('/dashboard')
         return
       }
+
+      console.log('No session returned — falling through to email confirmation')
 
       // No session means email confirmation is required
       // Store onboarding data in sessionStorage to save after they confirm
