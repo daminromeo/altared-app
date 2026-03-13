@@ -163,6 +163,7 @@ export default function GetStartedPage() {
           data: {
             full_name: weddingDetails.yourName,
           },
+          emailRedirectTo: `${window.location.origin}/callback?onboarding=true`,
         },
       })
 
@@ -174,8 +175,13 @@ export default function GetStartedPage() {
 
       // If there's a session, the user is immediately authenticated (email confirmation disabled)
       if (signUpData.session) {
-        if (signUpData.user) {
-          await saveOnboardingData(signUpData.user.id)
+        try {
+          if (signUpData.user) {
+            await saveOnboardingData(signUpData.user.id)
+          }
+        } catch (saveErr) {
+          console.error('Failed to save onboarding data:', saveErr)
+          // Continue to dashboard anyway — profile can be updated later
         }
         router.push('/dashboard')
         return
@@ -189,7 +195,8 @@ export default function GetStartedPage() {
       )
       setEmailConfirmation(data.email)
       setIsSubmitting(false)
-    } catch {
+    } catch (err) {
+      console.error('Signup error:', err)
       setError('Something went wrong. Please try again.')
       setIsSubmitting(false)
     }
