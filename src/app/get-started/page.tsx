@@ -161,6 +161,8 @@ export default function GetStartedPage() {
     setError(null)
 
     try {
+      alert('DEBUG: Starting signup...')
+
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
@@ -172,48 +174,42 @@ export default function GetStartedPage() {
         },
       })
 
+      alert(`DEBUG: signUp returned. error=${signUpError?.message || 'none'}, session=${!!signUpData.session}, user=${!!signUpData.user}`)
+
       if (signUpError) {
-        console.error('Supabase signUp error:', signUpError.message, signUpError)
         setError(
           signUpError.message === 'User already registered'
             ? 'An account with this email already exists. Please sign in instead.'
             : signUpError.message
         )
-        setIsSubmitting(false)
         return
       }
-
-      // If there's a session, the user is immediately authenticated (email confirmation disabled)
-      console.log('signUp result:', { session: !!signUpData.session, user: !!signUpData.user })
 
       if (signUpData.session) {
         try {
           if (signUpData.user) {
-            console.log('Saving onboarding data for user:', signUpData.user.id)
             await saveOnboardingData(signUpData.user.id)
-            console.log('Onboarding data saved successfully')
           }
         } catch (saveErr) {
           console.error('Failed to save onboarding data:', saveErr)
         }
-        console.log('Navigating to dashboard...')
-        router.push('/dashboard')
+        alert('DEBUG: Redirecting to dashboard...')
+        window.location.href = '/dashboard'
         return
       }
 
-      console.log('No session returned — falling through to email confirmation')
+      alert('DEBUG: No session — showing email confirmation')
 
       // No session means email confirmation is required
-      // Store onboarding data in sessionStorage to save after they confirm
       sessionStorage.setItem(
         'onboarding_data',
         JSON.stringify({ weddingDetails, budgetData, vendorCategories })
       )
       setEmailConfirmation(signupEmail)
-      setIsSubmitting(false)
     } catch (err) {
-      console.error('Signup error:', err)
+      alert(`DEBUG: Caught error: ${err}`)
       setError('Something went wrong. Please try again.')
+    } finally {
       setIsSubmitting(false)
     }
   }
