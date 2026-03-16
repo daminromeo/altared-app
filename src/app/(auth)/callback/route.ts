@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { trackTikTokEvent } from '@/lib/tiktok/events'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -27,6 +28,11 @@ export async function GET(request: Request) {
           .maybeSingle()
 
         if (!profile || !profile.onboarding_completed) {
+          // New registration — fire TikTok CompleteRegistration event
+          trackTikTokEvent({
+            event: 'CompleteRegistration',
+            email: user.email,
+          })
           // Redirect to get-started/complete to save onboarding data from sessionStorage
           return NextResponse.redirect(`${origin}/get-started/complete`)
         }

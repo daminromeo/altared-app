@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe/client";
+import { trackTikTokEvent } from "@/lib/tiktok/events";
 
 export async function POST(request: NextRequest) {
   try {
@@ -76,6 +77,22 @@ export async function POST(request: NextRequest) {
           if (error) {
             console.error("Error updating profile after checkout:", error);
           }
+
+          // Fire TikTok Purchase event
+          const amount = session.amount_total
+            ? session.amount_total / 100
+            : plan === "premium" ? 19.99 : 9.99;
+          const customerEmail =
+            session.customer_details?.email ?? undefined;
+
+          trackTikTokEvent({
+            event: "PlaceAnOrder",
+            email: customerEmail,
+            value: amount,
+            currency: "USD",
+            contentId: plan,
+            contentName: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
+          });
         }
         break;
       }
