@@ -73,6 +73,11 @@ export default function DashboardPage() {
       setLoading(true)
       setError(null)
 
+      // Ensure the Supabase client has an active session before querying
+      // This prevents empty results from RLS-protected tables after login redirect
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) return
+
       const user = authUser
 
       // Fetch all dashboard data in parallel
@@ -302,7 +307,7 @@ export default function DashboardPage() {
     }
   }, [data, supabase, fetchDashboardData])
 
-  if (loading && !data) {
+  if ((loading || authLoading) && !data) {
     return <DashboardSkeleton />
   }
 

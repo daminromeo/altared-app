@@ -85,6 +85,8 @@ export default function BudgetPage() {
 
   const fetchData = useCallback(async () => {
     if (!authUser) return
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
     try {
 
     const [itemsRes, catsRes, vendorsRes, settingsRes, bookedVendorsRes] = await Promise.all([

@@ -51,6 +51,8 @@ export default function ProposalsPage() {
 
   const fetchData = useCallback(async () => {
     if (!authUser) return
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session) return
     setLoading(true)
     try {
       const [proposalsRes, vendorsRes] = await Promise.all([

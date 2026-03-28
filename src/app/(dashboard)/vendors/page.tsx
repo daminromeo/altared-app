@@ -517,6 +517,8 @@ export default function VendorsPage() {
 
   const fetchVendors = useCallback(async () => {
     if (!authUser) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
     setLoading(true);
     try {
       let query = supabase
