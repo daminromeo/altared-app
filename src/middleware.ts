@@ -2,6 +2,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 const protectedRoutes = ["/dashboard"];
+const adminRoutes = ["/admin"];
 const authRoutes = ["/login"];
 
 export async function middleware(request: NextRequest) {
@@ -13,8 +14,9 @@ export async function middleware(request: NextRequest) {
   const isProtected = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
+  const isAdmin = adminRoutes.some((route) => pathname.startsWith(route));
 
-  if (isProtected && !user) {
+  if ((isProtected || isAdmin) && !user) {
     const loginUrl = new URL("/login", request.url);
     loginUrl.searchParams.set("redirect", pathname);
     return NextResponse.redirect(loginUrl);

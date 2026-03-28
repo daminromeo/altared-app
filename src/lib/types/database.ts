@@ -25,6 +25,7 @@ export interface Database {
           subscription_status: string;
           subscription_id: string | null;
           onboarding_completed: boolean;
+          is_admin: boolean;
           notification_preferences: Json | null;
           created_at: string;
           updated_at: string;
@@ -44,6 +45,7 @@ export interface Database {
           subscription_status?: string;
           subscription_id?: string | null;
           onboarding_completed?: boolean;
+          is_admin?: boolean;
           notification_preferences?: Json | null;
           created_at?: string;
           updated_at?: string;
@@ -63,6 +65,7 @@ export interface Database {
           subscription_status?: string;
           subscription_id?: string | null;
           onboarding_completed?: boolean;
+          is_admin?: boolean;
           notification_preferences?: Json | null;
           created_at?: string;
           updated_at?: string;
