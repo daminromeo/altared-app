@@ -4,6 +4,13 @@ import { createAdminClient } from "@/lib/supabase/admin";
 
 const ADMIN_EMAIL = "damin.romeo@gmail.com";
 
+// Test accounts to exclude from all metrics
+const TEST_EMAILS = new Set([
+  "damin.romeo@gmail.com",
+  "allie.vallario@gmail.com",
+  "damin@twigeo.com",
+]);
+
 export async function GET() {
   // Verify the requesting user is admin
   const supabase = await createClient();
@@ -32,11 +39,18 @@ export async function GET() {
     admin.from("partner_share_links").select("id, user_id, is_active, created_at"),
   ]);
 
-  const profiles = profilesResult.data ?? [];
-  const vendors = vendorsResult.data ?? [];
-  const proposals = proposalsResult.data ?? [];
-  const reminders = remindersResult.data ?? [];
-  const partnerLinks = partnerLinksResult.data ?? [];
+  const allProfiles = profilesResult.data ?? [];
+
+  // Filter out test accounts and their associated data
+  const testUserIds = new Set(
+    allProfiles.filter((p) => TEST_EMAILS.has(p.email)).map((p) => p.id)
+  );
+
+  const profiles = allProfiles.filter((p) => !TEST_EMAILS.has(p.email));
+  const vendors = (vendorsResult.data ?? []).filter((v) => !testUserIds.has(v.user_id));
+  const proposals = (proposalsResult.data ?? []).filter((p) => !testUserIds.has(p.user_id));
+  const reminders = (remindersResult.data ?? []).filter((r) => !testUserIds.has(r.user_id));
+  const partnerLinks = (partnerLinksResult.data ?? []).filter((l) => !testUserIds.has(l.user_id));
 
   // --- Overview metrics ---
   const totalUsers = profiles.length;
