@@ -517,8 +517,6 @@ export default function VendorsPage() {
 
   const fetchVendors = useCallback(async () => {
     if (!authUser) return;
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) return;
     setLoading(true);
     try {
       let query = supabase
@@ -1033,8 +1031,8 @@ export default function VendorsPage() {
         </div>
       ) : (
         /* List / table view */
-        <div className="rounded-lg border border-[#E5E7EB] bg-white overflow-hidden">
-          <Table>
+        <div className="rounded-lg border border-[#E5E7EB] bg-white overflow-x-auto">
+          <Table className="min-w-[640px]">
             <TableHeader>
               <TableRow>
                 <TableHead className="w-10">

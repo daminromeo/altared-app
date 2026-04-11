@@ -114,8 +114,6 @@ export default function TasksPage() {
 
   const fetchTasks = useCallback(async () => {
     if (!authUser) return
-    const { data: { session } } = await supabase.auth.getSession()
-    if (!session) return
     setLoading(true)
     try {
       const { data, error } = await supabase

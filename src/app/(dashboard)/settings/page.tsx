@@ -269,7 +269,7 @@ export default function SettingsPage() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="mx-auto max-w-4xl space-y-8 p-6 lg:p-8">
+    <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">
       <div>
         <h1
           className="text-3xl font-bold tracking-tight text-[#2D2D2D]"
@@ -761,7 +761,7 @@ export default function SettingsPage() {
 
       {/* Support */}
       <Card className="border-[#E8E4DF]">
-        <CardContent className="flex items-center justify-between py-5">
+        <CardContent className="flex flex-col gap-2 py-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="font-medium text-[#2D2D2D]">Need help?</p>
             <p className="text-sm text-[#7A7A7A]">

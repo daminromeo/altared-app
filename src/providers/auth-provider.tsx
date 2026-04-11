@@ -47,7 +47,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const fetchProfile = useCallback(
     async (userId: string, email?: string) => {
-      // Use maybeSingle to avoid error when profile doesn't exist yet
       const { data } = await supabase
         .from("profiles")
         .select("*")
@@ -57,8 +56,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
       if (data) {
         setProfile(data as Profile);
       } else {
-        // Profile doesn't exist yet — the handle_new_user trigger may still be creating it.
-        // Wait briefly and retry the select before attempting an insert.
         await new Promise((r) => setTimeout(r, 500));
         const { data: retryData } = await supabase
           .from("profiles")
@@ -69,7 +66,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
         if (retryData) {
           setProfile(retryData as Profile);
         } else {
-          // Still no profile — create one, ignoring conflicts from trigger race
           const { data: newProfile } = await supabase
             .from("profiles")
             .upsert(
@@ -104,23 +100,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [supabase]);
 
   useEffect(() => {
-    const initAuth = async () => {
-      try {
-        const {
-          data: { session: initialSession },
-        } = await supabase.auth.getSession();
-
-        if (initialSession?.user) {
-          setSession(initialSession);
-          setUser(initialSession.user);
-          await fetchProfile(initialSession.user.id, initialSession.user.email);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    initAuth();
+    // Use onAuthStateChange as the SOLE source of truth.
+    // The INITIAL_SESSION event fires first with the current session,
+    // replacing the need for a separate getSession() call that can race.
+    let initialSessionHandled = false;
 
     const {
       data: { subscription },
@@ -128,17 +111,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
       setSession(newSession);
       setUser(newSession?.user ?? null);
 
-      if (event === "SIGNED_IN" && newSession?.user) {
-        await fetchProfile(newSession.user.id, newSession.user.email);
+      if (newSession?.user) {
+        if (event === "INITIAL_SESSION" || event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
+          await fetchProfile(newSession.user.id, newSession.user.email);
+        }
       }
 
       if (event === "SIGNED_OUT") {
         setProfile(null);
       }
+
+      // Mark loading complete after the initial session is processed
+      if (event === "INITIAL_SESSION") {
+        initialSessionHandled = true;
+        setIsLoading(false);
+      }
     });
+
+    // Safety net: if INITIAL_SESSION never fires (shouldn't happen, but be safe)
+    const timeout = setTimeout(() => {
+      if (!initialSessionHandled) {
+        setIsLoading(false);
+      }
+    }, 3000);
 
     return () => {
       subscription.unsubscribe();
+      clearTimeout(timeout);
     };
   }, [supabase, fetchProfile]);
 

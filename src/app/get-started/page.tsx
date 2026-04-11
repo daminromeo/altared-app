@@ -367,7 +367,7 @@ export default function GetStartedPage() {
                   style={{ flex: 1 }}
                 >
                   <div
-                    className="flex size-8 items-center justify-center rounded-full text-xs font-semibold transition-all"
+                    className="flex size-6 sm:size-8 items-center justify-center rounded-full text-[10px] sm:text-xs font-semibold transition-all"
                     style={{
                       fontFamily: "'DM Sans', sans-serif",
                       backgroundColor: isActive || isCompleted ? '#8B9F82' : '#E5E2DD',
@@ -391,7 +391,7 @@ export default function GetStartedPage() {
                     )}
                   </div>
                   <span
-                    className="text-center text-xs"
+                    className="text-center text-[10px] sm:text-xs"
                     style={{
                       fontFamily: "'DM Sans', sans-serif",
                       color: isActive ? '#2D2D2D' : '#7A7A7A',

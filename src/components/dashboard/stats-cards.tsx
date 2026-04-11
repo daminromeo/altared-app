@@ -114,7 +114,7 @@ export function StatsCards({ data, loading }: StatsCardsProps) {
 
   if (loading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.key} className="bg-white">
             <CardContent className="pt-1">
@@ -131,28 +131,28 @@ export function StatsCards({ data, loading }: StatsCardsProps) {
   }
 
   return (
-    <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-4">
       {stats.map((stat) => {
         const Icon = stat.icon
         return (
           <Card key={stat.key} className="bg-white">
             <CardContent className="pt-1">
               <div className="flex items-center justify-between">
-                <p className="text-sm font-medium text-[#7A7A7A]">
+                <p className="text-xs sm:text-sm font-medium text-[#7A7A7A]">
                   {stat.label}
                 </p>
                 <div
                   className={cn(
-                    'flex size-9 items-center justify-center rounded-lg',
+                    'flex size-7 sm:size-9 items-center justify-center rounded-lg',
                     stat.bgColor
                   )}
                 >
-                  <Icon className={cn('size-5', stat.color)} />
+                  <Icon className={cn('size-4 sm:size-5', stat.color)} />
                 </div>
               </div>
-              <div className="mt-2">
+              <div className="mt-1 sm:mt-2">
                 <p
-                  className="text-2xl font-bold text-[#2D2D2D]"
+                  className="text-xl sm:text-2xl font-bold text-[#2D2D2D]"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
                   {getValue(stat.key)}

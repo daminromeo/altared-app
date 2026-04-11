@@ -285,11 +285,11 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
       <Card className="bg-white p-4">
         <div className="animate-pulse space-y-4">
           <div className="h-5 w-36 rounded bg-[#FAF8F5]" />
-          <div className="flex gap-4 overflow-hidden">
+          <div className="flex gap-2 sm:gap-4 overflow-hidden">
             {stages.map((stage) => (
               <div
                 key={stage.key}
-                className="w-[200px] shrink-0 space-y-2 rounded-lg bg-[#FAF8F5] p-3"
+                className="w-[140px] sm:w-[160px] lg:w-[200px] shrink-0 space-y-2 rounded-lg bg-[#FAF8F5] p-2 sm:p-3"
               >
                 <div className="h-4 w-20 rounded bg-white" />
                 <div className="h-16 rounded bg-white" />
@@ -332,20 +332,20 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
             Vendor Pipeline
           </h2>
           {onStageChange && (
-            <span className="text-[11px] text-[#7A7A7A]">
+            <span className="hidden sm:inline text-[11px] text-[#7A7A7A]">
               Drag vendors to move between stages
             </span>
           )}
         </div>
 
-        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin">
+        <div className="flex gap-2 sm:gap-3 overflow-x-auto pb-2 scrollbar-thin -mx-1 px-1">
           {vendorsByStage.map((stage) => {
             const isDropTarget = dragOverStage === stage.key && dragSourceStage.current !== stage.key
 
             return (
               <div
                 key={stage.key}
-                className={`w-[180px] shrink-0 rounded-lg p-2 transition-colors duration-150 ${
+                className={`w-[140px] sm:w-[160px] lg:w-[180px] shrink-0 rounded-lg p-1.5 sm:p-2 transition-colors duration-150 ${
                   isDropTarget
                     ? `${stage.dropColor} ring-2 ring-inset ring-[#8B9F82]/30`
                     : 'bg-[#FAF8F5]'
@@ -372,7 +372,7 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
                       draggable={!!onStageChange}
                       onDragStart={(e) => handleDragStart(e, vendor.id, stage.key)}
                       onDragEnd={handleDragEnd}
-                      className={`group w-full rounded-lg bg-white p-2.5 text-left shadow-sm ring-1 ring-black/5 transition-all hover:shadow-md ${
+                      className={`group w-full rounded-lg bg-white p-2 sm:p-2.5 text-left shadow-sm ring-1 ring-black/5 transition-all hover:shadow-md ${
                         onStageChange ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'
                       } ${draggedVendor === vendor.id ? 'opacity-50' : ''}`}
                     >
@@ -384,13 +384,13 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
                           onClick={() => router.push(`/vendors/${vendor.id}`)}
                           className="flex-1 min-w-0 text-left"
                         >
-                          <p className="text-sm font-medium text-[#2D2D2D] truncate">
+                          <p className="text-xs sm:text-sm font-medium text-[#2D2D2D] truncate">
                             {vendor.name}
                           </p>
-                          <p className="mt-0.5 text-xs text-[#7A7A7A]">
+                          <p className="mt-0.5 text-[11px] sm:text-xs text-[#7A7A7A] truncate">
                             {vendor.category}
                           </p>
-                          <p className="mt-1.5 text-xs font-semibold text-[#C9A96E]">
+                          <p className="mt-1 sm:mt-1.5 text-[11px] sm:text-xs font-semibold text-[#C9A96E]">
                             {formatPrice(vendor.price)}
                           </p>
                         </button>

@@ -139,3 +139,19 @@
     font-family: var(--font-playfair), serif;
   }
 }
+
+/* iOS safe area for bottom nav */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Hide scrollbars on mobile pipeline scroll */
+@media (max-width: 640px) {
+  .scrollbar-thin {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    display: none;
+  }
+}

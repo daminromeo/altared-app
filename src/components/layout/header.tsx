@@ -39,11 +39,11 @@ export function Header({ userProfile }: HeaderProps) {
   const weddingName = authProfile?.wedding_name ?? userProfile?.wedding_name
 
   return (
-    <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-white px-4 lg:px-6">
+    <header className="flex h-14 sm:h-16 shrink-0 items-center justify-between border-b border-border bg-white px-3 sm:px-4 lg:px-6">
       {/* Page title + wedding name */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <h1
-          className="text-lg font-semibold text-[#2D2D2D] lg:text-xl"
+          className="text-base sm:text-lg lg:text-xl font-semibold text-[#2D2D2D] truncate"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           {title}
@@ -51,7 +51,7 @@ export function Header({ userProfile }: HeaderProps) {
         {weddingName && (
           <>
             <span className="hidden sm:inline text-[#D1D5DB]">|</span>
-            <span className="hidden sm:inline text-sm text-[#7A7A7A]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <span className="hidden sm:inline text-sm text-[#7A7A7A] truncate" style={{ fontFamily: "'DM Sans', sans-serif" }}>
               {weddingName}
             </span>
           </>

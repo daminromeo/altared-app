@@ -221,7 +221,7 @@ export function StepVendorCategories({ data, onChange }: StepVendorCategoriesPro
       </div>
 
       {/* Category grid */}
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3">
         {VENDOR_CATEGORIES.map((category) => {
           const isSelected = data.selectedCategories.includes(category.id)
           const Icon = category.icon
@@ -231,7 +231,7 @@ export function StepVendorCategories({ data, onChange }: StepVendorCategoriesPro
               key={category.id}
               type="button"
               onClick={() => toggleCategory(category.id)}
-              className="group flex items-center gap-3 rounded-xl border-2 px-4 py-3.5 text-left transition-all hover:shadow-sm"
+              className="group flex items-center gap-2 sm:gap-3 rounded-xl border-2 px-2.5 sm:px-4 py-2.5 sm:py-3.5 text-left transition-all hover:shadow-sm"
               style={{
                 borderColor: isSelected ? category.color : '#E5E2DD',
                 backgroundColor: isSelected ? category.bgColor : 'transparent',

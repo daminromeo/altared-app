@@ -23,7 +23,7 @@ export function MobileNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 flex h-16 items-center justify-around border-t border-border bg-white lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 flex h-16 items-center justify-around border-t border-border bg-white lg:hidden safe-area-pb">
       {mobileNavLinks.map((link) => {
         const isActive =
           pathname === link.href || pathname.startsWith(link.href + '/')
@@ -34,7 +34,7 @@ export function MobileNav() {
             key={link.href}
             href={link.href}
             className={cn(
-              'flex flex-col items-center gap-1 px-3 py-2 text-xs font-medium transition-colors',
+              'flex flex-col items-center justify-center gap-0.5 min-w-[48px] min-h-[44px] px-2 py-1 text-[10px] sm:text-xs font-medium transition-colors',
               isActive
                 ? 'text-[#8B9F82]'
                 : 'text-[#7A7A7A] active:text-[#2D2D2D]'
@@ -46,7 +46,7 @@ export function MobileNav() {
                 isActive ? 'text-[#8B9F82]' : 'text-[#7A7A7A]'
               )}
             />
-            <span>{link.label}</span>
+            <span className="truncate">{link.label}</span>
           </Link>
         )
       })}

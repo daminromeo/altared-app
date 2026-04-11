@@ -73,11 +73,6 @@ export default function DashboardPage() {
       setLoading(true)
       setError(null)
 
-      // Ensure the Supabase client has an active session before querying
-      // This prevents empty results from RLS-protected tables after login redirect
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) return
-
       const user = authUser
 
       // Fetch all dashboard data in parallel
@@ -328,16 +323,16 @@ export default function DashboardPage() {
   if (!data) return null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Welcome message */}
       <div>
         <h2
-          className="text-xl font-bold text-[#2D2D2D] lg:text-2xl"
+          className="text-lg sm:text-xl font-bold text-[#2D2D2D] lg:text-2xl"
           style={{ fontFamily: "'Playfair Display', serif" }}
         >
           Welcome back
         </h2>
-        <p className="mt-1 text-sm text-[#7A7A7A]">
+        <p className="mt-1 text-xs sm:text-sm text-[#7A7A7A]">
           Here&apos;s an overview of your wedding planning progress.
         </p>
       </div>
