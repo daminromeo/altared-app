@@ -207,10 +207,10 @@ export default function PrivacyPolicyPage() {
               If you have any questions about this Privacy Policy, please contact
               us at{" "}
               <a
-                href="mailto:support@altared.app"
+                href="mailto:altaredapp@gmail.com"
                 className="text-[#8B9F82] underline underline-offset-4"
               >
-                support@altared.app
+                altaredapp@gmail.com
               </a>
               .
             </p>

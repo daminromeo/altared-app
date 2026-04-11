@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Altared - Brand Style Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; color: #2D2D2D; background: #fff; }
+
+  .page { max-width: 800px; margin: 0 auto; padding: 60px 40px; }
+  .page + .page { border-top: 1px solid #E8E4DF; }
+
+  h1 { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 700; }
+  h2 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+  h3 { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; color: #7A7A7A; margin-bottom: 16px; }
+
+  p { color: #7A7A7A; font-size: 15px; line-height: 1.6; }
+  .subtitle { font-size: 16px; color: #7A7A7A; margin-top: 8px; }
+
+  .section { margin-top: 48px; }
+
+  /* Logo */
+  .logo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px; }
+  .logo-box { border: 1px solid #E8E4DF; border-radius: 16px; padding: 40px; display: flex; align-items: center; justify-content: center; }
+  .logo-box.dark { background: #2D2D2D; }
+  .logo-text { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; }
+  .logo-text.sage { color: #8B9F82; }
+  .logo-text.white { color: #fff; }
+  .logo-icon { width: 48px; height: 48px; border-radius: 12px; background: #FAF8F5; display: flex; align-items: center; justify-content: center; font-family: serif; font-size: 32px; font-weight: 700; color: #2D2D2D; position: relative; }
+  .logo-icon .dot1 { position: absolute; top: 2px; right: 2px; width: 10px; height: 10px; border-radius: 50%; background: #8B9F82; opacity: 0.7; }
+  .logo-icon .dot2 { position: absolute; top: 10px; right: -2px; width: 8px; height: 8px; border-radius: 50%; background: #C9A96E; opacity: 0.6; }
+  .logo-icon .dot3 { position: absolute; top: 18px; right: 0; width: 6px; height: 6px; border-radius: 50%; background: #C4A0A0; opacity: 0.5; }
+  .logo-label { text-align: center; margin-top: 12px; font-size: 12px; color: #7A7A7A; }
+
+  /* Colors */
+  .color-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: 24px; }
+  .color-card { border-radius: 12px; overflow: hidden; border: 1px solid #E8E4DF; }
+  .color-swatch { height: 80px; }
+  .color-info { padding: 12px; }
+  .color-name { font-weight: 600; font-size: 14px; }
+  .color-hex { font-size: 13px; color: #7A7A7A; font-family: monospace; }
+  .color-use { font-size: 12px; color: #7A7A7A; margin-top: 4px; }
+
+  /* Typography */
+  .type-sample { margin-top: 24px; padding: 32px; border: 1px solid #E8E4DF; border-radius: 16px; }
+  .type-sample + .type-sample { margin-top: 16px; }
+  .type-label { font-size: 12px; color: #7A7A7A; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .type-demo-serif { font-family: 'Playfair Display', serif; }
+  .type-demo-sans { font-family: 'DM Sans', sans-serif; }
+  .type-weights { display: flex; gap: 32px; margin-top: 16px; flex-wrap: wrap; }
+  .type-weight { font-size: 14px; }
+  .type-weight span { display: block; font-size: 12px; color: #7A7A7A; margin-top: 2px; }
+
+  /* Spacing */
+  .spacing-note { background: #FAF8F5; border-radius: 12px; padding: 24px; margin-top: 24px; }
+  .spacing-note p { font-size: 14px; }
+
+  /* Usage */
+  .usage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px; }
+  .usage-do, .usage-dont { padding: 24px; border-radius: 12px; }
+  .usage-do { background: #8B9F82/10; border: 1px solid #8B9F82; }
+  .usage-dont { background: #C4A0A0/10; border: 1px solid #C4A0A0; }
+  .usage-do h4 { color: #8B9F82; font-weight: 600; margin-bottom: 8px; }
+  .usage-dont h4 { color: #C4A0A0; font-weight: 600; margin-bottom: 8px; }
+  .usage-do li, .usage-dont li { font-size: 14px; color: #7A7A7A; margin-left: 16px; margin-top: 4px; }
+
+  /* Brand voice */
+  .voice-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 24px; }
+  .voice-card { padding: 24px; border-radius: 12px; border: 1px solid #E8E4DF; text-align: center; }
+  .voice-card h4 { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 8px; }
+  .voice-card p { font-size: 13px; }
+
+  @media print {
+    .page { page-break-after: always; }
+    body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Page 1: Cover -->
+<div class="page" style="min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+  <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 40px;">
+    <div style="width: 48px; height: 48px; border-radius: 12px; background: #8B9F82; display: flex; align-items: center; justify-content: center;">
+      <span style="font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; color: #fff;">A</span>
+    </div>
+  </div>
+  <h1 style="font-size: 48px;">Brand Style Guide</h1>
+  <p class="subtitle" style="font-size: 18px; margin-top: 16px;">Altared - Wedding Planning Platform</p>
+  <p style="margin-top: 8px; font-size: 14px;">altared.app</p>
+  <p style="margin-top: 40px; font-size: 13px; color: #C9A96E;">Version 1.0 &mdash; April 2026</p>
+</div>
+
+<!-- Page 2: Brand Overview -->
+<div class="page">
+  <div class="section" style="margin-top: 0;">
+    <h3>Brand Overview</h3>
+    <h2>About Altared</h2>
+    <p style="margin-top: 12px;">
+      Altared is a modern wedding planning platform that helps couples compare vendors, scan proposals with AI, and manage their wedding budget in one place. Our brand reflects elegance, warmth, and clarity &mdash; making the overwhelming process of wedding planning feel organized and beautiful.
+    </p>
+  </div>
+
+  <div class="section">
+    <h3>Brand Values</h3>
+    <div class="voice-grid">
+      <div class="voice-card">
+        <h4>Elegant</h4>
+        <p>Refined and sophisticated without being pretentious. We celebrate the beauty of wedding planning.</p>
+      </div>
+      <div class="voice-card">
+        <h4>Warm</h4>
+        <p>Approachable and supportive. We're a trusted companion on your journey, not a cold tool.</p>
+      </div>
+      <div class="voice-card">
+        <h4>Clear</h4>
+        <p>Simple and organized. We bring clarity to complex decisions with clean, intuitive design.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page 3: Logo -->
+<div class="page">
+  <div class="section" style="margin-top: 0;">
+    <h3>Logo</h3>
+    <h2>Primary Logo</h2>
+    <p style="margin-top: 8px;">The Altared wordmark uses Playfair Display in bold. It should always be presented in Sage Green or white.</p>
+
+    <div class="logo-grid">
+      <div>
+        <div class="logo-box">
+          <span class="logo-text sage">Altared</span>
+        </div>
+        <p class="logo-label">Primary &mdash; on light backgrounds</p>
+      </div>
+      <div>
+        <div class="logo-box dark">
+          <span class="logo-text white">Altared</span>
+        </div>
+        <p class="logo-label">Reversed &mdash; on dark backgrounds</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Favicon / App Icon</h2>
+    <p style="margin-top: 8px;">The app icon features a serif "A" on warm white, accented with our three brand color dots (sage, gold, rose).</p>
+    <div style="display: flex; gap: 24px; margin-top: 24px; align-items: flex-end;">
+      <div style="text-align: center;">
+        <div style="width: 64px; height: 64px; border-radius: 16px; background: #FAF8F5; border: 1px solid #E8E4DF; display: flex; align-items: center; justify-content: center; position: relative; margin: 0 auto;">
+          <span style="font-family: 'Playfair Display', serif; font-size: 38px; font-weight: 700; color: #2D2D2D;">A</span>
+          <div style="position: absolute; top: 3px; right: 3px; width: 12px; height: 12px; border-radius: 50%; background: #8B9F82; opacity: 0.7;"></div>
+          <div style="position: absolute; top: 14px; right: -1px; width: 9px; height: 9px; border-radius: 50%; background: #C9A96E; opacity: 0.6;"></div>
+          <div style="position: absolute; top: 24px; right: 2px; width: 7px; height: 7px; border-radius: 50%; background: #C4A0A0; opacity: 0.5;"></div>
+        </div>
+        <p style="font-size: 12px; color: #7A7A7A; margin-top: 8px;">64px</p>
+      </div>
+      <div style="text-align: center;">
+        <div style="width: 32px; height: 32px; border-radius: 8px; background: #FAF8F5; border: 1px solid #E8E4DF; display: flex; align-items: center; justify-content: center; position: relative; margin: 0 auto;">
+          <span style="font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: #2D2D2D;">A</span>
+          <div style="position: absolute; top: 1px; right: 1px; width: 7px; height: 7px; border-radius: 50%; background: #8B9F82; opacity: 0.7;"></div>
+        </div>
+        <p style="font-size: 12px; color: #7A7A7A; margin-top: 8px;">32px</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="spacing-note" style="margin-top: 40px;">
+    <p><strong>Clear space:</strong> Maintain a minimum clear space equal to the height of the "A" in the wordmark on all sides of the logo. Never place the logo in a cluttered or competing visual environment.</p>
+  </div>
+</div>
+
+<!-- Page 4: Colors -->
+<div class="page">
+  <div class="section" style="margin-top: 0;">
+    <h3>Color Palette</h3>
+    <h2>Primary Colors</h2>
+    <p style="margin-top: 8px;">Our palette is inspired by nature and weddings &mdash; soft greens, warm golds, and dusty roses. These colors create a calm, elegant, and inviting experience.</p>
+
+    <div class="color-grid" style="margin-top: 32px;">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #8B9F82;"></div>
+        <div class="color-info">
+          <div class="color-name">Sage Green</div>
+          <div class="color-hex">#8B9F82</div>
+          <div class="color-use">Primary brand color. CTAs, links, active states</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #C9A96E;"></div>
+        <div class="color-info">
+          <div class="color-name">Gold</div>
+          <div class="color-hex">#C9A96E</div>
+          <div class="color-use">Accent, premium tier, labels</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #C4A0A0;"></div>
+        <div class="color-info">
+          <div class="color-name">Dusty Rose</div>
+          <div class="color-hex">#C4A0A0</div>
+          <div class="color-use">Secondary accent, decorative elements</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #FAF8F5;"></div>
+        <div class="color-info">
+          <div class="color-name">Warm White</div>
+          <div class="color-hex">#FAF8F5</div>
+          <div class="color-use">Background, cards, light surfaces</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top: 40px;">Neutral Colors</h2>
+    <div class="color-grid">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #2D2D2D;"></div>
+        <div class="color-info">
+          <div class="color-name">Charcoal</div>
+          <div class="color-hex">#2D2D2D</div>
+          <div class="color-use">Headings, primary text</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #7A7A7A;"></div>
+        <div class="color-info">
+          <div class="color-name">Gray</div>
+          <div class="color-hex">#7A7A7A</div>
+          <div class="color-use">Body text, descriptions</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #E8E4DF;"></div>
+        <div class="color-info">
+          <div class="color-name">Warm Border</div>
+          <div class="color-hex">#E8E4DF</div>
+          <div class="color-use">Borders, dividers</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #FFFFFF; border: 1px solid #E8E4DF;"></div>
+        <div class="color-info">
+          <div class="color-name">White</div>
+          <div class="color-hex">#FFFFFF</div>
+          <div class="color-use">Cards, clean surfaces</div>
+        </div>
+      </div>
+    </div>
+
+    <h2 style="margin-top: 40px;">Color Tints</h2>
+    <p style="margin-top: 8px;">Extended tints used for hover states and light backgrounds.</p>
+    <div class="color-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <div class="color-card">
+        <div class="color-swatch" style="background: #A8B8A0;"></div>
+        <div class="color-info">
+          <div class="color-name">Sage Light</div>
+          <div class="color-hex">#A8B8A0</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #D4BC8E;"></div>
+        <div class="color-info">
+          <div class="color-name">Gold Light</div>
+          <div class="color-hex">#D4BC8E</div>
+        </div>
+      </div>
+      <div class="color-card">
+        <div class="color-swatch" style="background: #D4B8B8;"></div>
+        <div class="color-info">
+          <div class="color-name">Rose Light</div>
+          <div class="color-hex">#D4B8B8</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Page 5: Typography -->
+<div class="page">
+  <div class="section" style="margin-top: 0;">
+    <h3>Typography</h3>
+    <h2>Typefaces</h2>
+    <p style="margin-top: 8px;">We use two complementary Google Fonts to balance elegance with readability.</p>
+
+    <div class="type-sample">
+      <div class="type-label">Display / Headings</div>
+      <div class="type-demo-serif" style="font-size: 36px; font-weight: 700;">Playfair Display</div>
+      <p style="margin-top: 8px; font-size: 14px;">Used for all headings, the logo wordmark, and feature titles. Conveys elegance and editorial quality.</p>
+      <div class="type-weights">
+        <div class="type-weight type-demo-serif" style="font-weight: 400; font-size: 20px;">Regular <span>400</span></div>
+        <div class="type-weight type-demo-serif" style="font-weight: 500; font-size: 20px;">Medium <span>500</span></div>
+        <div class="type-weight type-demo-serif" style="font-weight: 600; font-size: 20px;">SemiBold <span>600</span></div>
+        <div class="type-weight type-demo-serif" style="font-weight: 700; font-size: 20px;">Bold <span>700</span></div>
+      </div>
+    </div>
+
+    <div class="type-sample">
+      <div class="type-label">Body / UI</div>
+      <div class="type-demo-sans" style="font-size: 36px; font-weight: 600;">DM Sans</div>
+      <p style="margin-top: 8px; font-size: 14px;">Used for body text, buttons, navigation, labels, and all UI elements. Clean and highly legible.</p>
+      <div class="type-weights">
+        <div class="type-weight type-demo-sans" style="font-weight: 300; font-size: 20px;">Light <span>300</span></div>
+        <div class="type-weight type-demo-sans" style="font-weight: 400; font-size: 20px;">Regular <span>400</span></div>
+        <div class="type-weight type-demo-sans" style="font-weight: 500; font-size: 20px;">Medium <span>500</span></div>
+        <div class="type-weight type-demo-sans" style="font-weight: 600; font-size: 20px;">SemiBold <span>600</span></div>
+        <div class="type-weight type-demo-sans" style="font-weight: 700; font-size: 20px;">Bold <span>700</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Type Scale</h2>
+    <div style="margin-top: 24px; border: 1px solid #E8E4DF; border-radius: 16px; overflow: hidden;">
+      <table style="width: 100%; border-collapse: collapse; font-size: 14px;">
+        <thead>
+          <tr style="background: #FAF8F5; border-bottom: 1px solid #E8E4DF;">
+            <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: #7A7A7A;">Element</th>
+            <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: #7A7A7A;">Font</th>
+            <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: #7A7A7A;">Size</th>
+            <th style="text-align: left; padding: 12px 16px; font-weight: 600; color: #7A7A7A;">Weight</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #E8E4DF;">
+            <td style="padding: 12px 16px;">Page Title</td>
+            <td style="padding: 12px 16px;">Playfair Display</td>
+            <td style="padding: 12px 16px;">24-36px</td>
+            <td style="padding: 12px 16px;">Bold (700)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E8E4DF;">
+            <td style="padding: 12px 16px;">Section Heading</td>
+            <td style="padding: 12px 16px;">Playfair Display</td>
+            <td style="padding: 12px 16px;">18-24px</td>
+            <td style="padding: 12px 16px;">SemiBold (600)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E8E4DF;">
+            <td style="padding: 12px 16px;">Body Text</td>
+            <td style="padding: 12px 16px;">DM Sans</td>
+            <td style="padding: 12px 16px;">14-16px</td>
+            <td style="padding: 12px 16px;">Regular (400)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E8E4DF;">
+            <td style="padding: 12px 16px;">Button / CTA</td>
+            <td style="padding: 12px 16px;">DM Sans</td>
+            <td style="padding: 12px 16px;">14px</td>
+            <td style="padding: 12px 16px;">SemiBold (600)</td>
+          </tr>
+          <tr style="border-bottom: 1px solid #E8E4DF;">
+            <td style="padding: 12px 16px;">Label / Caption</td>
+            <td style="padding: 12px 16px;">DM Sans</td>
+            <td style="padding: 12px 16px;">12-13px</td>
+            <td style="padding: 12px 16px;">Medium (500)</td>
+          </tr>
+          <tr>
+            <td style="padding: 12px 16px;">Nav Link</td>
+            <td style="padding: 12px 16px;">DM Sans</td>
+            <td style="padding: 12px 16px;">14px</td>
+            <td style="padding: 12px 16px;">Medium (500)</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Page 6: UI Elements -->
+<div class="page">
+  <div class="section" style="margin-top: 0;">
+    <h3>UI Elements</h3>
+    <h2>Buttons</h2>
+    <div style="display: flex; gap: 16px; margin-top: 24px; align-items: center; flex-wrap: wrap;">
+      <button style="font-family: 'DM Sans', sans-serif; height: 44px; padding: 0 24px; background: #8B9F82; color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">Primary Button</button>
+      <button style="font-family: 'DM Sans', sans-serif; height: 44px; padding: 0 24px; background: #fff; color: #2D2D2D; border: 1px solid #E8E4DF; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer;">Secondary Button</button>
+      <button style="font-family: 'DM Sans', sans-serif; height: 44px; padding: 0 24px; background: transparent; color: #8B9F82; border: none; border-radius: 12px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: underline;">Text Link</button>
+    </div>
+    <p style="margin-top: 12px; font-size: 13px;">Border radius: 12px. Height: 44px (large), 36px (default), 28px (small).</p>
+  </div>
+
+  <div class="section">
+    <h2>Cards</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 24px;">
+      <div style="border: 1px solid #E8E4DF; border-radius: 16px; padding: 24px; background: #fff;">
+        <div style="font-weight: 600; font-size: 14px;">Card Title</div>
+        <p style="margin-top: 8px; font-size: 13px;">Cards use 16px border radius, 24px padding, and warm border color.</p>
+      </div>
+      <div style="border: 1px solid #E8E4DF; border-radius: 16px; padding: 24px; background: #FAF8F5;">
+        <div style="font-weight: 600; font-size: 14px;">Warm Background Card</div>
+        <p style="margin-top: 8px; font-size: 13px;">Alternate cards can use the warm white background (#FAF8F5).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Status Badges</h2>
+    <div style="display: flex; gap: 8px; margin-top: 24px; flex-wrap: wrap;">
+      <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: rgba(139,159,130,0.15); color: #8B9F82;">Active / Success</span>
+      <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: rgba(201,169,110,0.15); color: #C9A96E;">Warning / Pro</span>
+      <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: rgba(196,160,160,0.15); color: #C4A0A0;">Inactive / Rose</span>
+      <span style="display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; background: #f3f4f6; color: #6b7280;">Default / Free</span>
+    </div>
+  </div>
+</div>
+
+<!-- Page 7: Brand Voice & Contact -->
+<div class="page">
+  <div class="section" style="margin-top: 0;">
+    <h3>Brand Voice</h3>
+    <h2>Tone Guidelines</h2>
+    <div style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="padding: 24px; border-radius: 12px; border: 1px solid #8B9F82; background: rgba(139,159,130,0.05);">
+        <h4 style="color: #8B9F82; font-weight: 600; margin-bottom: 12px;">Do</h4>
+        <ul style="list-style: disc; padding-left: 20px;">
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Use warm, encouraging language</li>
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Keep copy concise and scannable</li>
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Celebrate milestones with the couple</li>
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Use "your wedding" not "the wedding"</li>
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Lead with benefits, not features</li>
+        </ul>
+      </div>
+      <div style="padding: 24px; border-radius: 12px; border: 1px solid #C4A0A0; background: rgba(196,160,160,0.05);">
+        <h4 style="color: #C4A0A0; font-weight: 600; margin-bottom: 12px;">Don't</h4>
+        <ul style="list-style: disc; padding-left: 20px;">
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Use overly corporate or technical language</li>
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Create urgency or pressure</li>
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Use gendered assumptions</li>
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Over-use exclamation marks</li>
+          <li style="font-size: 14px; color: #7A7A7A; margin-top: 6px;">Reference competitor brands</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>Quick Reference</h2>
+    <div style="margin-top: 24px; background: #FAF8F5; border-radius: 16px; padding: 32px;">
+      <table style="width: 100%; font-size: 14px; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 8px 0; font-weight: 600; width: 160px;">Brand Name</td>
+          <td style="padding: 8px 0;">Altared</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-weight: 600;">Website</td>
+          <td style="padding: 8px 0;">altared.app</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-weight: 600;">Tagline</td>
+          <td style="padding: 8px 0;">Your Wedding, Perfectly Organized</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-weight: 600;">Primary Color</td>
+          <td style="padding: 8px 0; font-family: monospace;">#8B9F82 (Sage Green)</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-weight: 600;">Heading Font</td>
+          <td style="padding: 8px 0;">Playfair Display (Google Fonts)</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-weight: 600;">Body Font</td>
+          <td style="padding: 8px 0;">DM Sans (Google Fonts)</td>
+        </tr>
+        <tr>
+          <td style="padding: 8px 0; font-weight: 600;">Contact</td>
+          <td style="padding: 8px 0;">altaredapp@gmail.com</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

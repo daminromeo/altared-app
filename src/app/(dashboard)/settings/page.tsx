@@ -4,7 +4,6 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLANS } from "@/lib/stripe/config";
 import { usePortalSession, useCheckout, useSubscription } from "@/lib/hooks/use-subscription";
-import { useAuth } from "@/providers/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -63,7 +62,6 @@ export default function SettingsPage() {
   const [notificationsLoading, setNotificationsLoading] = useState(true);
   const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
-  const { user: authUser, isLoading: authLoading, refreshProfile: refreshAuthProfile } = useAuth();
   const portalSession = usePortalSession();
   const checkout = useCheckout();
   const { data: subscriptionData } = useSubscription();
@@ -71,14 +69,21 @@ export default function SettingsPage() {
   // ── Fetch profile ─────────────────────────────────────────────────────────
 
   const fetchProfile = useCallback(async () => {
-    if (!authUser) return;
     setLoading(true);
     try {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        return;
+      }
+
       // Use maybeSingle() to avoid error when profile doesn't exist
       const { data } = await supabase
         .from("profiles")
         .select("*")
-        .eq("id", authUser.id)
+        .eq("id", user.id)
         .maybeSingle();
 
       if (data) {
@@ -89,7 +94,7 @@ export default function SettingsPage() {
         const { data: retryData } = await supabase
           .from("profiles")
           .select("*")
-          .eq("id", authUser.id)
+          .eq("id", user.id)
           .maybeSingle();
 
         if (retryData) {
@@ -99,9 +104,9 @@ export default function SettingsPage() {
             .from("profiles")
             .upsert(
               {
-                id: authUser.id,
-                email: authUser.email ?? "",
-                full_name: authUser.user_metadata?.full_name ?? null,
+                id: user.id,
+                email: user.email ?? "",
+                full_name: user.user_metadata?.full_name ?? null,
                 subscription_status: "free",
               },
               { onConflict: "id", ignoreDuplicates: true }
@@ -119,7 +124,7 @@ export default function SettingsPage() {
     } finally {
       setLoading(false);
     }
-  }, [authUser, supabase]);
+  }, [supabase]);
 
   useEffect(() => {
     fetchProfile();
@@ -175,8 +180,6 @@ export default function SettingsPage() {
       setSaveMessage("Changes saved successfully!");
       setProfile((p) => (p ? { ...p, avatar_url: avatarUrl } : p));
       setAvatarFile(null);
-      // Refresh auth context so header wedding name updates without page reload
-      refreshAuthProfile();
     }
 
     setSaving(false);
@@ -755,6 +758,24 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+
+      {/* Support */}
+      <Card className="border-[#E8E4DF]">
+        <CardContent className="flex items-center justify-between py-5">
+          <div>
+            <p className="font-medium text-[#2D2D2D]">Need help?</p>
+            <p className="text-sm text-[#7A7A7A]">
+              Reach out to us anytime and we&apos;ll get back to you as soon as possible.
+            </p>
+          </div>
+          <a
+            href="mailto:altaredapp@gmail.com"
+            className="text-sm font-medium text-[#8B9F82] hover:underline"
+          >
+            altaredapp@gmail.com
+          </a>
+        </CardContent>
+      </Card>
     </div>
   );
 }
