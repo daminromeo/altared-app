@@ -61,7 +61,7 @@ interface DashboardData {
 export default function DashboardPage() {
   const { user: authUser, isLoading: authLoading } = useAuth()
   const [data, setData] = useState<DashboardData | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { isFreePlan } = useSubscription()
 
@@ -302,9 +302,14 @@ export default function DashboardPage() {
     }
   }, [data, supabase, fetchDashboardData])
 
-  if ((loading || authLoading) && !data) {
-    return <DashboardSkeleton />
-  }
+  // Show skeleton while auth is resolving (brief — fires once on INITIAL_SESSION)
+  if (authLoading) return <DashboardSkeleton />
+
+  // Auth resolved but no user — middleware handles redirect; show nothing
+  if (!authUser) return null
+
+  // Auth resolved, user present, waiting for first data load
+  if (loading && !data) return <DashboardSkeleton />
 
   if (error && !data) {
     return (

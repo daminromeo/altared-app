@@ -100,35 +100,43 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [supabase]);
 
   useEffect(() => {
-    // Use onAuthStateChange as the SOLE source of truth.
-    // The INITIAL_SESSION event fires first with the current session,
-    // replacing the need for a separate getSession() call that can race.
     let initialSessionHandled = false;
 
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+    } = supabase.auth.onAuthStateChange((event, newSession) => {
+      // Synchronous state updates — Supabase docs warn against await inside this callback
       setSession(newSession);
       setUser(newSession?.user ?? null);
 
-      if (newSession?.user) {
-        if (event === "INITIAL_SESSION" || event === "SIGNED_IN" || event === "TOKEN_REFRESHED") {
-          await fetchProfile(newSession.user.id, newSession.user.email);
-        }
-      }
-
       if (event === "SIGNED_OUT") {
         setProfile(null);
+        return;
       }
 
-      // Mark loading complete after the initial session is processed
       if (event === "INITIAL_SESSION") {
         initialSessionHandled = true;
+        if (newSession?.user) {
+          // Fire profile fetch in background — do NOT await, do NOT block isLoading on it.
+          // Pages depend on authUser (the Supabase user) not profile for data fetching.
+          fetchProfile(newSession.user.id, newSession.user.email);
+        }
+        // Unblock the UI immediately once we know the auth state
+        setIsLoading(false);
+        return;
+      }
+
+      if (
+        (event === "SIGNED_IN" || event === "TOKEN_REFRESHED") &&
+        newSession?.user
+      ) {
+        fetchProfile(newSession.user.id, newSession.user.email);
+        // Ensure loading is cleared if INITIAL_SESSION previously fired null
         setIsLoading(false);
       }
     });
 
-    // Safety net: if INITIAL_SESSION never fires (shouldn't happen, but be safe)
+    // Safety net: if INITIAL_SESSION never fires within 3s, unblock the UI
     const timeout = setTimeout(() => {
       if (!initialSessionHandled) {
         setIsLoading(false);

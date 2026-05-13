@@ -44,7 +44,7 @@ export default function ProposalsPage() {
   const supabase = useMemo(() => createClient(), [])
   const [proposals, setProposals] = useState<Proposal[]>([])
   const [vendors, setVendors] = useState<Vendor[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [vendorFilter, setVendorFilter] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
@@ -181,7 +181,7 @@ export default function ProposalsPage() {
       )}
 
       {/* Proposals grid */}
-      {loading ? (
+      {(authLoading || loading) ? (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <div

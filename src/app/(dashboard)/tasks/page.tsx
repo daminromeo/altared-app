@@ -104,7 +104,7 @@ export default function TasksPage() {
   const { user: authUser, isLoading: authLoading } = useAuth()
   const supabase = useMemo(() => createClient(), [])
   const [tasks, setTasks] = useState<TaskData[]>([])
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [formOpen, setFormOpen] = useState(false)
   const [editingTask, setEditingTask] = useState<TaskData | null>(null)
   const [filterView, setFilterView] = useState<FilterView>('all')
@@ -293,7 +293,7 @@ export default function TasksPage() {
       </div>
 
       {/* Task list */}
-      {loading ? (
+      {(authLoading || loading) ? (
         <Card className="bg-white p-4">
           <div className="animate-pulse space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (

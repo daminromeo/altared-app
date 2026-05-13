@@ -77,7 +77,7 @@ export default function BudgetPage() {
   const [categories, setCategories] = useState<VendorCategory[]>([])
   const [vendors, setVendors] = useState<Array<{ id: string; name: string }>>([])
   const [totalBudget, setTotalBudget] = useState(0)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [newItem, setNewItem] = useState<NewItemForm>(emptyForm)
   const [isSaving, setIsSaving] = useState(false)
@@ -310,6 +310,20 @@ export default function BudgetPage() {
     setCustomCategoryName('')
     fetchData()
   }
+
+  if (authLoading) return (
+    <div className="space-y-6">
+      <div className="h-8 w-48 animate-pulse rounded-lg bg-[#FAF8F5]" />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="h-24 animate-pulse rounded-xl bg-[#FAF8F5]" />
+        ))}
+      </div>
+      <div className="h-64 animate-pulse rounded-xl bg-[#FAF8F5]" />
+    </div>
+  )
+
+  if (!authUser) return null
 
   if (loading) {
     return (

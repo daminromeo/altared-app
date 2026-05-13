@@ -418,7 +418,7 @@ export default function VendorsPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [vendors, setVendors] = useState<Vendor[]>([]);
   const [categories, setCategories] = useState<VendorCategory[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   // Filter state
   const [searchQuery, setSearchQuery] = useState('');
@@ -970,7 +970,7 @@ export default function VendorsPage() {
       </Dialog>
 
       {/* Loading */}
-      {loading ? (
+      {(authLoading || loading) ? (
         <div className="flex items-center justify-center py-20">
           <div className="flex flex-col items-center gap-3">
             <div className="size-8 animate-spin rounded-full border-2 border-[#8B9F82]/30 border-t-[#8B9F82]" />
