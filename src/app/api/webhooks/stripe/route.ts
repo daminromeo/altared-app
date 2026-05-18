@@ -3,6 +3,11 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe/client";
 import { trackTikTokEvent } from "@/lib/tiktok/events";
+import {
+  notifyNewSubscription,
+  notifySubscriptionCanceled,
+  notifySubscriptionUpdated,
+} from "@/lib/slack/notify";
 
 export async function POST(request: NextRequest) {
   try {
@@ -93,6 +98,13 @@ export async function POST(request: NextRequest) {
             contentId: plan,
             contentName: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
           });
+
+          void notifyNewSubscription({
+            email: customerEmail,
+            plan,
+            amount,
+            currency: session.currency ?? "USD",
+          });
         }
         break;
       }
@@ -134,12 +146,38 @@ export async function POST(request: NextRequest) {
             error
           );
         }
+
+        // Only notify on actual plan changes — skip renewal-only updates that
+        // don't touch `items` (price). previous_attributes is populated by
+        // Stripe with the diff of what changed.
+        const prev =
+          (event.data as { previous_attributes?: Record<string, unknown> })
+            .previous_attributes ?? {};
+        const planChanged = "items" in prev;
+        if (planChanged) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("email")
+            .eq("stripe_customer_id", customerId)
+            .maybeSingle();
+          void notifySubscriptionUpdated({
+            email: profile?.email,
+            plan: isActive ? plan : "free",
+            status,
+          });
+        }
         break;
       }
 
       case "customer.subscription.deleted": {
         const subscription = event.data.object as Stripe.Subscription;
         const customerId = subscription.customer as string;
+
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("email")
+          .eq("stripe_customer_id", customerId)
+          .maybeSingle();
 
         const { error } = await supabase
           .from("profiles")
@@ -156,6 +194,8 @@ export async function POST(request: NextRequest) {
             error
           );
         }
+
+        void notifySubscriptionCanceled({ email: profile?.email });
         break;
       }
 
