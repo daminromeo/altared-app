@@ -33,6 +33,9 @@ export const metadata: Metadata = {
     siteName: "Altared",
     type: "website",
   },
+  verification: {
+    google: "K29l-7Aq0oJCNoUWYzKciku_sylCa8p4Gs-2YPDRmjA",
+  },
 };
 
 export default function RootLayout({
