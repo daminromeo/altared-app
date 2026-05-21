@@ -144,14 +144,14 @@ export default async function BlogPostPage({
         />
 
         {post.featuredImage && (
-          <div className="relative mt-8 aspect-[16/9] w-full overflow-hidden rounded-2xl border border-[#E8E4DE] bg-[#F0EDE8]">
+          <div className="relative mx-auto mt-8 aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border border-[#E8E4DE] bg-[#F0EDE8] sm:max-w-lg">
             <Image
               src={post.featuredImage}
               alt={post.featuredImageAlt ?? post.title}
               fill
               priority
               className="object-cover"
-              sizes="(max-width: 768px) 100vw, 768px"
+              sizes="(max-width: 640px) 100vw, 512px"
             />
           </div>
         )}

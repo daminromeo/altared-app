@@ -8,7 +8,7 @@ export function PostCard({ post }: { post: PostMeta }) {
     <article className="group flex flex-col overflow-hidden rounded-2xl border border-[#E8E4DE] bg-white transition-shadow hover:shadow-lg">
       <Link href={`/blog/${post.slug}`} className="flex h-full flex-col">
         {post.featuredImage && (
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-[#F0EDE8]">
+          <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#F0EDE8]">
             <Image
               src={post.featuredImage}
               alt={post.featuredImageAlt ?? post.title}
