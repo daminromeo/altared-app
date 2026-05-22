@@ -21,7 +21,7 @@ export function BlogCTA() {
         </div>
         <Link
           href="/get-started"
-          className="inline-flex h-11 items-center rounded-lg bg-[#8B9F82] px-6 text-sm font-medium text-white transition-colors hover:bg-[#7A8E71]"
+          className="inline-flex h-11 shrink-0 items-center whitespace-nowrap rounded-lg bg-[#8B9F82] px-6 text-sm font-medium text-white transition-colors hover:bg-[#7A8E71]"
         >
           Try Altared free
         </Link>

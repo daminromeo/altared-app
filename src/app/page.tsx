@@ -229,6 +229,12 @@ export default function LandingPage() {
               Pricing
             </a>
             <Link
+              href="/blog"
+              className="text-sm font-medium text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
+            >
+              Blog
+            </Link>
+            <Link
               href="/login"
               className="text-sm font-medium text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
             >
@@ -839,6 +845,23 @@ export default function LandingPage() {
                     className="text-sm text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
                   >
                     Get Started
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            {/* Resources */}
+            <div>
+              <h4 className="mb-3 text-sm font-semibold text-[#2D2D2D]">
+                Resources
+              </h4>
+              <ul className="space-y-2">
+                <li>
+                  <Link
+                    href="/blog"
+                    className="text-sm text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
+                  >
+                    Wedding Blog
                   </Link>
                 </li>
               </ul>
