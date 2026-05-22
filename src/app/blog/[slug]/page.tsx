@@ -88,7 +88,7 @@ export default async function BlogPostPage({
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Resources", url: "/blog" },
+          { name: "Blog", url: "/blog" },
           {
             name: categoryLabel,
             url: `/blog/category/${post.category}`,
@@ -108,7 +108,7 @@ export default async function BlogPostPage({
           </Link>{" "}
           /{" "}
           <Link href="/blog" className="hover:text-[#2D2D2D]">
-            Resources
+            Blog
           </Link>{" "}
           /{" "}
           <Link

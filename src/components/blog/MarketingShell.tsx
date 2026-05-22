@@ -55,7 +55,7 @@ function MarketingHeader() {
             href="/blog"
             className="text-sm font-medium text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
           >
-            Resources
+            Blog
           </Link>
           <Link
             href="/login"

@@ -13,12 +13,12 @@ const SITE_URL = (
 export const revalidate = 3600
 
 export const metadata: Metadata = {
-  title: "Wedding Resources & Planning Tips | Altared",
+  title: "Wedding Blog: Planning Tips & Vendor Advice | Altared",
   description:
     "Honest, practical wedding-planning advice from Altared — vendor tips, hidden costs to watch for, budgeting frameworks, and contract red flags.",
   alternates: { canonical: `${SITE_URL}/blog` },
   openGraph: {
-    title: "Wedding Resources & Planning Tips",
+    title: "Wedding Blog: Planning Tips & Vendor Advice",
     description:
       "Practical wedding-planning advice — vendor tips, hidden costs, budgeting, and contract red flags.",
     url: `${SITE_URL}/blog`,
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Wedding Resources & Planning Tips | Altared",
+    title: "Wedding Blog: Planning Tips & Vendor Advice | Altared",
     description:
       "Practical wedding-planning advice — vendor tips, hidden costs, budgeting, and contract red flags.",
   },
@@ -41,7 +41,7 @@ export default function BlogIndexPage() {
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Resources", url: "/blog" },
+          { name: "Blog", url: "/blog" },
         ]}
       />
 
@@ -54,7 +54,7 @@ export default function BlogIndexPage() {
             <Link href="/" className="hover:text-[#2D2D2D]">
               Home
             </Link>{" "}
-            / <span className="text-[#2D2D2D]">Resources</span>
+            / <span className="text-[#2D2D2D]">Blog</span>
           </nav>
           <h1
             className="text-4xl font-bold tracking-tight text-[#2D2D2D] md:text-5xl"

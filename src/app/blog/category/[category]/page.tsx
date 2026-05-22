@@ -42,11 +42,11 @@ export async function generateMetadata({
   if (!isPostCategory(category)) return { title: "Not found" }
   const label = CATEGORY_LABELS[category]
   return {
-    title: `${label} — Wedding Planning Resources | Altared`,
+    title: `${label} | Altared Wedding Blog`,
     description: `Articles, tips, and guides about ${label.toLowerCase()} for couples planning their wedding.`,
     alternates: { canonical: `${SITE_URL}/blog/category/${category}` },
     openGraph: {
-      title: `${label} — Wedding Planning Resources`,
+      title: `${label} | Altared Wedding Blog`,
       description: `Articles, tips, and guides about ${label.toLowerCase()}.`,
       url: `${SITE_URL}/blog/category/${category}`,
       type: "website",
@@ -74,7 +74,7 @@ export default async function CategoryPage({
       <BreadcrumbJsonLd
         items={[
           { name: "Home", url: "/" },
-          { name: "Resources", url: "/blog" },
+          { name: "Blog", url: "/blog" },
           { name: label, url: `/blog/category/${category}` },
         ]}
       />
@@ -90,7 +90,7 @@ export default async function CategoryPage({
             </Link>{" "}
             /{" "}
             <Link href="/blog" className="hover:text-[#2D2D2D]">
-              Resources
+              Blog
             </Link>{" "}
             / <span className="text-[#2D2D2D]">{label}</span>
           </nav>
