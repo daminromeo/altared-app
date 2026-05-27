@@ -3,6 +3,7 @@
 import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent } from '@/lib/analytics'
 
 /**
  * This page handles saving onboarding data after Google OAuth sign-in.
@@ -24,6 +25,11 @@ export default function GetStartedCompletePage() {
         router.push('/get-started')
         return
       }
+
+      // Funnel: Google/OAuth signups complete here (the email path fires its
+      // own signup_completed in the wizard). TikTok's CompleteRegistration is
+      // already sent server-side in the auth callback, so GA only here.
+      trackEvent('signup_completed', { method: 'google' })
 
       // Read onboarding data from sessionStorage
       const raw = sessionStorage.getItem('onboarding_data')

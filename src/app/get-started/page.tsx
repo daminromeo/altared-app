@@ -1,10 +1,11 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { z } from 'zod'
 import { createClient } from '@/lib/supabase/client'
+import { trackEvent } from '@/lib/analytics'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -65,6 +66,11 @@ export default function GetStartedPage() {
   const [signupPassword, setSignupPassword] = useState('')
   const [formErrors, setFormErrors] = useState<Record<string, { message?: string }>>({})
 
+  // Funnel: wizard reached (top of the get-started funnel)
+  useEffect(() => {
+    trackEvent('onboarding_started')
+  }, [])
+
   const handleWeddingDetailsChange = useCallback(
     (data: WeddingDetailsData) => setWeddingDetails(data),
     []
@@ -92,7 +98,13 @@ export default function GetStartedPage() {
   }
 
   function goNext() {
-    if (currentStep < TOTAL_STEPS) setCurrentStep((s) => s + 1)
+    if (currentStep < TOTAL_STEPS) {
+      trackEvent('onboarding_step_completed', {
+        step: currentStep,
+        step_name: STEP_LABELS[currentStep - 1],
+      })
+      setCurrentStep((s) => s + 1)
+    }
   }
 
   function goPrev() {
@@ -135,11 +147,13 @@ export default function GetStartedPage() {
         }
       }
       setFormErrors(fieldErrors)
+      trackEvent('signup_failed', { method: 'email', reason: 'validation' })
       return
     }
     setFormErrors({})
     setIsSubmitting(true)
     setError(null)
+    trackEvent('signup_submitted', { method: 'email' })
 
     try {
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -159,6 +173,10 @@ export default function GetStartedPage() {
             ? 'An account with this email already exists. Please sign in instead.'
             : signUpError.message
         )
+        trackEvent('signup_failed', {
+          method: 'email',
+          reason: signUpError.message,
+        })
         return
       }
 
@@ -166,6 +184,11 @@ export default function GetStartedPage() {
         // Small delay to let the handle_new_user trigger create the profile row
         await new Promise((r) => setTimeout(r, 300))
         await saveOnboardingData(signUpData.user.id)
+        trackEvent(
+          'signup_completed',
+          { method: 'email' },
+          { event: 'CompleteRegistration' }
+        )
         window.location.href = '/dashboard'
         return
       }
@@ -175,9 +198,11 @@ export default function GetStartedPage() {
         'onboarding_data',
         JSON.stringify({ weddingDetails, budgetData, vendorCategories })
       )
+      trackEvent('signup_email_confirmation_required', { method: 'email' })
       setEmailConfirmation(signupEmail)
     } catch (err) {
       console.error('Signup error:', err)
+      trackEvent('signup_failed', { method: 'email', reason: 'exception' })
       setError('Something went wrong. Please try again.')
     } finally {
       setIsSubmitting(false)
@@ -187,6 +212,7 @@ export default function GetStartedPage() {
   async function handleGoogleSignIn() {
     setIsGoogleLoading(true)
     setError(null)
+    trackEvent('signup_submitted', { method: 'google' })
 
     // Store onboarding data in sessionStorage so we can save it after OAuth redirect
     sessionStorage.setItem(
@@ -202,6 +228,10 @@ export default function GetStartedPage() {
     })
 
     if (oauthError) {
+      trackEvent('signup_failed', {
+        method: 'google',
+        reason: oauthError.message,
+      })
       setError(oauthError.message)
       setIsGoogleLoading(false)
     }

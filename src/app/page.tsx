@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { DM_Sans, Playfair_Display } from "next/font/google";
+import { TrackedCTA } from "@/components/shared/tracked-cta";
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
@@ -302,12 +303,13 @@ export default function LandingPage() {
 
             {/* CTA Buttons */}
             <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
-              <Link
+              <TrackedCTA
                 href="/get-started"
+                location="hero_primary"
                 className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#8B9F82] px-8 text-base font-semibold text-white shadow-lg shadow-[#8B9F82]/25 transition-all hover:bg-[#7A8E71] hover:shadow-xl hover:shadow-[#8B9F82]/30 sm:w-auto"
               >
                 Get Started Free
-              </Link>
+              </TrackedCTA>
               <a
                 href="#features"
                 className="inline-flex h-12 items-center justify-center gap-1.5 px-4 text-base font-medium text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
@@ -947,12 +949,13 @@ export default function LandingPage() {
 
       {/* Sticky mobile CTA */}
       <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#E8E4DF] bg-[#FAF8F5]/90 p-3 backdrop-blur-lg md:hidden">
-        <Link
+        <TrackedCTA
           href="/get-started"
+          location="sticky_mobile"
           className="flex h-12 w-full items-center justify-center rounded-xl bg-[#8B9F82] text-base font-semibold text-white shadow-lg shadow-[#8B9F82]/25"
         >
           Get Started Free
-        </Link>
+        </TrackedCTA>
       </div>
     </div>
   );
