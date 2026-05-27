@@ -18,7 +18,12 @@ const playfair = Playfair_Display({
   weight: ["400", "500", "600", "700"],
 });
 
+const SITE_URL = (
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://altared.app"
+).replace(/\/$/, "");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Altared - Wedding Vendor Comparison & Management",
   description:
     "Compare vendors, scan proposals with AI, and manage your wedding budget — all in one place.",
@@ -29,7 +34,7 @@ export const metadata: Metadata = {
     title: "Altared - Your Wedding, Perfectly Organized",
     description:
       "Compare vendors, scan proposals with AI, and manage your wedding budget — all in one place.",
-    url: process.env.NEXT_PUBLIC_APP_URL,
+    url: SITE_URL,
     siteName: "Altared",
     type: "website",
   },
