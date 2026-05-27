@@ -185,7 +185,7 @@ const plans = [
 export default function LandingPage() {
   return (
     <div
-      className={`${dmSans.variable} ${playfair.variable} min-h-screen bg-[#FAF8F5]`}
+      className={`${dmSans.variable} ${playfair.variable} min-h-screen bg-[#FAF8F5] pb-20 md:pb-0`}
       style={{ fontFamily: "var(--font-dm-sans), sans-serif" }}
     >
       {/* ── Navigation ─────────────────────────────────────────────────── */}
@@ -281,7 +281,7 @@ export default function LandingPage() {
               className="text-4xl font-bold leading-tight tracking-tight text-[#2D2D2D] sm:text-5xl md:text-6xl lg:text-7xl"
               style={{ fontFamily: "var(--font-playfair), serif" }}
             >
-              Your Wedding,{" "}
+              Wedding Planning,{" "}
               <span
                 className="bg-clip-text text-transparent"
                 style={{
@@ -289,30 +289,30 @@ export default function LandingPage() {
                     "linear-gradient(135deg, #8B9F82, #C9A96E, #C4A0A0)",
                 }}
               >
-                Perfectly
-              </span>{" "}
-              Organized
+                Without the Chaos
+              </span>
             </h1>
 
             {/* Subheadline */}
             <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-[#7A7A7A] sm:text-xl">
-              Compare vendors, scan proposals with AI, and manage your wedding
-              budget — all in one place.
+              Keep your vendors, budget, proposals, and to-dos organized in one
+              calm place — so you can stop juggling spreadsheets, screenshots,
+              and group texts, and actually enjoy the journey.
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
+            <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center sm:gap-4">
               <Link
                 href="/get-started"
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-[#8B9F82] px-8 text-base font-semibold text-white shadow-lg shadow-[#8B9F82]/25 transition-all hover:bg-[#7A8E71] hover:shadow-xl hover:shadow-[#8B9F82]/30"
+                className="inline-flex h-12 w-full items-center justify-center rounded-xl bg-[#8B9F82] px-8 text-base font-semibold text-white shadow-lg shadow-[#8B9F82]/25 transition-all hover:bg-[#7A8E71] hover:shadow-xl hover:shadow-[#8B9F82]/30 sm:w-auto"
               >
                 Get Started Free
               </Link>
               <a
                 href="#features"
-                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[#E8E4DF] bg-white px-8 text-base font-semibold text-[#2D2D2D] shadow-sm transition-all hover:border-[#8B9F82]/30 hover:shadow-md"
+                className="inline-flex h-12 items-center justify-center gap-1.5 px-4 text-base font-medium text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
               >
-                See How It Works
+                See how it works
                 <svg
                   className="h-4 w-4"
                   fill="none"
@@ -329,12 +329,56 @@ export default function LandingPage() {
               </a>
             </div>
 
-            {/* Social proof */}
-            <p className="mt-12 text-sm text-[#7A7A7A]">
-              Trusted by{" "}
-              <span className="font-semibold text-[#2D2D2D]">thousands of</span>{" "}
-              couples planning their perfect day
+            {/* Trust line */}
+            <p className="mt-10 text-sm text-[#7A7A7A]">
+              Free to start · No credit card required
             </p>
+
+            {/* Product preview */}
+            <div className="mx-auto mt-14 max-w-lg rounded-2xl border border-[#E8E4DF] bg-white p-5 text-left shadow-xl shadow-black/5 sm:mt-16">
+              <div className="mb-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-[#2D2D2D]">
+                    The Romeo Wedding
+                  </p>
+                  <p className="text-xs text-[#7A7A7A]">142 days to go</p>
+                </div>
+                <span className="inline-flex items-center rounded-full bg-[#8B9F82]/10 px-2.5 py-0.5 text-[10px] font-semibold text-[#8B9F82]">
+                  On track
+                </span>
+              </div>
+              <div className="mb-1 flex items-center justify-between text-xs text-[#7A7A7A]">
+                <span>Budget</span>
+                <span>$18,500 / $30,000</span>
+              </div>
+              <div className="mb-5 h-2.5 w-full rounded-full bg-[#E5E7EB]">
+                <div
+                  className="h-2.5 rounded-full bg-[#8B9F82]"
+                  style={{ width: "62%" }}
+                />
+              </div>
+              <div className="space-y-2.5">
+                {[
+                  { name: "Venue", status: "Booked", done: true },
+                  { name: "Photographer", status: "Comparing 3", done: false },
+                  { name: "Florist", status: "2 proposals in", done: false },
+                ].map((row) => (
+                  <div
+                    key={row.name}
+                    className="flex items-center justify-between rounded-lg border border-[#E8E4DF] px-3 py-2"
+                  >
+                    <span className="text-sm text-[#2D2D2D]">{row.name}</span>
+                    <span
+                      className={`text-xs font-medium ${
+                        row.done ? "text-[#047857]" : "text-[#7A7A7A]"
+                      }`}
+                    >
+                      {row.status}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -769,8 +813,8 @@ export default function LandingPage() {
             Ready to simplify your wedding planning?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-lg text-white/80">
-            Join thousands of couples who traded spreadsheet stress for peace of
-            mind.
+            Trade scattered spreadsheets, screenshots, and group texts for one
+            calm place to plan — free to start, no credit card required.
           </p>
           <div className="mt-10">
             <Link
@@ -900,6 +944,16 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Sticky mobile CTA */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-[#E8E4DF] bg-[#FAF8F5]/90 p-3 backdrop-blur-lg md:hidden">
+        <Link
+          href="/get-started"
+          className="flex h-12 w-full items-center justify-center rounded-xl bg-[#8B9F82] text-base font-semibold text-white shadow-lg shadow-[#8B9F82]/25"
+        >
+          Get Started Free
+        </Link>
+      </div>
     </div>
   );
 }

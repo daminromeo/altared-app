@@ -27,11 +27,7 @@ const signupSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
   password: z
     .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
-      'Password must include uppercase, lowercase, and a number'
-    ),
+    .min(8, 'Password must be at least 8 characters'),
 })
 
 export default function GetStartedPage() {
@@ -752,7 +748,7 @@ function StepCreateAccount({
               color: '#7A7A7A',
             }}
           >
-            Must be 8+ characters with uppercase, lowercase, and a number
+            Must be at least 8 characters
           </p>
         </div>
 
