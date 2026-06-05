@@ -73,7 +73,7 @@ Options:
   --category <slug>        Force category. One of: ${VALID_CATEGORIES.join(", ")}
   --start <iso>            First publish time (default: tomorrow 9am local)
                            Subsequent posts drip 12h later (2/day)
-  --model <id>             Anthropic model (default: claude-opus-4-7)
+  --model <id>             Anthropic model (default: claude-opus-4-8)
   --overwrite              Overwrite existing MDX files (default: skip)
   --dry-run                Print MDX to stdout instead of writing files`
 
@@ -85,7 +85,7 @@ function die(msg: string): never {
 function parseArgs(argv: string[]): Args {
   const args: Args = {
     sources: [],
-    model: "claude-opus-4-7",
+    model: "claude-opus-4-8",
     dryRun: false,
     overwrite: false,
   }
