@@ -1,6 +1,11 @@
 import type { MetadataRoute } from "next"
 import { getAllPosts, getAllCategories } from "@/lib/blog/posts"
 
+// Regenerate hourly so dripped posts enter the sitemap without a redeploy,
+// matching the ISR cadence of the blog routes (without this, the sitemap is
+// statically frozen at build time and newly-published posts never appear).
+export const revalidate = 3600
+
 const SITE_URL = (
   process.env.NEXT_PUBLIC_APP_URL ?? "https://altared.app"
 ).replace(/\/$/, "")
