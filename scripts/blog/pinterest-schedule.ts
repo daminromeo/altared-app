@@ -3,30 +3,25 @@
  * blog:pinterest-schedule — generate Pinterest pins from published blog posts
  * and schedule them via the Postiz public API.
  *
- * For each PUBLISHED post it builds one pin:
+ * For each PUBLISHED, not-yet-pinned post it builds one pin:
  *   - image: public/blog/<slug>.jpg (uploaded to Postiz from its live URL)
  *   - title: the post title (<=100 chars)
- *   - description: the post's meta description (keyword-rich)
+ *   - description: meta description + a few board-specific keywords/hashtags
  *   - link: https://altared.app/blog/<slug>  ← the SEO destination link
  *   - board: routed by vendor tag first, then category (see routeBoard)
  *
- * SAFE BY DEFAULT: dry-run unless --execute is passed. With --execute it creates
- * posts of --type (default "draft" so nothing auto-publishes until you review in
- * Postiz; use --type schedule to actually queue them).
+ * INCREMENTAL: slugs that have been pinned are recorded in scripts/blog/.pinned.json
+ * and skipped on later runs, so re-running only pins NEW posts (no duplicates).
+ * Use --force to ignore the ledger; --only always bypasses it.
+ *
+ * SAFE BY DEFAULT: dry-run unless --execute. With --execute it creates posts of
+ * --type (default "draft"; use "schedule" to auto-queue).
  *
  * Usage:
- *   npm run blog:pinterest-schedule                      # dry-run: print routing for all published posts
- *   npm run blog:pinterest-schedule -- --only dj-all-inclusive-add-ons   # single post
- *   npm run blog:pinterest-schedule -- --only <slug> --execute --type draft   # create ONE draft pin to review
- *   npm run blog:pinterest-schedule -- --execute --type schedule --start 2026-06-30T09:00 --per-day 5
- *
- * Options:
- *   --execute            Actually call the Postiz API (otherwise dry-run)
- *   --type <t>           draft | schedule | now   (default: draft)
- *   --start <iso>        First scheduled pin time (local). Default: tomorrow 9am
- *   --per-day <n>        Pins per day when scheduling (default: 5)
- *   --only <slug>        Only this post
- *   --limit <n>          Only the first N posts
+ *   npm run blog:pinterest-schedule                                  # dry-run, new posts only
+ *   npm run blog:pinterest-schedule -- --execute --type schedule --per-day 5 --start 2026-06-30T09:00
+ *   npm run blog:pinterest-schedule -- --only <slug> --execute --type draft   # one pin, ignores ledger
+ *   npm run blog:pinterest-schedule -- --force ...                   # ignore ledger (re-pin everything)
  */
 
 import fs from "node:fs"
@@ -35,11 +30,11 @@ import { fileURLToPath } from "node:url"
 import matter from "gray-matter"
 import dotenv from "dotenv"
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const ROOT = path.resolve(__dirname, "..", "..")
 const POSTS_DIR = path.join(ROOT, "src", "content", "blog")
 const PUBLIC_BLOG = path.join(ROOT, "public", "blog")
+const LEDGER = path.join(__dirname, ".pinned.json")
 
 dotenv.config({ path: path.join(ROOT, ".env.local") })
 
@@ -49,13 +44,13 @@ const PINTEREST_INTEGRATION_ID = "cmqzfv34k021qk00y6gny1p17" // altaredapp
 
 // Board ids fetched via integration-trigger { methodName: "boards" }.
 const BOARDS = {
-  hiddenCosts: "1108870808192966717", // Hidden Wedding Costs & Fees
-  vendors: "1108870808192966726", // How to Choose Wedding Vendors
-  budget: "1108870808192966722", // Wedding Budget Tips
-  catering: "1108870808192966729", // Wedding Catering & Bar Costs
-  photoFlowers: "1108870808192966732", // Wedding Photography & Flowers
-  contracts: "1108870808192966720", // Wedding Vendor Contracts & Red Flags
-  venue: "1108870808192966727", // Wedding Venue Tips & Costs
+  hiddenCosts: "1108870808192966717",
+  vendors: "1108870808192966726",
+  budget: "1108870808192966722",
+  catering: "1108870808192966729",
+  photoFlowers: "1108870808192966732",
+  contracts: "1108870808192966720",
+  venue: "1108870808192966727",
 }
 const BOARD_NAMES: Record<string, string> = {
   [BOARDS.hiddenCosts]: "Hidden Wedding Costs & Fees",
@@ -65,6 +60,16 @@ const BOARD_NAMES: Record<string, string> = {
   [BOARDS.photoFlowers]: "Wedding Photography & Flowers",
   [BOARDS.contracts]: "Wedding Vendor Contracts & Red Flags",
   [BOARDS.venue]: "Wedding Venue Tips & Costs",
+}
+// Pinterest is a search engine; these double as keywords + hashtags per board.
+const BOARD_TAGS: Record<string, string[]> = {
+  [BOARDS.hiddenCosts]: ["#weddingbudget", "#hiddenweddingcosts", "#weddingplanning", "#weddingtips", "#bridetobe"],
+  [BOARDS.vendors]: ["#weddingvendors", "#vendortips", "#weddingplanning", "#weddingadvice", "#bridetobe"],
+  [BOARDS.budget]: ["#weddingbudget", "#budgetwedding", "#weddingplanning", "#weddingtips", "#bridetobe"],
+  [BOARDS.catering]: ["#weddingcatering", "#weddingfood", "#weddingbar", "#weddingbudget", "#weddingplanning"],
+  [BOARDS.photoFlowers]: ["#weddingphotographer", "#weddingflowers", "#weddingflorals", "#weddingvendors", "#weddingplanning"],
+  [BOARDS.contracts]: ["#weddingcontracts", "#weddingvendors", "#weddingredflags", "#weddingplanning", "#bridetobe"],
+  [BOARDS.venue]: ["#weddingvenue", "#venuetips", "#weddingplanning", "#weddingbudget", "#bridetobe"],
 }
 
 type Post = {
@@ -83,6 +88,8 @@ type Args = {
   perDay: number
   only?: string
   limit?: number
+  force: boolean
+  delay: number
 }
 
 function die(msg: string): never {
@@ -91,15 +98,12 @@ function die(msg: string): never {
 }
 
 function parseArgs(argv: string[]): Args {
-  const a: Args = {
-    execute: false,
-    type: "draft",
-    start: tomorrow9am(),
-    perDay: 5,
-  }
+  const a: Args = { execute: false, type: "draft", start: tomorrow9am(), perDay: 5, force: false, delay: 4000 }
   for (let i = 0; i < argv.length; i++) {
     const f = argv[i]
     if (f === "--execute") a.execute = true
+    else if (f === "--force") a.force = true
+    else if (f === "--delay") a.delay = Number(argv[++i])
     else if (f === "--type") {
       const v = argv[++i]
       if (!["draft", "schedule", "now"].includes(v)) die(`bad --type: ${v}`)
@@ -111,10 +115,8 @@ function parseArgs(argv: string[]): Args {
     } else if (f === "--per-day") a.perDay = Number(argv[++i])
     else if (f === "--only") a.only = argv[++i]
     else if (f === "--limit") a.limit = Number(argv[++i])
-    else if (f === "--help" || f === "-h") {
-      console.log("See header comment for usage.")
-      process.exit(0)
-    } else die(`unknown flag: ${f}`)
+    else if (f === "--help" || f === "-h") { console.log("See header comment for usage."); process.exit(0) }
+    else die(`unknown flag: ${f}`)
   }
   return a
 }
@@ -143,42 +145,45 @@ function publishedPosts(): Post[] {
       publishedAt: new Date(pa).toISOString(),
     })
   }
-  // Oldest first, so the backlog drips out in publish order.
-  return out.sort((x, y) => x.publishedAt.localeCompare(y.publishedAt))
+  return out.sort((x, y) => x.publishedAt.localeCompare(y.publishedAt)) // oldest first
 }
 
-// Vendor tag first, then category. Returns a board id.
 function routeBoard(post: Post): string {
   const t = post.tags.map((s) => s.toLowerCase()).join(" ")
-  const has = (...words: string[]) => words.some((w) => t.includes(w))
-
+  const has = (...w: string[]) => w.some((x) => t.includes(x))
   if (has("venue")) return BOARDS.venue
-  if (has("catering", "bar", "service charge", "per plate", "caterer"))
-    return BOARDS.catering
-  if (has("photograph", "florist", "flower", "floral"))
-    return BOARDS.photoFlowers
-
+  if (has("catering", "bar", "service charge", "per plate", "caterer")) return BOARDS.catering
+  if (has("photograph", "florist", "flower", "floral")) return BOARDS.photoFlowers
   switch (post.category) {
-    case "contracts":
-      return BOARDS.contracts
-    case "budgeting":
-      return BOARDS.budget
-    case "vendor-tips":
-      return BOARDS.vendors
-    default:
-      return BOARDS.hiddenCosts // hidden-costs + anything else
+    case "contracts": return BOARDS.contracts
+    case "budgeting": return BOARDS.budget
+    case "vendor-tips": return BOARDS.vendors
+    default: return BOARDS.hiddenCosts
   }
 }
 
 function pinFor(post: Post) {
+  const board = routeBoard(post)
+  const tags = BOARD_TAGS[board].join(" ")
   return {
     title: post.title.slice(0, 100),
-    description: post.description,
+    description: `${post.description}\n\n${tags}`.slice(0, 480),
     link: `${SITE}/blog/${post.slug}`,
-    board: routeBoard(post),
+    board,
     imageUrl: `${SITE}/blog/${post.slug}.jpg`,
     imageFile: path.join(PUBLIC_BLOG, `${post.slug}.jpg`),
   }
+}
+
+function readLedger(): Set<string> {
+  try {
+    return new Set(JSON.parse(fs.readFileSync(LEDGER, "utf8")) as string[])
+  } catch {
+    return new Set()
+  }
+}
+function writeLedger(s: Set<string>) {
+  fs.writeFileSync(LEDGER, JSON.stringify([...s].sort(), null, 2) + "\n")
 }
 
 function apiKey(): string {
@@ -187,23 +192,31 @@ function apiKey(): string {
   return k
 }
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
+
+// Postiz throttles the public API; retry on 429 (and transient 5xx) with backoff.
+async function apiFetch(path: string, init: RequestInit, label: string): Promise<Response> {
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`${API_BASE}${path}`, {
+      ...init,
+      headers: { Authorization: apiKey(), "Content-Type": "application/json", ...(init.headers ?? {}) },
+    })
+    if ((res.status !== 429 && res.status < 500) || attempt >= 5) return res
+    const wait = 5000 * 2 ** attempt // 5s,10s,20s,40s,80s
+    console.log(`  …${res.status} on ${label}, waiting ${wait / 1000}s (retry ${attempt + 1}/5)`)
+    await sleep(wait)
+  }
+}
+
 async function uploadFromUrl(url: string): Promise<{ id: string; path: string }> {
-  const res = await fetch(`${API_BASE}/upload-from-url`, {
-    method: "POST",
-    headers: { Authorization: apiKey(), "Content-Type": "application/json" },
-    body: JSON.stringify({ url }),
-  })
+  const res = await apiFetch("/upload-from-url", { method: "POST", body: JSON.stringify({ url }) }, "upload")
   if (!res.ok) throw new Error(`upload-from-url ${res.status}: ${await res.text()}`)
   const j = (await res.json()) as { id: string; path: string }
-  if (!j.id || !j.path) throw new Error(`upload returned no id/path: ${JSON.stringify(j)}`)
+  if (!j.id || !j.path) throw new Error(`upload returned no id/path`)
   return j
 }
 
-async function createPin(
-  post: Post,
-  when: Date,
-  type: Args["type"]
-): Promise<string> {
+async function createPin(post: Post, when: Date, type: Args["type"]): Promise<void> {
   const pin = pinFor(post)
   const media = await uploadFromUrl(pin.imageUrl)
   const body = {
@@ -215,53 +228,46 @@ async function createPin(
       {
         integration: { id: PINTEREST_INTEGRATION_ID },
         value: [{ content: pin.description, image: [media] }],
-        settings: {
-          __type: "pinterest",
-          title: pin.title,
-          link: pin.link,
-          board: pin.board,
-        },
+        settings: { __type: "pinterest", title: pin.title, link: pin.link, board: pin.board },
       },
     ],
   }
-  const res = await fetch(`${API_BASE}/posts`, {
-    method: "POST",
-    headers: { Authorization: apiKey(), "Content-Type": "application/json" },
-    body: JSON.stringify(body),
-  })
+  const res = await apiFetch("/posts", { method: "POST", body: JSON.stringify(body) }, "create")
   if (!res.ok) throw new Error(`POST /posts ${res.status}: ${await res.text()}`)
-  const j = (await res.json()) as any
-  return j?.[0]?.id ?? j?.id ?? "(created)"
 }
 
-// nth pin's scheduled time: perDay pins spread 09:00..21:00 each day from start.
 function scheduleTime(start: Date, index: number, perDay: number): Date {
   const day = Math.floor(index / perDay)
   const slot = index % perDay
   const d = new Date(start)
   d.setDate(d.getDate() + day)
-  const spanHours = 12 // 9am..9pm
-  const hour = 9 + Math.round((slot * spanHours) / Math.max(1, perDay))
-  d.setHours(hour, 0, 0, 0)
+  d.setHours(9 + Math.round((slot * 12) / Math.max(1, perDay)), 0, 0, 0)
   return d
 }
 
 async function main() {
   const args = parseArgs(process.argv.slice(2))
+  const ledger = readLedger()
+
   let posts = publishedPosts()
+  let skippedPinned = 0
   if (args.only) {
     posts = posts.filter((p) => p.slug === args.only)
     if (posts.length === 0) die(`no published post with slug: ${args.only}`)
+  } else if (!args.force) {
+    const before = posts.length
+    posts = posts.filter((p) => !ledger.has(p.slug))
+    skippedPinned = before - posts.length
   }
   if (args.limit) posts = posts.slice(0, args.limit)
 
-  // Posts missing a pin image (e.g. no slideshow) are skipped with a warning.
-  const skipped = posts.filter((p) => !fs.existsSync(pinFor(p).imageFile))
+  const skippedNoImage = posts.filter((p) => !fs.existsSync(pinFor(p).imageFile))
   posts = posts.filter((p) => fs.existsSync(pinFor(p).imageFile))
 
   console.log(
     `${posts.length} pins to ${args.execute ? `create (type=${args.type})` : "preview (dry-run)"}` +
-      (skipped.length ? `  |  ${skipped.length} skipped (no image)` : "")
+      (skippedPinned ? `  |  ${skippedPinned} already pinned (ledger)` : "") +
+      (skippedNoImage.length ? `  |  ${skippedNoImage.length} no image` : "")
   )
   console.log("")
 
@@ -271,34 +277,32 @@ async function main() {
     const pin = pinFor(p)
     const when = scheduleTime(args.start, i, args.perDay)
     byBoard.set(pin.board, (byBoard.get(pin.board) ?? 0) + 1)
-
     if (!args.execute) {
-      console.log(
-        `• ${p.slug}\n    → ${BOARD_NAMES[pin.board]}  |  ${args.type === "draft" ? "draft" : when.toISOString()}\n    ${pin.link}`
-      )
+      console.log(`• ${p.slug}\n    → ${BOARD_NAMES[pin.board]}  |  ${args.type === "draft" ? "draft" : when.toISOString()}`)
       continue
     }
     try {
-      const id = await createPin(p, when, args.type)
-      console.log(`✓ ${p.slug} → ${BOARD_NAMES[pin.board]}  (${args.type}, id=${id})`)
+      await createPin(p, when, args.type)
+      ledger.add(p.slug)
+      writeLedger(ledger) // persist incrementally so a mid-run failure doesn't lose progress
+      console.log(`✓ ${p.slug} → ${BOARD_NAMES[pin.board]} (${args.type})`)
     } catch (err) {
       console.error(`✗ ${p.slug}: ${err instanceof Error ? err.message : err}`)
     }
+    await sleep(args.delay) // base pacing between pins to stay under the throttle
   }
 
   console.log("\n— board distribution —")
   for (const [b, n] of [...byBoard.entries()].sort((a, z) => z[1] - a[1])) {
     console.log(`  ${n.toString().padStart(3)}  ${BOARD_NAMES[b]}`)
   }
-  if (skipped.length) {
-    console.log(`\nSkipped (no public/blog/<slug>.jpg): ${skipped.map((p) => p.slug).join(", ")}`)
+  if (skippedNoImage.length) {
+    console.log(`\nNo image (skipped): ${skippedNoImage.map((p) => p.slug).join(", ")}`)
   }
-  if (!args.execute) {
-    console.log(`\nDry-run only. Add --execute (and --type draft for a safe first pass) to create pins.`)
-  }
+  if (!args.execute) console.log(`\nDry-run. Add --execute --type schedule to create pins.`)
 }
 
-main().catch((err) => {
-  console.error(err)
+main().catch((e) => {
+  console.error(e)
   process.exit(1)
 })

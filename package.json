@@ -10,7 +10,8 @@
     "blog:draft": "tsx scripts/blog/draft.ts",
     "blog:attach-images": "tsx scripts/blog/attach-images.ts",
     "blog:check-sitemap": "tsx scripts/blog/check-sitemap.ts",
-    "blog:pinterest-schedule": "tsx scripts/blog/pinterest-schedule.ts"
+    "blog:pinterest-schedule": "tsx scripts/blog/pinterest-schedule.ts",
+    "blog:make-pin-image": "tsx scripts/blog/make-pin-image.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
@@ -53,6 +54,7 @@
     "zustand": "^5.0.11"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^1.0.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
