@@ -249,7 +249,11 @@ async function main() {
   const args = parseArgs(process.argv.slice(2))
   const ledger = readLedger()
 
-  let posts = publishedPosts()
+  const allPublished = publishedPosts()
+  // Stable slot index per slug (position in the full published list) so that
+  // incremental/retry runs fill original gaps instead of overlapping slots.
+  const fullIndex = new Map(allPublished.map((p, i) => [p.slug, i]))
+  let posts = allPublished
   let skippedPinned = 0
   if (args.only) {
     posts = posts.filter((p) => p.slug === args.only)
@@ -275,7 +279,7 @@ async function main() {
   for (let i = 0; i < posts.length; i++) {
     const p = posts[i]
     const pin = pinFor(p)
-    const when = scheduleTime(args.start, i, args.perDay)
+    const when = scheduleTime(args.start, fullIndex.get(p.slug) ?? i, args.perDay)
     byBoard.set(pin.board, (byBoard.get(pin.board) ?? 0) + 1)
     if (!args.execute) {
       console.log(`• ${p.slug}\n    → ${BOARD_NAMES[pin.board]}  |  ${args.type === "draft" ? "draft" : when.toISOString()}`)
