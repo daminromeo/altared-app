@@ -9,7 +9,8 @@
     "lint": "eslint",
     "blog:draft": "tsx scripts/blog/draft.ts",
     "blog:attach-images": "tsx scripts/blog/attach-images.ts",
-    "blog:check-sitemap": "tsx scripts/blog/check-sitemap.ts"
+    "blog:check-sitemap": "tsx scripts/blog/check-sitemap.ts",
+    "blog:pinterest-schedule": "tsx scripts/blog/pinterest-schedule.ts"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.78.0",
