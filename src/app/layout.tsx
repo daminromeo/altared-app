@@ -40,6 +40,9 @@ export const metadata: Metadata = {
   },
   verification: {
     google: "K29l-7Aq0oJCNoUWYzKciku_sylCa8p4Gs-2YPDRmjA",
+    other: {
+      "p:domain_verify": "3e8d974414800827d759e2e6c2b03711",
+    },
   },
 };
 
