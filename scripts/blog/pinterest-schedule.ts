@@ -276,10 +276,17 @@ async function main() {
   console.log("")
 
   const byBoard = new Map<string, number>()
+  let pastCount = 0
   for (let i = 0; i < posts.length; i++) {
     const p = posts[i]
     const pin = pinFor(p)
-    const when = scheduleTime(args.start, fullIndex.get(p.slug) ?? i, args.perDay)
+    let when = scheduleTime(args.start, fullIndex.get(p.slug) ?? i, args.perDay)
+    // A stable slot can fall in the past on a later retry; push it to a
+    // staggered near-future time so the scheduler doesn't reject it.
+    if (when.getTime() <= Date.now() + 60_000) {
+      pastCount++
+      when = new Date(Date.now() + pastCount * 15 * 60_000)
+    }
     byBoard.set(pin.board, (byBoard.get(pin.board) ?? 0) + 1)
     if (!args.execute) {
       console.log(`• ${p.slug}\n    → ${BOARD_NAMES[pin.board]}  |  ${args.type === "draft" ? "draft" : when.toISOString()}`)
