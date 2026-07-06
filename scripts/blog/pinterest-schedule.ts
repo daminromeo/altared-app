@@ -90,6 +90,7 @@ type Args = {
   limit?: number
   force: boolean
   delay: number
+  includeFuture: boolean
 }
 
 function die(msg: string): never {
@@ -98,11 +99,12 @@ function die(msg: string): never {
 }
 
 function parseArgs(argv: string[]): Args {
-  const a: Args = { execute: false, type: "draft", start: tomorrow9am(), perDay: 5, force: false, delay: 4000 }
+  const a: Args = { execute: false, type: "draft", start: tomorrow9am(), perDay: 5, force: false, delay: 4000, includeFuture: false }
   for (let i = 0; i < argv.length; i++) {
     const f = argv[i]
     if (f === "--execute") a.execute = true
     else if (f === "--force") a.force = true
+    else if (f === "--include-future") a.includeFuture = true
     else if (f === "--delay") a.delay = Number(argv[++i])
     else if (f === "--type") {
       const v = argv[++i]
@@ -128,14 +130,15 @@ function tomorrow9am(): Date {
   return d
 }
 
-function publishedPosts(): Post[] {
+function loadPosts(includeFuture: boolean): Post[] {
   const now = Date.now()
   const out: Post[] = []
   for (const file of fs.readdirSync(POSTS_DIR)) {
     if (!file.endsWith(".mdx")) continue
     const { data } = matter(fs.readFileSync(path.join(POSTS_DIR, file), "utf8"))
     const pa = data.publishedAt ? new Date(data.publishedAt).getTime() : NaN
-    if (Number.isNaN(pa) || pa > now) continue
+    if (Number.isNaN(pa)) continue
+    if (pa > now && !includeFuture) continue // not yet live; its link would 404
     out.push({
       slug: file.replace(/\.mdx$/, ""),
       title: String(data.title ?? ""),
@@ -249,11 +252,7 @@ async function main() {
   const args = parseArgs(process.argv.slice(2))
   const ledger = readLedger()
 
-  const allPublished = publishedPosts()
-  // Stable slot index per slug (position in the full published list) so that
-  // incremental/retry runs fill original gaps instead of overlapping slots.
-  const fullIndex = new Map(allPublished.map((p, i) => [p.slug, i]))
-  let posts = allPublished
+  let posts = loadPosts(args.includeFuture)
   let skippedPinned = 0
   if (args.only) {
     posts = posts.filter((p) => p.slug === args.only)
@@ -280,12 +279,14 @@ async function main() {
   for (let i = 0; i < posts.length; i++) {
     const p = posts[i]
     const pin = pinFor(p)
-    let when = scheduleTime(args.start, fullIndex.get(p.slug) ?? i, args.perDay)
-    // A stable slot can fall in the past on a later retry; push it to a
-    // staggered near-future time so the scheduler doesn't reject it.
-    if (when.getTime() <= Date.now() + 60_000) {
+    // Run-local slot: pack the posts being pinned this run 5/day from --start.
+    let when = scheduleTime(args.start, i, args.perDay)
+    // Never pin before the post is live (link would 404) or in the past; bump
+    // to a staggered near-future time past that floor.
+    const floor = Math.max(new Date(p.publishedAt).getTime() + 3_600_000, Date.now() + 60_000)
+    if (when.getTime() < floor) {
       pastCount++
-      when = new Date(Date.now() + pastCount * 15 * 60_000)
+      when = new Date(floor + pastCount * 15 * 60_000)
     }
     byBoard.set(pin.board, (byBoard.get(pin.board) ?? 0) + 1)
     if (!args.execute) {
