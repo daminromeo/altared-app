@@ -1,7 +1,6 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { trackTikTokEvent } from '@/lib/tiktok/events'
-import { notifyNewSignup } from '@/lib/slack/notify'
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
@@ -29,31 +28,14 @@ export async function GET(request: Request) {
           .maybeSingle()
 
         if (!profile || !profile.onboarding_completed) {
-          // New registration — fire TikTok CompleteRegistration event
-          trackTikTokEvent({
-            event: 'CompleteRegistration',
-            email: user.email,
-          })
-
-          // Fire Slack notification only on a fresh signup. The profile row is
-          // created by a DB trigger at auth.users insert time, so "no profile"
-          // never holds here — instead detect freshness via created_at (OAuth
-          // new user) or email_confirmed_at (email user just confirmed).
-          const FIVE_MIN = 5 * 60 * 1000
-          const now = Date.now()
-          const createdRecently =
-            now - new Date(user.created_at).getTime() < FIVE_MIN
-          const confirmedRecently =
-            !!user.email_confirmed_at &&
-            now - new Date(user.email_confirmed_at).getTime() < FIVE_MIN
-          if (createdRecently || confirmedRecently) {
-            void notifyNewSignup({
-              email: user.email,
-              name:
-                (user.user_metadata?.full_name as string | undefined) ?? null,
-              provider: user.app_metadata?.provider ?? 'email',
-            })
-          }
+          // New registration — fire TikTok CompleteRegistration (OAuth path).
+          // after() guarantees it runs after the response instead of being cut
+          // off when the redirect returns. New-signup Slack alerts now come
+          // from the Supabase profiles-insert webhook, which covers BOTH email
+          // (auto-confirmed, never reaches here) and OAuth signups.
+          after(() =>
+            trackTikTokEvent({ event: 'CompleteRegistration', email: user.email })
+          )
 
           // Redirect to get-started/complete to save onboarding data from sessionStorage
           return NextResponse.redirect(`${origin}/get-started/complete`)
