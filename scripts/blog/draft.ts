@@ -231,18 +231,23 @@ type DraftedPost = {
   faq: { question: string; answer: string }[]
 }
 
-const SYSTEM_PROMPT = `You are an SEO content writer for Altared, a wedding planning app. You write practical, specific, honest blog posts for engaged couples — the opposite of fluffy listicles. Your voice is warm, knowledgeable, direct, and confidently lowercase-conversational where the brand uses it. You never invent vendor names or stats. When you reference a number, it should match (or be consistent with) the dollar ranges already in the source material.
+const SYSTEM_PROMPT = `You are an SEO content writer for Altared, a wedding planning app. You write practical, specific, honest blog posts for engaged couples — the opposite of fluffy listicles. Your voice is warm, knowledgeable, direct, and confidently lowercase-conversational where the brand uses it. You never invent vendor names or stats.
 
-Your job: expand a hook + source material (TikTok/IG slideshow content) into a 1,200–1,800 word blog post. Submit it via the submit_post tool — never reply with plain text.
+NUMBERS — the hardest rule, and it is checked by code after you submit:
+- Every dollar amount, percentage and price range in your post (title, description, body AND faq) must appear in the source material. Copy it exactly.
+- If the source material has no figures, your post has no figures. Explain the cost or the trade-off in words ("ask for the all-in number", "it varies by county, so check yours") instead of estimating one.
+- Never write a typical range, an average, a "most venues charge", or a worked example with made-up amounts. A post with an unsourced figure is rejected and not published.
+
+Your job: expand a hook + source material (TikTok/IG slideshow content) into an 800–1,200 word blog post. Submit it via the submit_post tool — never reply with plain text.
 
 Hard requirements for the body:
-- Open with a concrete scene or specific example. NEVER "Planning a wedding is exciting but..." or "Let's dive in"
+- Open with a concrete, clearly hypothetical scene addressed to the reader ("say you get two quotes on the same Tuesday..."). NEVER a first-person or "real" anecdote: no "a couple I know", "a bride we know", "one of our users", "a friend of mine". NEVER "Planning a wedding is exciting but..." or "Let's dive in"
 - 3–6 H2 sections (## ), with H3 subheads where useful. DO NOT include a top-level H1, it is rendered from the title
-- Include at least one numbered list AND at least one specific dollar example, drawing from the source material's dollar figures verbatim where possible
+- Include at least one numbered list
 - Include a "red flags" or "watch for" beat
 - Close with a short, actionable summary list
 - Internal-link naturally to /blog/category/{slug} or /get-started where it helps the reader. Do not stuff links
-- Reuse the exact phrases and dollar amounts from the source material when relevant. This keeps brand voice consistent
+- Reuse the exact phrases from the source material when relevant. This keeps brand voice consistent
 - No AI tells ("in today's world", "let's dive in", "the bottom line is")
 - Avoid em-dashes; use commas, periods, or parentheses instead`
 
@@ -324,13 +329,13 @@ function userPrompt(item: SourceItem, forced: Category | undefined): string {
     "TikTok caption:",
     item.tiktokCaption,
     "",
-    "Instagram caption (this is the brand-voice backbone — match its tone, reuse its dollar figures and phrasing):",
+    "Instagram caption (this is the brand-voice backbone — match its tone and phrasing; any figure you use must come from here or the slides):",
     item.instagramCaption,
     "",
     "Slide-by-slide text (use this as the structural skeleton — each slide is a beat that should map roughly to a section or sub-point):",
     item.slideText,
     "",
-    `Write a 1,200–1,800 word blog post expanding this material into long-form. ${categoryHint}`,
+    `Write an 800–1,200 word blog post expanding this material into long-form. ${categoryHint}`,
   ].join("\n")
 }
 
@@ -375,6 +380,69 @@ async function draftPost(
   }
 
   return parsed
+}
+
+// ─── Source check ────────────────────────────────────────────────────────────
+// The prompt says "no invented figures" and the model still invented them: on
+// 2026-10-05, 11 of 14 week-41 posts carried price ranges and percentages that
+// appear nowhere in their decks ("$85-$200 per head", "$1M-$2M coverage"),
+// because the old prompt REQUIRED a dollar example and the decks had none.
+// So the rule is enforced here, not just asked for: every $ amount and
+// percentage in the draft must appear in the source, and first-person
+// "real" anecdotes are refused outright. A rejected post is not written.
+
+function normAmount(s: string): string {
+  const t = s.toLowerCase().replace(/[,\s]/g, "")
+  const m = t.match(/^([\d.]+)(k|m)?$/)
+  if (!m) return t
+  const n = parseFloat(m[1]) * (m[2] === "k" ? 1e3 : m[2] === "m" ? 1e6 : 1)
+  return String(n)
+}
+
+// Returns the set of figures in a text, normalised: "$1200", "20%".
+export function extractFigures(text: string): Set<string> {
+  const out = new Set<string>()
+  const t = text.replace(/[–—]/g, "-")
+  // $85, $1,400, $1M, and the open end of "$150-500" / "$85-$200"
+  for (const m of t.matchAll(/\$\s?([\d][\d,]*(?:\.\d+)?\s?[kKmM]?)\b(?:\s*(?:-|to)\s*\$?\s?([\d][\d,]*(?:\.\d+)?\s?[kKmM]?)\b)?/g)) {
+    out.add("$" + normAmount(m[1]))
+    if (m[2]) out.add("$" + normAmount(m[2]))
+  }
+  // 20%, 20 percent, and both ends of "10-20%" / "10 to 20 percent"
+  for (const m of t.matchAll(/(\d+(?:\.\d+)?)(?:\s*(?:-|to)\s*(\d+(?:\.\d+)?))?\s?(?:%|percent\b)/gi)) {
+    out.add(normAmount(m[1]) + "%")
+    if (m[2]) out.add(normAmount(m[2]) + "%")
+  }
+  return out
+}
+
+const ANECDOTE_RE =
+  /\b(?:a|one)\s+(?:bride|groom|couple|friend|client|reader|user)s?\s+(?:I|we)\s+(?:know|knew|worked with|talked to)\b|\b(?:bride|groom|couple|friend)\s+(?:of mine|of ours)\b|\bone of our (?:users|couples|readers)\b/i
+
+export function checkAgainstSource(
+  post: DraftedPost,
+  sourceText: string
+): string[] {
+  const draftText = [
+    post.title,
+    post.description,
+    post.body,
+    ...(post.faq ?? []).map((q) => `${q.question} ${q.answer}`),
+  ].join("\n")
+  const allowed = extractFigures(sourceText)
+  const problems: string[] = []
+  for (const f of extractFigures(draftText)) {
+    if (!allowed.has(f)) problems.push(`unsourced figure ${f}`)
+  }
+  const a = draftText.match(ANECDOTE_RE)
+  if (a) problems.push(`first-person anecdote: "${a[0]}"`)
+  return problems
+}
+
+function sourceTextOf(item: SourceItem): string {
+  return item.kind === "slideshow"
+    ? [item.hook, item.tiktokCaption, item.instagramCaption, item.slideText].join("\n")
+    : item.hook
 }
 
 function toMdx(post: DraftedPost, publishedAt: Date): string {
@@ -444,6 +512,7 @@ async function main() {
 
   const start = args.start ?? tomorrowAt9amLocal()
   const SCHEDULE_STEP_MS = 12 * 60 * 60 * 1000
+  const rejected: string[] = []
 
   for (let i = 0; i < args.sources.length; i++) {
     const item = args.sources[i]
@@ -473,6 +542,17 @@ async function main() {
       post = await draftPost(client, item, args.category, args.model)
     } catch (err) {
       console.error(`  ✗ Failed: ${err instanceof Error ? err.message : err}`)
+      continue
+    }
+
+    const problems = checkAgainstSource(post, sourceTextOf(item))
+    if (problems.length) {
+      rejected.push(label)
+      console.error(`  ✗ REJECTED, not written (source check):`)
+      for (const p of problems) console.error(`      - ${p}`)
+      console.error(
+        `    Re-run this source, or fix the deck's caption.md if the figure is real and sourced.`
+      )
       continue
     }
 
@@ -512,6 +592,14 @@ async function main() {
       ? "\nDone (dry-run)."
       : `\nDone. Review the MDX files in ${path.relative(ROOT, POSTS_DIR)} and commit.`
   )
+  if (rejected.length) {
+    console.error(
+      `\n✗ ${rejected.length} post(s) REJECTED by the source check and not written:\n` +
+        rejected.map((r) => `   - ${r}`).join("\n") +
+        `\n  Their slots are empty: re-run them with --start set to each missing slot.`
+    )
+    process.exitCode = 1
+  }
 }
 
 main().catch((err) => {
