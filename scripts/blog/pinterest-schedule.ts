@@ -43,6 +43,9 @@ const SITE = "https://altared.app"
 const PINTEREST_INTEGRATION_ID = "cmqzfv34k021qk00y6gny1p17" // altaredapp
 
 // Board ids fetched via integration-trigger { methodName: "boards" }.
+// ⚠️ etiquette + planning (created 2026-10-19) were NOT returned by that trigger on the day: Postiz
+// served a cached 7-board list. Their ids were read off the public board pages
+// (pinterest.com/altaredapp/wedding-etiquette-guest-tips/ and /wedding-planning-step-by-step/).
 const BOARDS = {
   hiddenCosts: "1108870808192966717",
   vendors: "1108870808192966726",
@@ -51,6 +54,8 @@ const BOARDS = {
   photoFlowers: "1108870808192966732",
   contracts: "1108870808192966720",
   venue: "1108870808192966727",
+  etiquette: "1108870808193411421",
+  planning: "1108870808193411423",
 }
 const BOARD_NAMES: Record<string, string> = {
   [BOARDS.hiddenCosts]: "Hidden Wedding Costs & Fees",
@@ -60,6 +65,8 @@ const BOARD_NAMES: Record<string, string> = {
   [BOARDS.photoFlowers]: "Wedding Photography & Flowers",
   [BOARDS.contracts]: "Wedding Vendor Contracts & Red Flags",
   [BOARDS.venue]: "Wedding Venue Tips & Costs",
+  [BOARDS.etiquette]: "Wedding Etiquette & Guest Tips",
+  [BOARDS.planning]: "Wedding Planning, Step by Step",
 }
 // Pinterest is a search engine; these double as keywords + hashtags per board.
 const BOARD_TAGS: Record<string, string[]> = {
@@ -70,6 +77,8 @@ const BOARD_TAGS: Record<string, string[]> = {
   [BOARDS.photoFlowers]: ["#weddingphotographer", "#weddingflowers", "#weddingflorals", "#weddingvendors", "#weddingplanning"],
   [BOARDS.contracts]: ["#weddingcontracts", "#weddingvendors", "#weddingredflags", "#weddingplanning", "#bridetobe"],
   [BOARDS.venue]: ["#weddingvenue", "#venuetips", "#weddingplanning", "#weddingbudget", "#bridetobe"],
+  [BOARDS.etiquette]: ["#weddingetiquette", "#weddingguests", "#thankyounotes", "#weddingplanning", "#bridetobe"],
+  [BOARDS.planning]: ["#weddingplanning", "#weddingtimeline", "#weddingtips", "#engaged", "#bridetobe"],
 }
 
 type Post = {
@@ -154,13 +163,19 @@ function loadPosts(includeFuture: boolean): Post[] {
 function routeBoard(post: Post): string {
   const t = post.tags.map((s) => s.toLowerCase()).join(" ")
   const has = (...w: string[]) => w.some((x) => t.includes(x))
+  // Etiquette routes on category BEFORE the vendor tags: an RSVP-card post tagged "caterer" is a
+  // guest question, not a catering cost. Planning goes after the venue tag only, so a venue-week
+  // post still lands on the venue board. Both used to fall through to hiddenCosts (until 2026-10-19).
+  if (post.category === "etiquette") return BOARDS.etiquette
   if (has("venue")) return BOARDS.venue
+  if (post.category === "planning") return BOARDS.planning
   if (has("catering", "bar", "service charge", "per plate", "caterer")) return BOARDS.catering
   if (has("photograph", "florist", "flower", "floral")) return BOARDS.photoFlowers
   switch (post.category) {
     case "contracts": return BOARDS.contracts
     case "budgeting": return BOARDS.budget
     case "vendor-tips": return BOARDS.vendors
+    case "planning": return BOARDS.planning
     default: return BOARDS.hiddenCosts
   }
 }
