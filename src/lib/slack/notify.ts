@@ -9,11 +9,20 @@ async function postToSlack(payload: SlackPayload): Promise<void> {
   const url = process.env.SLACK_WEBHOOK_URL
   if (!url) return
 
+  // Tag every alert with the product so it's identifiable in a shared channel
+  const tagged: SlackPayload = {
+    text: `[Altared] ${payload.text}`,
+    blocks: payload.blocks && [
+      { type: "context", elements: [{ type: "mrkdwn", text: "*Altared*" }] },
+      ...payload.blocks,
+    ],
+  }
+
   try {
     const res = await fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
+      body: JSON.stringify(tagged),
     })
     if (!res.ok) {
       console.error(
