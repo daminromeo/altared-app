@@ -4,6 +4,7 @@ import { useEffect, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { trackEvent } from '@/lib/analytics'
+import { clearDraft, loadDraft, saveOnboardingToProfile } from '@/lib/onboarding'
 
 /**
  * This page handles saving onboarding data after Google OAuth sign-in.
@@ -26,43 +27,17 @@ export default function GetStartedCompletePage() {
         return
       }
 
+      const draft = loadDraft()
+
       // Funnel: Google/OAuth signups complete here (the email path fires its
       // own signup_completed in the wizard). TikTok's CompleteRegistration is
       // already sent server-side in the auth callback, so GA only here.
-      trackEvent('signup_completed', { method: 'google' })
+      trackEvent('signup_completed', { method: 'google', from: draft?.from ?? 'direct' })
 
-      // Read onboarding data from sessionStorage
-      const raw = sessionStorage.getItem('onboarding_data')
-      if (raw) {
-        try {
-          const { weddingDetails, budgetData } = JSON.parse(raw)
-
-          // Upsert profile with onboarding data
-          await supabase
-            .from('profiles')
-            .upsert(
-              {
-                id: user.id,
-                email: user.email ?? '',
-                full_name: weddingDetails.yourName || null,
-                partner_name: weddingDetails.partnerName || null,
-                wedding_date: weddingDetails.weddingDate
-                  ? new Date(weddingDetails.weddingDate).toISOString().split('T')[0]
-                  : null,
-                wedding_location: weddingDetails.location || null,
-                estimated_guest_count:
-                  weddingDetails.guestCount === '' ? null : Number(weddingDetails.guestCount),
-                total_budget: budgetData.totalBudget,
-                onboarding_completed: true,
-                subscription_status: 'free',
-              },
-              { onConflict: 'id' }
-            )
-
-          sessionStorage.removeItem('onboarding_data')
-        } catch {
-          // JSON parse failed — just continue to dashboard
-        }
+      if (draft) {
+        const saveError = await saveOnboardingToProfile(supabase, user, draft)
+        if (saveError) console.error('Onboarding save failed:', saveError.message)
+        clearDraft()
       }
 
       router.push('/dashboard')
@@ -72,21 +47,10 @@ export default function GetStartedCompletePage() {
   }, [supabase, router])
 
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: '#FAF8F5' }}
-    >
+    <div className="flex min-h-dvh items-center justify-center bg-paper">
       <div className="text-center">
-        <div className="mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-4 border-[#8B9F82] border-t-transparent" />
-        <p
-          className="text-sm"
-          style={{
-            fontFamily: "'DM Sans', sans-serif",
-            color: '#7A7A7A',
-          }}
-        >
-          Setting up your account...
-        </p>
+        <div className="mx-auto mb-4 size-8 animate-spin rounded-full border-4 border-moss border-t-transparent" />
+        <p className="text-sm text-ink-muted">Saving your plan…</p>
       </div>
     </div>
   )

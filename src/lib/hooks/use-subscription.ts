@@ -1,5 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { PLANS, type SubscriptionPlan } from "@/lib/stripe/config";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { PLANS, type Plan } from "@/lib/stripe/config";
+import { trialDaysLeft, type Access } from "@/lib/plan-access";
+import { trackEvent } from "@/lib/analytics";
 
 const SUBSCRIPTION_KEY = "subscription";
 
@@ -14,6 +16,7 @@ async function fetchJson<T>(url: string, init?: RequestInit): Promise<T> {
 
 // ── Feature gate definitions ──────────────────────────────────────────────────
 
+// Every paid feature comes with the Wedding Pass (and the free trial).
 type Feature =
   | "comparison_scoring"
   | "comparison_ai"
@@ -21,33 +24,21 @@ type Feature =
   | "partner_sharing"
   | "proposal_scanning";
 
-const FEATURE_PLAN_MAP: Record<Feature, SubscriptionPlan["id"][]> = {
-  comparison_scoring: ["pro", "premium"],
-  comparison_ai: ["pro", "premium"],
-  reminders: ["pro", "premium"],
-  partner_sharing: ["pro", "premium"],
-  proposal_scanning: ["pro", "premium"],
-};
-
-const COMPARISON_VENDOR_LIMITS: Record<SubscriptionPlan["id"], number> = {
+const COMPARISON_VENDOR_LIMITS: Record<Plan["id"], number> = {
   free: 2,
-  pro: 4,
-  premium: 4,
+  pass: 4,
 };
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface SubscriptionData {
-  planId: string;
-  plan: SubscriptionPlan;
+  planId: Plan["id"];
+  plan: Plan;
+  access: Access;
   status: string | null;
   currentPeriodEnd: string | null;
   cancelAtPeriodEnd: boolean;
   stripeCustomerId: string | null;
-}
-
-interface CheckoutParams {
-  priceId: string;
 }
 
 interface CheckoutResult {
@@ -61,7 +52,8 @@ interface PortalResult {
 // ── Hooks ─────────────────────────────────────────────────────────────────────
 
 /**
- * Returns the current subscription plan, features, and limits.
+ * Returns the current plan, how the couple has it (trial, pass, legacy
+ * subscription), and feature limits.
  */
 export function useSubscription() {
   const query = useQuery<SubscriptionData>({
@@ -71,15 +63,12 @@ export function useSubscription() {
   });
 
   const plan = query.data?.plan ?? PLANS.free;
-  const planId = (query.data?.planId ?? "free") as SubscriptionPlan["id"];
+  const planId = query.data?.planId ?? "free";
+  const access = query.data?.access ?? null;
 
-  /**
-   * Checks if the current subscription plan allows a given feature.
-   */
   function canUseFeature(feature: Feature): boolean {
-    const allowedPlans = FEATURE_PLAN_MAP[feature];
-    if (!allowedPlans) return false;
-    return allowedPlans.includes(planId);
+    void feature;
+    return planId === "pass";
   }
 
   function getComparisonVendorLimit(): number {
@@ -90,25 +79,29 @@ export function useSubscription() {
     ...query,
     plan,
     planId,
+    access,
     canUseFeature,
     getComparisonVendorLimit,
     isFreePlan: planId === "free",
-    isProPlan: planId === "pro",
-    isPremiumPlan: planId === "premium",
+    isTrial: access?.source === "trial",
+    /** Paid through a pass or a legacy subscription (not the trial) */
+    hasPaidAccess: access?.source === "pass" || access?.source === "subscription",
+    trialDaysLeft: access ? trialDaysLeft(access) : 0,
+    /** True once a trial existed and has run out */
+    trialEnded: access?.source === "free" && !!access.trialEndsAt,
   };
 }
 
 /**
- * Creates a Stripe checkout session and redirects the user.
+ * Starts Stripe Checkout for the Wedding Pass and redirects the user.
+ * `location` says which prompt started it, for the funnel.
  */
 export function useCheckout() {
-  return useMutation<CheckoutResult, Error, CheckoutParams>({
-    mutationFn: (params) =>
-      fetchJson<CheckoutResult>("/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(params),
-      }),
+  return useMutation<CheckoutResult, Error, { location: string } | void>({
+    mutationFn: (params) => {
+      trackEvent("checkout_started", { product: "wedding_pass", location: params?.location ?? "unknown" });
+      return fetchJson<CheckoutResult>("/api/stripe/checkout", { method: "POST" });
+    },
     onSuccess: (data) => {
       if (data.url) {
         window.location.href = data.url;

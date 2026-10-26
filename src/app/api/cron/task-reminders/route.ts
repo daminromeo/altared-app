@@ -1,3 +1,4 @@
+import { ACCESS_PROFILE_COLUMNS, resolveAccess } from "@/lib/plan-access";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendTaskReminder } from "@/lib/resend/templates";
@@ -20,12 +21,13 @@ export async function GET(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Get Pro/Premium users who have task_reminders enabled (reminders are a paid feature)
+  // Reminders are a paid feature: pass holders, trial users and legacy
+  // subscribers who have task_reminders enabled. Trial access is computed from
+  // created_at, so the filter runs here rather than in the query.
   const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
-    .select("id, email, full_name, notification_preferences, subscription_status")
-    .not("email", "is", null)
-    .in("subscription_status", ["pro", "premium"]);
+    .select(`id, email, full_name, notification_preferences, ${ACCESS_PROFILE_COLUMNS}`)
+    .not("email", "is", null);
 
   if (profilesError || !profiles) {
     console.error("Failed to fetch profiles:", profilesError);
@@ -33,6 +35,7 @@ export async function GET(request: NextRequest) {
   }
 
   const eligibleProfiles = profiles.filter((p) => {
+    if (resolveAccess(p).planId === "free") return false;
     const prefs = p.notification_preferences as Record<string, boolean> | null;
     return prefs?.task_reminders !== false; // default to true
   });

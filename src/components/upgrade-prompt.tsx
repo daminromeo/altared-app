@@ -1,98 +1,76 @@
 'use client';
 
-import { useState } from 'react';
 import { Lock } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { useCheckout } from '@/lib/hooks/use-subscription';
+import { useCheckout, useSubscription } from '@/lib/hooks/use-subscription';
 import { PLANS } from '@/lib/stripe/config';
 
 interface UpgradePromptProps {
   title: string;
   description: string;
-  plan?: 'pro' | 'premium';
   compact?: boolean;
+  /** Analytics label for where this prompt sits, e.g. "compare_scoring" */
+  location?: string;
 }
 
-export function UpgradePrompt({
-  title,
-  description,
-  plan = 'pro',
-  compact = false,
-}: UpgradePromptProps) {
+/**
+ * Shown where a Free user reaches a Wedding Pass feature. Says what the
+ * feature does and offers the pass at its one-time price.
+ */
+export function UpgradePrompt({ title, description, compact = false, location }: UpgradePromptProps) {
   const checkout = useCheckout();
-  const targetPlan = PLANS[plan];
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
+  const { trialEnded } = useSubscription();
+  const price = `$${PLANS.pass.price}`;
+  const where = location ?? title.toLowerCase().replace(/[^a-z0-9]+/g, '_');
 
   function handleUpgrade() {
-    const priceId = billingPeriod === 'yearly'
-      ? targetPlan.stripePriceIdYearly
-      : targetPlan.stripePriceIdMonthly;
-    if (priceId) {
-      checkout.mutate({ priceId });
-    }
+    checkout.mutate({ location: where });
   }
-
-  const price = billingPeriod === 'yearly' ? targetPlan.priceYearly : targetPlan.priceMonthly;
-  const period = billingPeriod === 'yearly' ? 'year' : 'month';
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2 rounded-lg border border-[#C9A96E]/30 bg-[#C9A96E]/5 px-3 py-2">
-        <Lock className="size-3.5 text-[#C9A96E] shrink-0" />
-        <span className="text-xs text-[#C9A96E] font-medium">{title}</span>
-        <Button
+      <div className="flex items-center gap-2 rounded-xl border border-moss/15 bg-sage-soft px-3 py-2">
+        <Lock className="size-3.5 shrink-0 text-moss" aria-hidden />
+        <span className="text-xs font-medium text-moss">{title} comes with the Wedding Pass</span>
+        <button
+          type="button"
           onClick={handleUpgrade}
           disabled={checkout.isPending}
-          className="ml-auto h-6 px-2 text-xs bg-[#C9A96E] hover:bg-[#B8985D] text-white"
+          className="ml-auto shrink-0 rounded-full bg-moss px-3 py-1 text-xs font-semibold text-white hover:bg-moss-light disabled:opacity-60"
         >
-          Upgrade
-        </Button>
+          {checkout.isPending ? 'Opening…' : `Get it · ${price}`}
+        </button>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-3 rounded-xl border border-[#C9A96E]/30 bg-[#C9A96E]/5 p-6 text-center">
-      <div className="rounded-full bg-[#C9A96E]/10 p-3">
-        <Lock className="size-5 text-[#C9A96E]" />
+    <div className="flex flex-col items-center gap-3 rounded-2xl border border-moss/15 bg-sage-soft p-6 text-center">
+      <div className="rounded-full bg-white p-3">
+        <Lock className="size-5 text-moss" aria-hidden />
       </div>
       <div>
-        <p className="font-semibold text-[#2D2D2D]">{title}</p>
-        <p className="mt-1 text-sm text-[#7A7A7A]">{description}</p>
+        <p className="font-display text-lg font-bold tracking-[-0.02em] text-ink">{title}</p>
+        <p className="mx-auto mt-1 max-w-md text-sm text-ink-muted">{description}</p>
+        {trialEnded && (
+          <p className="mt-2 text-sm text-ink-muted">
+            Your free trial has ended. Everything you added is still here.
+          </p>
+        )}
       </div>
-      {/* Billing period toggle */}
-      <div className="flex items-center gap-1 rounded-lg bg-white/60 p-1">
-        <button
-          type="button"
-          onClick={() => setBillingPeriod('monthly')}
-          className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
-            billingPeriod === 'monthly'
-              ? 'bg-white text-[#2D2D2D] shadow-sm'
-              : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
-          }`}
-        >
-          Monthly
-        </button>
-        <button
-          type="button"
-          onClick={() => setBillingPeriod('yearly')}
-          className={`rounded-md px-3 py-1 text-xs font-medium transition-all ${
-            billingPeriod === 'yearly'
-              ? 'bg-white text-[#2D2D2D] shadow-sm'
-              : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
-          }`}
-        >
-          Yearly
-          <span className="ml-1 text-[10px] text-[#8B9F82]">Save ~17%</span>
-        </button>
-      </div>
-      <Button
+      <button
+        type="button"
         onClick={handleUpgrade}
         disabled={checkout.isPending}
-        className="bg-[#C9A96E] hover:bg-[#B8985D] text-white"
+        className="rounded-full bg-moss px-5 py-2.5 font-display text-sm font-bold text-white hover:bg-moss-light disabled:opacity-60"
       >
-        {checkout.isPending ? 'Loading...' : `Upgrade to ${targetPlan.name} — $${price}/${period}`}
-      </Button>
+        {checkout.isPending ? 'Opening checkout…' : `Get the Wedding Pass · ${price}`}
+      </button>
+      <p className="text-xs text-ink-muted">One payment. Use it through your wedding.</p>
+      {checkout.isError && (
+        <p role="alert" className="text-xs text-error">
+          Checkout didn&apos;t open: {checkout.error.message}. Try again in a moment.
+        </p>
+      )}
     </div>
   );
 }

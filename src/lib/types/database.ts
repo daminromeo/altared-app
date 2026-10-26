@@ -24,6 +24,9 @@ export interface Database {
           stripe_customer_id: string | null;
           subscription_status: string;
           subscription_id: string | null;
+          pass_expires_at: string | null;
+          wedding_date_estimate: string | null;
+          planned_categories: string[] | null;
           onboarding_completed: boolean;
           is_admin: boolean;
           notification_preferences: Json | null;
@@ -44,6 +47,9 @@ export interface Database {
           stripe_customer_id?: string | null;
           subscription_status?: string;
           subscription_id?: string | null;
+          pass_expires_at?: string | null;
+          wedding_date_estimate?: string | null;
+          planned_categories?: string[] | null;
           onboarding_completed?: boolean;
           is_admin?: boolean;
           notification_preferences?: Json | null;
@@ -64,6 +70,9 @@ export interface Database {
           stripe_customer_id?: string | null;
           subscription_status?: string;
           subscription_id?: string | null;
+          pass_expires_at?: string | null;
+          wedding_date_estimate?: string | null;
+          planned_categories?: string[] | null;
           onboarding_completed?: boolean;
           is_admin?: boolean;
           notification_preferences?: Json | null;

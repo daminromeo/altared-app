@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { z } from "zod";
-import { getPlan } from "@/lib/stripe/config";
+import { getUserAccess } from "@/lib/plan-access";
 
 const createVendorSchema = z.object({
   name: z.string().min(1, "Name is required").max(200),
@@ -97,13 +97,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check vendor limit
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("subscription_status")
-      .eq("id", user.id)
-      .single();
-
-    const plan = getPlan(profile?.subscription_status ?? "free");
+    const { plan } = await getUserAccess(supabase, user.id);
     const vendorLimit = plan.limits.vendors;
 
     if (vendorLimit !== Infinity) {
@@ -116,7 +110,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json(
           {
             error: "vendor_limit_reached",
-            message: `Your ${plan.name} plan supports up to ${vendorLimit} vendors. Upgrade to add more.`,
+            message: `The Free plan holds up to ${vendorLimit} vendors. Get the Wedding Pass for unlimited vendors.`,
             limit: vendorLimit,
           },
           { status: 403 }

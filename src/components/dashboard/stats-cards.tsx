@@ -153,7 +153,7 @@ export function StatsCards({ data, loading }: StatsCardsProps) {
               <div className="mt-1 sm:mt-2">
                 <p
                   className="text-xl sm:text-2xl font-bold text-[#2D2D2D]"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  style={{ fontFamily: "var(--font-manrope), sans-serif" }}
                 >
                   {getValue(stat.key)}
                 </p>

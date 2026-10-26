@@ -29,7 +29,7 @@ export function PostCard({ post }: { post: PostMeta }) {
           </div>
           <h2
             className="mb-2 text-xl font-semibold leading-snug text-[#2D2D2D] group-hover:text-[#6B8F71]"
-            style={{ fontFamily: "var(--font-playfair), serif" }}
+            style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             {post.title}
           </h2>

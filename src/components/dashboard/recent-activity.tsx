@@ -140,7 +140,7 @@ export function RecentActivity({ activities, loading }: RecentActivityProps) {
     <Card className="bg-white p-4">
       <h2
         className="mb-4 text-base font-semibold text-[#2D2D2D]"
-        style={{ fontFamily: "'Playfair Display', serif" }}
+        style={{ fontFamily: "var(--font-manrope), sans-serif" }}
       >
         Recent Activity
       </h2>

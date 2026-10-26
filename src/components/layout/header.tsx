@@ -44,7 +44,7 @@ export function Header({ userProfile }: HeaderProps) {
       <div className="flex items-center gap-2 sm:gap-3 min-w-0">
         <h1
           className="text-base sm:text-lg lg:text-xl font-semibold text-[#2D2D2D] truncate"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           {title}
         </h1>

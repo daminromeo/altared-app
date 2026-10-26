@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { parseProposal } from "@/lib/anthropic/proposal-parser";
-import { getPlan } from "@/lib/stripe/config";
+import { getUserAccess } from "@/lib/plan-access";
 import { z } from "zod";
 
 const scanRequestSchema = z.object({
@@ -20,13 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check proposal scan limit
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("subscription_status")
-      .eq("id", user.id)
-      .single();
-
-    const plan = getPlan(profile?.subscription_status ?? "free");
+    const { plan } = await getUserAccess(supabase, user.id);
     const scanLimit = plan.limits.proposalScans;
 
     if (scanLimit !== Infinity) {
@@ -47,8 +41,8 @@ export async function POST(request: NextRequest) {
             error: "scan_limit_reached",
             message:
               scanLimit === 0
-                ? `AI proposal scanning is a Pro feature. Upgrade to scan proposals.`
-                : `You've used all ${scanLimit} AI scans this month. Upgrade for more.`,
+                ? `AI quote scanning is part of the Wedding Pass. Get the pass to scan quotes.`
+                : `You've used all ${scanLimit} AI scans this month.`,
             limit: scanLimit,
             used: count,
           },

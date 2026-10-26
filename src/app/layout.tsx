@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Playfair_Display } from "next/font/google";
+import { DM_Sans, Manrope } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
 import { QueryProvider } from "@/providers/query-provider";
@@ -12,10 +12,10 @@ const dmSans = DM_Sans({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const manrope = Manrope({
+  variable: "--font-manrope",
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
+  weight: ["500", "600", "700", "800"],
 });
 
 const SITE_URL = (
@@ -26,14 +26,14 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: "Altared - Wedding Vendor Comparison & Management",
   description:
-    "Compare vendors, scan proposals with AI, and manage your wedding budget — all in one place.",
+    "Compare vendor quotes side by side, track your wedding budget, and keep every vendor in one place. Free to start.",
   icons: {
     icon: "/icon.svg",
   },
   openGraph: {
     title: "Altared - Your Wedding, Perfectly Organized",
     description:
-      "Compare vendors, scan proposals with AI, and manage your wedding budget — all in one place.",
+      "Compare vendor quotes side by side, track your wedding budget, and keep every vendor in one place. Free to start.",
     url: SITE_URL,
     siteName: "Altared",
     type: "website",
@@ -75,7 +75,7 @@ var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n
         </Script>
       </head>
       <body
-        className={`${dmSans.variable} ${playfair.variable} font-sans antialiased`}
+        className={`${dmSans.variable} ${manrope.variable} font-sans antialiased`}
       >
         <QueryProvider>
           <AuthProvider>

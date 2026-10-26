@@ -75,7 +75,7 @@ export function ShareLinkManager() {
       if (!res.ok) {
         const body = await res.json().catch(() => null);
         if (body?.error === "upgrade_required") {
-          toast.error("Upgrade to Pro to share your wedding plans");
+          toast.error("Sharing comes with the Wedding Pass");
           return;
         }
         toast.error("Failed to generate share link");

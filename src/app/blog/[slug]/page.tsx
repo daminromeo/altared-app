@@ -12,6 +12,7 @@ import { CATEGORY_LABELS } from "@/lib/blog/types"
 import { MDXContent } from "@/lib/blog/mdx"
 import { MarketingShell } from "@/components/blog/MarketingShell"
 import { BlogCTA } from "@/components/blog/BlogCTA"
+import { StickyCTA } from "@/components/blog/StickyCTA"
 import { RelatedPosts } from "@/components/blog/RelatedPosts"
 import { AuthorByline } from "@/components/blog/AuthorByline"
 import {
@@ -128,7 +129,7 @@ export default async function BlogPostPage({
 
         <h1
           className="mt-4 text-3xl font-bold leading-tight tracking-tight text-[#2D2D2D] md:text-4xl lg:text-5xl"
-          style={{ fontFamily: "var(--font-playfair), serif" }}
+          style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           {post.title}
         </h1>
@@ -156,15 +157,15 @@ export default async function BlogPostPage({
           </div>
         )}
 
-        <div className="prose prose-neutral mt-10 max-w-none prose-headings:font-[var(--font-playfair),serif] prose-headings:tracking-tight prose-headings:text-[#2D2D2D] prose-p:text-[#3D3D3D] prose-p:leading-relaxed prose-a:text-[#6B8F71] prose-a:underline-offset-2 prose-strong:text-[#2D2D2D] prose-blockquote:border-l-[#8B9F82] prose-blockquote:bg-[#FAF8F5] prose-blockquote:py-2 prose-blockquote:not-italic prose-blockquote:text-[#3D3D3D] prose-li:text-[#3D3D3D] prose-img:rounded-xl">
-          <MDXContent source={post.content} />
+        <div className="prose prose-neutral mt-10 max-w-none prose-headings:font-display prose-headings:font-bold prose-headings:tracking-[-0.03em] prose-headings:tracking-tight prose-headings:text-[#2D2D2D] prose-p:text-[#3D3D3D] prose-p:leading-relaxed prose-a:text-[#6B8F71] prose-a:underline-offset-2 prose-strong:text-[#2D2D2D] prose-blockquote:border-l-[#8B9F82] prose-blockquote:bg-[#FAF8F5] prose-blockquote:py-2 prose-blockquote:not-italic prose-blockquote:text-[#3D3D3D] prose-li:text-[#3D3D3D] prose-img:rounded-xl">
+          <MDXContent source={post.content} category={post.category} />
         </div>
 
         {post.faq && post.faq.length > 0 && (
           <section className="not-prose mt-12 border-t border-[#E8E4DE] pt-10">
             <h2
               className="mb-6 text-2xl font-semibold text-[#2D2D2D]"
-              style={{ fontFamily: "var(--font-playfair), serif" }}
+              style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               Frequently asked questions
             </h2>
@@ -183,7 +184,7 @@ export default async function BlogPostPage({
           </section>
         )}
 
-        <BlogCTA />
+        <BlogCTA category={post.category} />
 
         <RelatedPosts posts={related} />
 
@@ -197,6 +198,7 @@ export default async function BlogPostPage({
           )}
         </footer>
       </article>
+      <StickyCTA category={post.category} />
     </MarketingShell>
   )
 }

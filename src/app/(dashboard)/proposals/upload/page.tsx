@@ -200,8 +200,8 @@ export default function UploadProposalPage() {
           </div>
         </div>
         <UpgradePrompt
-          title="AI Proposal Scanning"
-          description="Upload vendor proposals and let AI automatically extract pricing, services, payment schedules, and contract terms. Upgrade to Pro to unlock this feature."
+          title="AI quote scanning"
+          description="Upload vendor proposals and let AI automatically extract pricing, services, payment schedules, and contract terms."
         />
       </div>
     )

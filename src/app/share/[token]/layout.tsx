@@ -14,7 +14,7 @@ export default function ShareLayout({
             <Heart className="h-5 w-5 text-[#8B9F82]" />
             <span
               className="text-lg font-bold text-[#2D2D2D]"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               Altared
             </span>

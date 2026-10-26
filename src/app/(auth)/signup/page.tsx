@@ -115,7 +115,7 @@ export default function SignupPage() {
           <h1
             className="text-4xl tracking-tight"
             style={{
-              fontFamily: "'Playfair Display', serif",
+              fontFamily: "var(--font-manrope), sans-serif",
               color: '#2D2D2D',
             }}
           >
@@ -137,7 +137,7 @@ export default function SignupPage() {
             <CardTitle
               className="text-xl"
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "var(--font-manrope), sans-serif",
                 color: '#2D2D2D',
               }}
             >

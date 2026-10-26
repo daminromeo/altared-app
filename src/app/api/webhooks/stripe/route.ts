@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import Stripe from "stripe";
 import { getStripe } from "@/lib/stripe/client";
 import { trackTikTokEvent } from "@/lib/tiktok/events";
+import { passExpiryAtPurchase } from "@/lib/plan-access";
 import {
   notifyNewSubscription,
   notifySubscriptionCanceled,
@@ -42,8 +43,16 @@ export async function POST(request: NextRequest) {
     const supabase = createAdminClient();
 
     switch (event.type) {
-      case "checkout.session.completed": {
+      case "checkout.session.completed":
+      case "checkout.session.async_payment_succeeded": {
         const session = event.data.object as Stripe.Checkout.Session;
+        if (session.mode === "payment") {
+          if (session.payment_status === "paid") await grantWeddingPass(session);
+          break;
+        }
+        if (event.type !== "checkout.session.completed") break;
+
+        // Legacy monthly subscription checkout (before the Wedding Pass)
         const userId = session.metadata?.userId ?? session.client_reference_id;
         const customerId = session.customer as string;
         const subscriptionId = session.subscription as string;
@@ -213,6 +222,24 @@ export async function POST(request: NextRequest) {
         break;
       }
 
+      case "charge.refunded": {
+        const charge = event.data.object as Stripe.Charge;
+        // Only a full refund ends the pass; partial refunds are goodwill credits
+        if (!charge.refunded || typeof charge.customer !== "string") break;
+
+        const { error } = await supabase
+          .from("profiles")
+          .update({
+            subscription_status: "free",
+            pass_expires_at: null,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("stripe_customer_id", charge.customer)
+          .eq("subscription_status", "pass");
+        if (error) console.error("Error revoking Wedding Pass after refund:", error);
+        break;
+      }
+
       default:
         // Unhandled event type — just acknowledge
         break;
@@ -226,4 +253,51 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
+}
+
+/** Marks the buyer's profile as holding a Wedding Pass. Safe to run twice. */
+async function grantWeddingPass(session: Stripe.Checkout.Session) {
+  const userId = session.metadata?.userId ?? session.client_reference_id;
+  if (!userId || session.metadata?.product !== "wedding_pass") return;
+
+  const supabase = createAdminClient();
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("wedding_date, email")
+    .eq("id", userId)
+    .maybeSingle();
+
+  const { error } = await supabase
+    .from("profiles")
+    .update({
+      stripe_customer_id: session.customer as string,
+      subscription_status: "pass",
+      pass_expires_at: passExpiryAtPurchase(profile?.wedding_date ?? null).toISOString(),
+      updated_at: new Date().toISOString(),
+    })
+    .eq("id", userId);
+
+  if (error) {
+    console.error("Error granting Wedding Pass:", error);
+    throw error; // 500 so Stripe retries the event
+  }
+
+  const amount = session.amount_total ? session.amount_total / 100 : null;
+  const email = session.customer_details?.email ?? profile?.email ?? undefined;
+
+  trackTikTokEvent({
+    event: "PlaceAnOrder",
+    email,
+    value: amount ?? undefined,
+    currency: "USD",
+    contentId: "wedding_pass",
+    contentName: "Wedding Pass",
+  });
+
+  await notifyNewSubscription({
+    email,
+    plan: "Wedding Pass",
+    amount,
+    currency: session.currency ?? "USD",
+  });
 }

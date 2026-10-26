@@ -1,46 +1,56 @@
 'use client'
 
-import { Sparkles } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent } from '@/components/ui/card'
-import { useCheckout } from '@/lib/hooks/use-subscription'
+import { useCheckout, useSubscription } from '@/lib/hooks/use-subscription'
 import { PLANS } from '@/lib/stripe/config'
 
+/**
+ * Dashboard card for couples without paid access. During the free trial it
+ * counts down; after the trial it reassures them their data is safe; for
+ * accounts that never had a trial it names the most common reason to upgrade.
+ */
 export function DashboardUpgradeCard() {
   const checkout = useCheckout()
-  const proPlan = PLANS.pro
+  const { access, isTrial, trialDaysLeft, trialEnded, hasPaidAccess, isLoading } = useSubscription()
+  const price = `$${PLANS.pass.price}`
 
-  function handleUpgrade() {
-    if (proPlan.stripePriceIdMonthly) {
-      checkout.mutate({ priceId: proPlan.stripePriceIdMonthly })
-    }
+  if (isLoading || hasPaidAccess) return null
+
+  let title: string
+  let body: string
+  if (isTrial) {
+    const endDate = access?.trialEndsAt
+      ? new Date(access.trialEndsAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
+      : null
+    title =
+      trialDaysLeft === 1 ? 'Last day of your free trial' : `${trialDaysLeft} days left in your free trial`
+    body = `Everything is unlocked${endDate ? ` until ${endDate}` : ''}. To keep comparing 4 vendors, AI scanning and partner sharing after that, get the Wedding Pass for ${price}, once.`
+  } else if (trialEnded) {
+    title = 'Your free trial has ended'
+    body = `Your vendors, quotes and budget are all still here. Get the Wedding Pass to unlock comparing 4 vendors, AI scanning and partner sharing again. ${price}, once.`
+  } else {
+    title = 'Comparing 3 or 4 vendors?'
+    body = `The Wedding Pass compares up to 4 side by side, scans quotes with AI and lets your partner react. ${price}, once, through your wedding.`
   }
 
   return (
-    <Card className="border-[#C9A96E]/30 bg-gradient-to-br from-[#C9A96E]/5 to-[#C9A96E]/10">
-      <CardContent className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 py-4">
-        <div className="flex items-center gap-3 sm:gap-4">
-          <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#C9A96E]/15">
-            <Sparkles className="size-5 text-[#C9A96E]" />
-          </div>
-          <div className="min-w-0 flex-1 sm:flex-initial">
-            <p className="text-sm font-semibold text-[#2D2D2D]">
-              Unlock more with Pro
-            </p>
-            <p className="text-xs text-[#7A7A7A]">
-              Compare up to 4 vendors, AI scoring, collaborative sharing, and more for ${proPlan.priceMonthly}/mo.
-            </p>
-          </div>
-        </div>
-        <Button
-          onClick={handleUpgrade}
-          disabled={checkout.isPending}
-          className="w-full sm:w-auto shrink-0 bg-[#C9A96E] text-white hover:bg-[#B8985D]"
-          size="sm"
-        >
-          {checkout.isPending ? 'Loading...' : 'Upgrade'}
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="flex flex-col gap-3 rounded-2xl bg-moss p-5 text-[#F1EFE8] sm:flex-row sm:items-center sm:gap-6">
+      <div className="min-w-0 flex-1">
+        <p className="font-display text-lg font-bold tracking-[-0.02em]">{title}</p>
+        <p className="mt-1 text-sm text-[#C9D3C6]">{body}</p>
+        {checkout.isError && (
+          <p role="alert" className="mt-2 text-sm text-champagne">
+            Checkout didn&apos;t open: {checkout.error.message}. Try again in a moment.
+          </p>
+        )}
+      </div>
+      <button
+        type="button"
+        onClick={() => checkout.mutate({ location: isTrial ? 'dashboard_trial' : 'dashboard_card' })}
+        disabled={checkout.isPending}
+        className="shrink-0 rounded-full bg-champagne px-5 py-2.5 font-display text-sm font-bold text-ink transition-opacity hover:opacity-90 disabled:opacity-60"
+      >
+        {checkout.isPending ? 'Opening checkout…' : `Get the Wedding Pass · ${price}`}
+      </button>
+    </div>
   )
 }

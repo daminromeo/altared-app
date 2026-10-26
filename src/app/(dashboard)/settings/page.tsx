@@ -60,11 +60,18 @@ export default function SettingsPage() {
     }
   );
   const [notificationsLoading, setNotificationsLoading] = useState(true);
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
 
   const portalSession = usePortalSession();
   const checkout = useCheckout();
-  const { data: subscriptionData } = useSubscription();
+  const {
+    data: subscriptionData,
+    plan: currentPlan,
+    access,
+    isTrial,
+    trialDaysLeft,
+    trialEnded,
+    hasPaidAccess,
+  } = useSubscription();
 
   // ── Fetch profile ─────────────────────────────────────────────────────────
 
@@ -246,7 +253,23 @@ export default function SettingsPage() {
     setNotificationPrefs((prev) => ({ ...prev, [key]: !prev[key] }));
   }
 
-  const currentPlan = PLANS[profile?.subscription_status ?? "free"] ?? PLANS.free;
+  const formatDate = (iso: string) =>
+    new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+
+  let accessSummary = "The basics: up to 10 vendors, budget tracking and 2-vendor comparison.";
+  let accessBadge = "Free";
+  if (access?.source === "pass" && access.accessEndsAt) {
+    accessSummary = `Paid once. Full access through ${formatDate(access.accessEndsAt)}, and longer if your wedding date moves later.`;
+    accessBadge = "Active";
+  } else if (access?.source === "subscription") {
+    accessSummary = "Your monthly subscription includes everything in the Wedding Pass.";
+    accessBadge = "Subscribed";
+  } else if (isTrial && access?.trialEndsAt) {
+    accessSummary = `Free trial: everything is unlocked until ${formatDate(access.trialEndsAt)} (${trialDaysLeft} ${trialDaysLeft === 1 ? "day" : "days"} left).`;
+    accessBadge = "Trial";
+  } else if (trialEnded) {
+    accessSummary = "Your free trial has ended. Everything you added is still here.";
+  }
   const initials = profile?.full_name
     ? profile.full_name
         .split(" ")
@@ -273,7 +296,7 @@ export default function SettingsPage() {
       <div>
         <h1
           className="text-3xl font-bold tracking-tight text-[#2D2D2D]"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Settings
         </h1>
@@ -465,49 +488,24 @@ export default function SettingsPage() {
             </CardHeader>
             <CardContent className="space-y-6">
               {/* Current Plan */}
-              <div className="rounded-lg border border-[#8B9F82]/30 bg-[#8B9F82]/5 p-6">
-                <div className="flex items-start justify-between">
+              <div className="rounded-2xl border border-moss/15 bg-sage-soft/50 p-6">
+                <div className="flex items-start justify-between gap-4">
                   <div>
-                    <p className="text-sm font-medium text-[#7A7A7A]">
-                      Current Plan
-                    </p>
-                    <p className="mt-1 text-2xl font-bold text-[#2D2D2D]">
+                    <p className="text-sm font-medium text-ink-muted">Current plan</p>
+                    <p className="mt-1 font-display text-2xl font-bold tracking-[-0.03em] text-ink">
                       {currentPlan.name}
                     </p>
-                    <p className="mt-1 text-sm text-[#7A7A7A]">
-                      {currentPlan.description}
-                    </p>
+                    <p className="mt-1 text-sm text-ink-muted">{accessSummary}</p>
                   </div>
-                  <Badge className="bg-[#8B9F82] text-white">
-                    {profile?.subscription_status === "active"
-                      ? "Active"
-                      : profile?.subscription_status === "free"
-                        ? "Free Tier"
-                        : profile?.subscription_status ?? "Free Tier"}
-                  </Badge>
+                  <Badge className="bg-moss text-white">{accessBadge}</Badge>
                 </div>
-
-                {currentPlan.priceMonthly > 0 && (
-                  <p className="mt-4 text-lg font-semibold text-[#2D2D2D]">
-                    ${currentPlan.priceMonthly}
-                    <span className="text-sm font-normal text-[#7A7A7A]">
-                      /month
-                    </span>
-                  </p>
-                )}
 
                 {subscriptionData?.cancelAtPeriodEnd && subscriptionData?.currentPeriodEnd && (
                   <div className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2">
                     <p className="text-sm text-amber-800">
                       Your subscription is set to cancel on{" "}
-                      <span className="font-semibold">
-                        {new Date(subscriptionData.currentPeriodEnd).toLocaleDateString("en-US", {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </span>
-                      . You&apos;ll retain access to Pro features until then.
+                      <span className="font-semibold">{formatDate(subscriptionData.currentPeriodEnd)}</span>
+                      . You&apos;ll keep full access until then.
                     </p>
                   </div>
                 )}
@@ -515,141 +513,44 @@ export default function SettingsPage() {
 
               {/* Plan Features */}
               <div>
-                <h3 className="mb-3 text-sm font-semibold text-[#2D2D2D]">
-                  Included Features
+                <h3 className="mb-3 text-sm font-semibold text-ink">
+                  {hasPaidAccess || isTrial ? "Included" : "The Wedding Pass includes"}
                 </h3>
                 <ul className="space-y-2">
-                  {currentPlan.features.map((feature) => (
-                    <li
-                      key={feature.text}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      {feature.included ? (
-                        <svg
-                          className="h-4 w-4 text-[#8B9F82]"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                      ) : (
-                        <svg
-                          className="h-4 w-4 text-[#7A7A7A]/50"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          strokeWidth={2}
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            d="M6 18L18 6M6 6l12 12"
-                          />
-                        </svg>
-                      )}
-                      <span
-                        className={
-                          feature.included
-                            ? "text-[#2D2D2D]"
-                            : "text-[#7A7A7A]/60"
-                        }
-                      >
-                        {feature.text}
-                      </span>
+                  {PLANS.pass.features.map((feature) => (
+                    <li key={feature.text} className="flex items-center gap-2 text-sm text-ink">
+                      <svg className="h-4 w-4 text-moss" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                      {feature.text}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <Separator className="bg-[#E8E4DF]" />
-
-              {/* Billing period toggle */}
-              {(profile?.subscription_status === "free" || profile?.subscription_status === "pro") && (
-                <div className="flex items-center gap-1 rounded-lg bg-[#FAF8F5] p-1 w-fit">
-                  <button
-                    type="button"
-                    onClick={() => setBillingPeriod('monthly')}
-                    className={`rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
-                      billingPeriod === 'monthly'
-                        ? 'bg-white text-[#2D2D2D] shadow-sm'
-                        : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
-                    }`}
-                  >
-                    Monthly
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setBillingPeriod('yearly')}
-                    className={`rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
-                      billingPeriod === 'yearly'
-                        ? 'bg-white text-[#2D2D2D] shadow-sm'
-                        : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
-                    }`}
-                  >
-                    Yearly
-                    <span className="ml-1 text-[10px] text-[#8B9F82]">Save ~17%</span>
-                  </button>
-                </div>
-              )}
+              <Separator className="bg-hairline" />
 
               {/* Actions */}
-              <div className="flex flex-wrap gap-3">
-                {profile?.subscription_status === "free" && (
+              <div className="flex flex-wrap items-center gap-3">
+                {!hasPaidAccess && (
                   <Button
-                    className="bg-[#C9A96E] text-white hover:bg-[#B8985D]"
+                    className="rounded-full bg-moss px-5 text-white hover:bg-moss-light"
                     disabled={checkout.isPending}
-                    onClick={() => {
-                      const priceId = billingPeriod === 'yearly'
-                        ? PLANS.pro.stripePriceIdYearly
-                        : PLANS.pro.stripePriceIdMonthly;
-                      if (priceId) checkout.mutate({ priceId });
-                    }}
+                    onClick={() => checkout.mutate({ location: "settings_billing" })}
                   >
-                    {checkout.isPending ? "Loading..." : `Upgrade to Pro — $${billingPeriod === 'yearly' ? PLANS.pro.priceYearly + '/yr' : PLANS.pro.priceMonthly + '/mo'}`}
+                    {checkout.isPending
+                      ? "Opening checkout…"
+                      : `Get the Wedding Pass · $${PLANS.pass.price} once`}
                   </Button>
                 )}
 
-                {profile?.subscription_status === "pro" && (
-                  <>
-                    <Button
-                      className="bg-[#C9A96E] text-white hover:bg-[#B8985D]"
-                      disabled={checkout.isPending}
-                      onClick={() => {
-                        const priceId = billingPeriod === 'yearly'
-                          ? PLANS.premium.stripePriceIdYearly
-                          : PLANS.premium.stripePriceIdMonthly;
-                        if (priceId) checkout.mutate({ priceId });
-                      }}
-                    >
-                      {checkout.isPending ? "Loading..." : `Upgrade to Premium — $${billingPeriod === 'yearly' ? PLANS.premium.priceYearly + '/yr' : PLANS.premium.priceMonthly + '/mo'}`}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => portalSession.mutate()}
-                      disabled={portalSession.isPending}
-                    >
-                      {portalSession.isPending
-                        ? "Loading..."
-                        : "Manage Subscription"}
-                    </Button>
-                  </>
-                )}
-
-                {profile?.subscription_status === "premium" && (
+                {access?.source === "subscription" && (
                   <Button
                     variant="outline"
                     onClick={() => portalSession.mutate()}
                     disabled={portalSession.isPending}
                   >
-                    {portalSession.isPending
-                      ? "Loading..."
-                      : "Manage Subscription"}
+                    {portalSession.isPending ? "Loading..." : "Manage subscription"}
                   </Button>
                 )}
 
@@ -658,12 +559,17 @@ export default function SettingsPage() {
                     variant="ghost"
                     onClick={() => portalSession.mutate()}
                     disabled={portalSession.isPending}
-                    className="text-[#7A7A7A]"
+                    className="text-ink-muted"
                   >
-                    View Billing History
+                    View billing history
                   </Button>
                 )}
               </div>
+              {checkout.isError && (
+                <p role="alert" className="text-sm text-error">
+                  Checkout didn&apos;t open: {checkout.error.message}. Try again in a moment.
+                </p>
+              )}
             </CardContent>
           </Card>
         </TabsContent>

@@ -168,7 +168,7 @@ export default function VendorComparePage() {
     }
     if (selectedIds.length >= vendorLimit) {
       if (isFreePlan) {
-        toast.error('Free plan supports comparing up to 2 vendors. Upgrade to Pro for up to 4.');
+        toast.error('The Free plan compares 2 vendors at a time. The Wedding Pass compares up to 4.');
       } else {
         toast.error(`You can compare up to ${vendorLimit} vendors at a time`);
       }
@@ -269,7 +269,7 @@ export default function VendorComparePage() {
           <Plus className="size-4" />
           Add Vendor
           {isFreePlan && selectedIds.length >= 2 && (
-            <Badge className="ml-1.5 bg-[#C9A96E]/10 text-[#C9A96E] text-[10px]">Pro</Badge>
+            <Badge className="ml-1.5 bg-[#C9A96E]/10 text-[#C9A96E] text-[10px]">Pass</Badge>
           )}
         </Button>
       </div>

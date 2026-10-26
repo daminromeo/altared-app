@@ -10,7 +10,7 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-dm-sans);
-  --font-serif: var(--font-playfair);
+  --font-display: var(--font-manrope);
   --font-mono: var(--font-geist-mono);
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -49,6 +49,20 @@
   --color-rose: #C4A0A0;
   --color-rose-light: #D4B8B8;
   --color-warm-white: #FAF8F5;
+  /* Premium redesign palette (Oct 2026): paper + deep sage, champagne used sparingly on dark */
+  --color-paper: #F6F3EE;
+  --color-ink: #1C221E;
+  --color-ink-muted: #5D665F;
+  --color-moss: #2F4A3B;
+  --color-moss-light: #3B5B49;
+  --color-sage-soft: #E4EADF;
+  --color-champagne: #E2C994;
+  --color-champagne-soft: #F3E8CF;
+  --color-hairline: #1C221E1A;
+  --color-flag: #A3541F;
+  --color-flag-soft: #F7E6DA;
+  --color-error: #A33A2E;
+  --color-error-soft: #F8E3DF;
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -138,7 +152,8 @@
     @apply font-sans;
   }
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-playfair), serif;
+    font-family: var(--font-manrope), sans-serif;
+    letter-spacing: -0.025em;
   }
 }
 
@@ -155,5 +170,69 @@
   }
   .scrollbar-thin::-webkit-scrollbar {
     display: none;
+  }
+}
+
+/* ── Marketing motion ─────────────────────────────────────────────────────
+   One load sequence in the hero, then elements reveal once as they scroll
+   into view. All of it is off for prefers-reduced-motion. */
+
+@keyframes altared-rise {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes altared-settle {
+  from { opacity: 0; transform: scale(1.04); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes altared-parallax {
+  from { transform: translateY(-7%) scale(1.14); }
+  to { transform: translateY(7%) scale(1.14); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .motion-rise {
+    animation: altared-rise 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  .motion-settle {
+    animation: altared-settle 1.2s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* Scroll reveals play once, on a timer, when an element enters the view
+     (see ScrollReveal). They're only hidden after that script has run, so
+     content never stays invisible without JavaScript. */
+  .reveal-ready .reveal,
+  .reveal-ready .reveal-side {
+    opacity: 0;
+    transition:
+      opacity 0.9s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .reveal-ready .reveal {
+    transform: translateY(36px);
+  }
+  .reveal-ready .reveal-side {
+    transform: translateX(48px);
+  }
+  .reveal-ready .reveal.is-visible,
+  .reveal-ready .reveal-side.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Parallax is meant to track the scroll, so it stays scroll-driven */
+  @supports (animation-timeline: view()) {
+    .parallax {
+      animation: altared-parallax linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+
+  .lift {
+    transition: transform 0.25s ease, background-color 0.2s ease, opacity 0.2s ease;
+  }
+  .lift:hover {
+    transform: translateY(-2px);
   }
 }

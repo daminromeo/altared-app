@@ -61,9 +61,10 @@ export async function GET() {
     free: profiles.filter((p) => p.subscription_status === "free").length,
     pro: profiles.filter((p) => p.subscription_status === "pro").length,
     premium: profiles.filter((p) => p.subscription_status === "premium").length,
+    pass: profiles.filter((p) => p.subscription_status === "pass").length,
   };
 
-  // MRR estimate
+  // MRR estimate (legacy monthly subscribers only; Wedding Pass sales are one-time)
   const mrr = subscriptionBreakdown.pro * 9.99 + subscriptionBreakdown.premium * 19.99;
 
   // --- Signups over time (last 30 days, daily) ---

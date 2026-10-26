@@ -35,7 +35,7 @@ export function PartnerNameGate({
           </div>
           <h1
             className="mt-4 text-3xl font-bold text-[#2D2D2D]"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             {weddingName ?? "Wedding Planning"}
           </h1>

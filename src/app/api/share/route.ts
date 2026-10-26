@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { getUserAccess } from "@/lib/plan-access";
 import { randomBytes } from "crypto";
 import { z } from "zod";
 import type { Tables } from "@/lib/types/database";
@@ -23,14 +24,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Check subscription
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("subscription_status")
-      .eq("id", user.id)
-      .single();
-
-    const plan = profile?.subscription_status ?? "free";
-    if (plan === "free") {
+    const { access } = await getUserAccess(supabase, user.id);
+    if (access.planId === "free") {
       return NextResponse.json(
         { error: "upgrade_required", feature: "partner_sharing" },
         { status: 403 }

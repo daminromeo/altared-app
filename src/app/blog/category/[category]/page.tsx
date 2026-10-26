@@ -96,7 +96,7 @@ export default async function CategoryPage({
           </nav>
           <h1
             className="text-4xl font-bold tracking-tight text-[#2D2D2D] md:text-5xl"
-            style={{ fontFamily: "var(--font-playfair), serif" }}
+            style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             {label}
           </h1>

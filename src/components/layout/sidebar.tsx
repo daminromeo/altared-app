@@ -45,7 +45,7 @@ export function Sidebar() {
           <Link href="/dashboard" className="flex items-center gap-2">
             <span
               className="text-xl font-bold tracking-tight text-[#8B9F82]"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               Altared
             </span>

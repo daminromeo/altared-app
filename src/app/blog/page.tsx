@@ -58,7 +58,7 @@ export default function BlogIndexPage() {
           </nav>
           <h1
             className="text-4xl font-bold tracking-tight text-[#2D2D2D] md:text-5xl"
-            style={{ fontFamily: "var(--font-playfair), serif" }}
+            style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Wedding planning, decoded.
           </h1>
@@ -74,7 +74,7 @@ export default function BlogIndexPage() {
           <div className="rounded-2xl border border-dashed border-[#E8E4DE] bg-white p-16 text-center">
             <h2
               className="text-xl font-semibold text-[#2D2D2D]"
-              style={{ fontFamily: "var(--font-playfair), serif" }}
+              style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               New posts coming soon
             </h2>

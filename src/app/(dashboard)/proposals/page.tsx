@@ -174,8 +174,8 @@ export default function ProposalsPage() {
       {/* AI scanning upgrade prompt for free users */}
       {isFreePlan && proposals.length > 0 && (
         <UpgradePrompt
-          title="AI Proposal Scanning"
-          description="Upgrade to automatically extract costs, terms, and schedules from your proposals."
+          title="AI quote scanning"
+          description="Automatically pull costs, terms, and schedules out of your proposals."
           compact
         />
       )}

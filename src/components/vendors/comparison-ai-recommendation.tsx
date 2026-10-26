@@ -38,7 +38,7 @@ export function AIRecommendationPanel({
       });
 
       if (res.status === 403) {
-        toast.error('Upgrade to Pro to unlock AI recommendations');
+        toast.error('AI recommendations come with the Wedding Pass');
         setLoading(false);
         return;
       }

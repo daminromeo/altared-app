@@ -548,12 +548,12 @@ export default function BudgetPage() {
           )}
         </div>
 
-        {/* Pie chart — Pro/Premium only */}
+        {/* Pie chart — Wedding Pass only */}
         <div className="lg:sticky lg:top-6 lg:self-start">
           {isFreePlan ? (
             <UpgradePrompt
               title="Budget Breakdown by Category"
-              description="Upgrade to Pro for visual budget breakdowns, category allocation tracking, and more."
+              description="See your budget broken down by category, with allocation tracking for each one."
             />
           ) : (
             <BudgetChart categories={chartData} />

@@ -39,7 +39,7 @@ export default async function AdminLayout({
             <a
               href="/admin"
               className="text-xl font-bold tracking-tight text-[#8B9F82]"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               Altared
             </a>

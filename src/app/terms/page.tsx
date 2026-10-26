@@ -14,7 +14,7 @@ export default function TermsOfServicePage() {
           <Link
             href="/"
             className="text-lg font-bold text-[#8B9F82]"
-            style={{ fontFamily: "var(--font-playfair), serif" }}
+            style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Altared
           </Link>
@@ -31,7 +31,7 @@ export default function TermsOfServicePage() {
       <main className="mx-auto max-w-3xl px-6 py-12">
         <h1
           className="text-3xl font-bold text-[#2D2D2D]"
-          style={{ fontFamily: "var(--font-playfair), serif" }}
+          style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Terms of Service
         </h1>

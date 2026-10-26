@@ -34,7 +34,7 @@ export function EmptyState({
       </div>
       <h3
         className="mt-4 text-base font-semibold text-[#2D2D2D]"
-        style={{ fontFamily: "'Playfair Display', serif" }}
+        style={{ fontFamily: "var(--font-manrope), sans-serif" }}
       >
         {title}
       </h3>

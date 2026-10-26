@@ -6,7 +6,7 @@ interface AdminMetrics {
   overview: {
     totalUsers: number;
     completedOnboarding: number;
-    subscriptionBreakdown: { free: number; pro: number; premium: number };
+    subscriptionBreakdown: { free: number; pro: number; premium: number; pass: number };
     mrr: number;
   };
   signupsByDay: Record<string, number>;
@@ -60,6 +60,7 @@ function PlanBadge({ plan }: { plan: string }) {
     free: "bg-gray-100 text-gray-600",
     pro: "bg-[#C9A96E]/15 text-[#C9A96E]",
     premium: "bg-[#8B9F82]/15 text-[#8B9F82]",
+    pass: "bg-moss/15 text-moss",
   };
   return (
     <span
@@ -126,7 +127,7 @@ export default function AdminDashboard() {
       <div>
         <h1
           className="text-2xl font-bold text-[#2D2D2D]"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Admin Dashboard
         </h1>
@@ -163,12 +164,13 @@ export default function AdminDashboard() {
               sub={`${overview.totalUsers > 0 ? Math.round((overview.completedOnboarding / overview.totalUsers) * 100) : 0}% completion rate`}
             />
             <StatCard
-              label="Paid Subscribers"
+              label="Paying Couples"
               value={
+                overview.subscriptionBreakdown.pass +
                 overview.subscriptionBreakdown.pro +
                 overview.subscriptionBreakdown.premium
               }
-              sub={`${overview.subscriptionBreakdown.pro} Pro, ${overview.subscriptionBreakdown.premium} Premium`}
+              sub={`${overview.subscriptionBreakdown.pass} Wedding Pass, ${overview.subscriptionBreakdown.pro + overview.subscriptionBreakdown.premium} legacy monthly`}
             />
             <StatCard
               label="Est. MRR"
@@ -218,6 +220,7 @@ export default function AdminDashboard() {
               {(
                 [
                   ["Free", overview.subscriptionBreakdown.free, "bg-gray-300"],
+                  ["Wedding Pass", overview.subscriptionBreakdown.pass, "bg-moss"],
                   ["Pro", overview.subscriptionBreakdown.pro, "bg-[#C9A96E]"],
                   [
                     "Premium",

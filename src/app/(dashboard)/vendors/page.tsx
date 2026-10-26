@@ -274,7 +274,6 @@ function CategoryFilterDropdown({
 function VendorLimitModal({
   open,
   onOpenChange,
-  planName,
   vendorLimit,
   currentCount,
 }: {
@@ -285,120 +284,47 @@ function VendorLimitModal({
   currentCount: number;
 }) {
   const checkout = useCheckout();
-  const [billingPeriod, setBillingPeriod] = useState<'monthly' | 'yearly'>('monthly');
-  const proPlan = PLANS.pro;
-  const premiumPlan = PLANS.premium;
-
-  function getPriceId(plan: typeof proPlan) {
-    return billingPeriod === 'yearly' ? plan.stripePriceIdYearly : plan.stripePriceIdMonthly;
-  }
-
-  function getPrice(plan: typeof proPlan) {
-    return billingPeriod === 'yearly' ? plan.priceYearly : plan.priceMonthly;
-  }
-
-  function handleUpgrade(priceId: string) {
-    if (priceId) {
-      checkout.mutate({ priceId });
-    }
-  }
+  const pass = PLANS.pass;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-[#C9A96E]/10">
-            <Package className="size-6 text-[#C9A96E]" />
+          <div className="mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-sage-soft">
+            <Package className="size-6 text-moss" />
           </div>
-          <DialogTitle className="text-center">Vendor Limit Reached</DialogTitle>
+          <DialogTitle className="text-center">You&apos;ve reached {vendorLimit} vendors</DialogTitle>
           <DialogDescription className="text-center">
-            Your {planName} plan supports up to {vendorLimit} vendors. Upgrade to add more and unlock additional features.
+            The Free plan holds up to {vendorLimit} vendors, and you have {currentCount}. The
+            Wedding Pass removes the limit.
           </DialogDescription>
-          <p className="mt-1 text-center text-xs text-[#7A7A7A]">
-            You currently have {currentCount} vendor{currentCount !== 1 ? 's' : ''} ({currentCount} of {vendorLimit} used).
-          </p>
         </DialogHeader>
 
-        {/* Billing period toggle */}
-        <div className="mt-2 flex items-center justify-center gap-1 rounded-lg bg-[#FAF8F5] p-1">
-          <button
-            type="button"
-            onClick={() => setBillingPeriod('monthly')}
-            className={`rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
-              billingPeriod === 'monthly'
-                ? 'bg-white text-[#2D2D2D] shadow-sm'
-                : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
-            }`}
-          >
-            Monthly
-          </button>
-          <button
-            type="button"
-            onClick={() => setBillingPeriod('yearly')}
-            className={`rounded-md px-4 py-1.5 text-xs font-medium transition-all ${
-              billingPeriod === 'yearly'
-                ? 'bg-white text-[#2D2D2D] shadow-sm'
-                : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
-            }`}
-          >
-            Yearly
-            <span className="ml-1 text-[10px] text-[#8B9F82]">Save ~17%</span>
-          </button>
-        </div>
-
-        <div className="mt-1 space-y-3">
-          {/* Pro plan option */}
-          {vendorLimit < proPlan.limits.vendors && (
-            <button
-              type="button"
-              onClick={() => handleUpgrade(getPriceId(proPlan))}
-              disabled={checkout.isPending}
-              className="flex w-full items-center gap-4 rounded-xl border border-[#8B9F82] bg-[#8B9F82]/5 p-4 text-left transition-all hover:bg-[#8B9F82]/10"
-            >
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-semibold text-[#2D2D2D]">{proPlan.name}</p>
-                  <span className="rounded-full bg-[#8B9F82] px-2 py-0.5 text-[10px] font-semibold text-white">
-                    Recommended
-                  </span>
-                </div>
-                <p className="mt-0.5 text-xs text-[#7A7A7A]">
-                  Up to {proPlan.limits.vendors} vendors, AI scoring, collaborative sharing & more
-                </p>
-              </div>
-              <div className="shrink-0 text-right">
-                <p className="text-lg font-bold text-[#2D2D2D]">${getPrice(proPlan)}</p>
-                <p className="text-[10px] text-[#7A7A7A]">/{billingPeriod === 'yearly' ? 'year' : 'month'}</p>
-              </div>
-            </button>
-          )}
-
-          {/* Premium plan option */}
-          <button
-            type="button"
-            onClick={() => handleUpgrade(getPriceId(premiumPlan))}
-            disabled={checkout.isPending}
-            className="flex w-full items-center gap-4 rounded-xl border border-[#E8E4DF] bg-white p-4 text-left transition-all hover:border-[#C9A96E]/40 hover:bg-[#C9A96E]/5"
-          >
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-[#2D2D2D]">{premiumPlan.name}</p>
-              <p className="mt-0.5 text-xs text-[#7A7A7A]">
-                Unlimited vendors, unlimited AI scans, priority support
-              </p>
-            </div>
-            <div className="shrink-0 text-right">
-              <p className="text-lg font-bold text-[#2D2D2D]">${getPrice(premiumPlan)}</p>
-              <p className="text-[10px] text-[#7A7A7A]">/{billingPeriod === 'yearly' ? 'year' : 'month'}</p>
-            </div>
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => checkout.mutate({ location: 'vendor_limit' })}
+          disabled={checkout.isPending}
+          className="mt-1 flex w-full items-center gap-4 rounded-2xl border border-moss bg-sage-soft/60 p-4 text-left transition-colors hover:bg-sage-soft"
+        >
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-sm font-bold text-ink">{pass.name}</p>
+            <p className="mt-0.5 text-xs text-ink-muted">
+              Unlimited vendors, compare 4 side by side, AI scanning, partner sharing
+            </p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="font-display text-lg font-bold text-ink">${pass.price}</p>
+            <p className="text-[10px] text-ink-muted">one time</p>
+          </div>
+        </button>
+        {checkout.isError && (
+          <p role="alert" className="text-center text-xs text-error">
+            Checkout didn&apos;t open: {checkout.error.message}. Try again in a moment.
+          </p>
+        )}
 
         <DialogFooter className="mt-2 sm:justify-center">
-          <Button
-            variant="ghost"
-            onClick={() => onOpenChange(false)}
-            className="text-sm text-[#7A7A7A]"
-          >
+          <Button variant="ghost" onClick={() => onOpenChange(false)} className="text-sm text-ink-muted">
             Maybe later
           </Button>
         </DialogFooter>
@@ -586,7 +512,7 @@ export default function VendorsPage() {
       } else {
         if (next.size >= limit) {
           if (isFreePlan) {
-            toast.error('Free plan supports comparing up to 2 vendors. Upgrade to Pro for up to 4.');
+            toast.error('The Free plan compares 2 vendors at a time. The Wedding Pass compares up to 4.');
           } else {
             toast.error(`You can compare up to ${limit} vendors at a time`);
           }
@@ -878,7 +804,7 @@ export default function VendorsPage() {
             <p className="mt-0.5 text-xs text-[#7A7A7A]">
               {canUseFeature('partner_sharing')
                 ? 'Share a magic link so your partner, family, or wedding planner can browse vendors, view budgets, and leave reactions — no account needed.'
-                : 'Upgrade to Pro to share a live view with your partner, family, or wedding planner and get their reactions on every vendor.'}
+                : 'Get the Wedding Pass to share a live view with your partner, family, or wedding planner and get their reactions on every vendor.'}
             </p>
           </div>
           {canUseFeature('partner_sharing') ? (
@@ -895,12 +821,11 @@ export default function VendorsPage() {
               type="button"
               disabled={vendorCheckout.isPending}
               onClick={() => {
-                const priceId = PLANS.pro.stripePriceIdMonthly;
-                if (priceId) vendorCheckout.mutate({ priceId });
+                vendorCheckout.mutate({ location: 'vendors_sharing_cta' });
               }}
               className="inline-flex w-full shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#C9A96E] px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-[#B8985D] sm:w-auto"
             >
-              {vendorCheckout.isPending ? 'Loading...' : 'Upgrade to Pro'}
+              {vendorCheckout.isPending ? 'Opening…' : `Get the pass · $${PLANS.pass.price}`}
             </button>
           )}
           <button

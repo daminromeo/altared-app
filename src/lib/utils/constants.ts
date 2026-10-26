@@ -50,30 +50,6 @@ export const VENDOR_CATEGORIES = [
   { value: "other", label: "Other" },
 ] as const;
 
-export const SUBSCRIPTION_PLANS = [
-  {
-    id: "free",
-    name: "Free",
-    price: 0,
-    vendorLimit: 10,
-    proposalScans: 0,
-  },
-  {
-    id: "pro",
-    name: "Pro",
-    price: 9.99,
-    vendorLimit: 50,
-    proposalScans: 10,
-  },
-  {
-    id: "premium",
-    name: "Premium",
-    price: 19.99,
-    vendorLimit: Infinity,
-    proposalScans: Infinity,
-  },
-] as const;
-
 export type VendorStatusValue = (typeof VENDOR_STATUSES)[number]["value"];
 export type VendorSourceValue = (typeof VENDOR_SOURCES)[number]["value"];
 export type MessageSourceValue = (typeof MESSAGE_SOURCES)[number]["value"];

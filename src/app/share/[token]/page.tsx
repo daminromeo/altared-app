@@ -208,7 +208,7 @@ export default function SharedViewPage({
           <AlertCircle className="mx-auto h-12 w-12 text-[#C9A96E]" />
           <h1
             className="text-2xl font-bold text-[#2D2D2D]"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Link Expired
           </h1>
@@ -318,7 +318,7 @@ export default function SharedViewPage({
         </p>
         <h1
           className="text-3xl font-bold text-[#2D2D2D]"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           {data.profile?.wedding_name ?? "Our Wedding"}
         </h1>

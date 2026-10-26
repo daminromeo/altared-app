@@ -8,7 +8,7 @@ export function RelatedPosts({ posts }: { posts: PostMeta[] }) {
     <section className="not-prose mt-16 border-t border-[#E8E4DE] pt-12">
       <h2
         className="mb-6 text-2xl font-semibold text-[#2D2D2D]"
-        style={{ fontFamily: "var(--font-playfair), serif" }}
+        style={{ fontFamily: "var(--font-manrope), sans-serif" }}
       >
         Keep reading
       </h2>
@@ -24,7 +24,7 @@ export function RelatedPosts({ posts }: { posts: PostMeta[] }) {
               </span>
               <span
                 className="text-base font-semibold leading-snug text-[#2D2D2D] group-hover:text-[#6B8F71]"
-                style={{ fontFamily: "var(--font-playfair), serif" }}
+                style={{ fontFamily: "var(--font-manrope), sans-serif" }}
               >
                 {p.title}
               </span>

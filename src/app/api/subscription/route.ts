@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getPlan } from "@/lib/stripe/config";
 import { stripe } from "@/lib/stripe/client";
+import { getUserAccess } from "@/lib/plan-access";
 import type Stripe from "stripe";
 
 export async function GET() {
@@ -15,41 +15,33 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { access, plan } = await getUserAccess(supabase, user.id);
+
     const { data: profile } = await supabase
       .from("profiles")
-      .select(
-        "subscription_status, subscription_id, stripe_customer_id"
-      )
+      .select("subscription_id, stripe_customer_id")
       .eq("id", user.id)
       .single();
 
-    const planId = profile?.subscription_status ?? "free";
-    const plan = getPlan(planId);
-
     // Infinity is not JSON-serializable (becomes null), so replace with
     // a large sentinel number for the client to interpret as "unlimited".
+    const finite = (n: number) => (Number.isFinite(n) ? n : 999999);
     const serializablePlan = {
       ...plan,
       limits: {
         ...plan.limits,
-        vendors: Number.isFinite(plan.limits.vendors)
-          ? plan.limits.vendors
-          : 999999,
-        proposalScans: Number.isFinite(plan.limits.proposalScans)
-          ? plan.limits.proposalScans
-          : 999999,
-        reminders: Number.isFinite(plan.limits.reminders)
-          ? plan.limits.reminders
-          : 999999,
+        vendors: finite(plan.limits.vendors),
+        proposalScans: finite(plan.limits.proposalScans),
+        reminders: finite(plan.limits.reminders),
       },
     };
 
-    // Fetch Stripe subscription details if there's an active subscription
+    // Legacy monthly subscribers: surface renewal/cancellation state
     let status: string | null = null;
     let currentPeriodEnd: string | null = null;
     let cancelAtPeriodEnd = false;
 
-    if (profile?.subscription_id) {
+    if (access.source === "subscription" && profile?.subscription_id) {
       try {
         const sub = (await stripe.subscriptions.retrieve(
           profile.subscription_id
@@ -59,9 +51,7 @@ export async function GET() {
         // In Stripe v20+, current_period_end is on subscription items
         const firstItem = sub.items?.data?.[0];
         if (firstItem?.current_period_end) {
-          currentPeriodEnd = new Date(
-            firstItem.current_period_end * 1000
-          ).toISOString();
+          currentPeriodEnd = new Date(firstItem.current_period_end * 1000).toISOString();
         }
       } catch {
         // Subscription may have been deleted — fall back to defaults
@@ -69,8 +59,9 @@ export async function GET() {
     }
 
     return NextResponse.json({
-      planId,
+      planId: access.planId,
       plan: serializablePlan,
+      access,
       status,
       currentPeriodEnd,
       cancelAtPeriodEnd,
@@ -78,9 +69,6 @@ export async function GET() {
     });
   } catch (err) {
     console.error("GET /api/subscription error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

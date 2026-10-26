@@ -13,6 +13,8 @@ import { DashboardUpgradeCard } from '@/components/dashboard/upgrade-card'
 import { UpcomingPayments, type UpcomingPayment } from '@/components/dashboard/upcoming-payments'
 import { DashboardSkeleton } from '@/components/shared/loading-skeleton'
 import { useSubscription } from '@/lib/hooks/use-subscription'
+import { PLANS } from '@/lib/stripe/config'
+import { trackEvent } from '@/lib/analytics'
 
 interface DashboardData {
   stats: {
@@ -63,7 +65,7 @@ export default function DashboardPage() {
   const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const { isFreePlan } = useSubscription()
+  const { refetch: refetchSubscription } = useSubscription()
 
   const supabase = useMemo(() => createClient(), [])
 
@@ -225,6 +227,18 @@ export default function DashboardPage() {
     fetchDashboardData()
   }, [fetchDashboardData])
 
+  // Back from Stripe Checkout. The webhook that grants the pass can land a
+  // moment after the redirect, so refresh plan access a few times.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search)
+    if (params.get('pass') !== 'active') return
+    window.history.replaceState(null, '', window.location.pathname)
+    trackEvent('purchase', { currency: 'USD', value: PLANS.pass.price, item_name: 'Wedding Pass' })
+    toast.success('Your Wedding Pass is active. Everything is unlocked through your wedding.')
+    const timers = [0, 2000, 5000, 10000].map((ms) => setTimeout(() => refetchSubscription(), ms))
+    return () => timers.forEach(clearTimeout)
+  }, [refetchSubscription])
+
   const handleTaskToggle = (taskId: string, completed: boolean) => {
     if (!data) return
     setData({
@@ -333,7 +347,7 @@ export default function DashboardPage() {
       <div>
         <h2
           className="text-lg sm:text-xl font-bold text-[#2D2D2D] lg:text-2xl"
-          style={{ fontFamily: "'Playfair Display', serif" }}
+          style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Welcome back
         </h2>
@@ -346,7 +360,7 @@ export default function DashboardPage() {
       <GettingStarted {...data.checklist} />
 
       {/* Upgrade card for free users */}
-      {isFreePlan && <DashboardUpgradeCard />}
+      <DashboardUpgradeCard />
 
       {/* Stats cards */}
       <StatsCards data={data.stats} loading={loading} />

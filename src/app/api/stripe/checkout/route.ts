@@ -1,13 +1,13 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { stripe } from "@/lib/stripe/client";
-import { z } from "zod";
+import { PASS_STRIPE_PRICE_ID, PLANS } from "@/lib/stripe/config";
+import { getUserAccess } from "@/lib/plan-access";
+import type Stripe from "stripe";
 
-const checkoutSchema = z.object({
-  priceId: z.string().min(1, "Price ID is required"),
-});
-
-export async function POST(request: NextRequest) {
+/** Starts a one-time Stripe Checkout for the Wedding Pass. */
+export async function POST() {
   try {
     const supabase = await createClient();
     const {
@@ -18,19 +18,14 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const parsed = checkoutSchema.safeParse(body);
-
-    if (!parsed.success) {
+    const { access } = await getUserAccess(supabase, user.id);
+    if (access.source === "pass" || access.source === "subscription") {
       return NextResponse.json(
-        { error: "Validation failed", details: parsed.error.flatten() },
-        { status: 400 }
+        { error: "You already have full access. There's nothing to buy." },
+        { status: 409 }
       );
     }
 
-    const { priceId } = parsed.data;
-
-    // Fetch user profile to check for existing Stripe customer
     const { data: profile } = await supabase
       .from("profiles")
       .select("stripe_customer_id, email")
@@ -39,58 +34,53 @@ export async function POST(request: NextRequest) {
 
     let customerId = profile?.stripe_customer_id;
 
-    // Create Stripe customer if one doesn't exist
     if (!customerId) {
       const customer = await stripe.customers.create({
         email: user.email ?? profile?.email,
-        metadata: {
-          userId: user.id,
-        },
+        metadata: { userId: user.id },
       });
-
       customerId = customer.id;
 
-      // Store the customer ID on the profile
-      await supabase
+      // Billing columns are server-only (migration 009), so write with the
+      // service role
+      await createAdminClient()
         .from("profiles")
-        .update({
-          stripe_customer_id: customerId,
-          updated_at: new Date().toISOString(),
-        })
+        .update({ stripe_customer_id: customerId, updated_at: new Date().toISOString() })
         .eq("id", user.id);
     }
 
+    const lineItem: Stripe.Checkout.SessionCreateParams.LineItem = PASS_STRIPE_PRICE_ID
+      ? { price: PASS_STRIPE_PRICE_ID, quantity: 1 }
+      : {
+          price_data: {
+            currency: "usd",
+            unit_amount: Math.round(PLANS.pass.price * 100),
+            product_data: {
+              name: "Altared Wedding Pass",
+              description: PLANS.pass.description,
+            },
+          },
+          quantity: 1,
+        };
+
     const appUrl = process.env.NEXT_PUBLIC_APP_URL!;
+    const metadata = { userId: user.id, product: "wedding_pass" };
 
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       client_reference_id: user.id,
-      mode: "subscription",
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
-      success_url: `${appUrl}/dashboard?upgraded=true`,
+      mode: "payment",
+      line_items: [lineItem],
+      success_url: `${appUrl}/dashboard?pass=active`,
       cancel_url: `${appUrl}/settings?tab=billing&canceled=true`,
-      metadata: {
-        userId: user.id,
-      },
-      subscription_data: {
-        metadata: {
-          userId: user.id,
-        },
-      },
+      metadata,
+      payment_intent_data: { metadata },
       allow_promotion_codes: true,
     });
 
     return NextResponse.json({ url: session.url });
   } catch (err) {
     console.error("POST /api/stripe/checkout error:", err);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
   }
 }

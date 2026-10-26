@@ -524,7 +524,7 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
         <div className="mb-3 sm:mb-4 flex items-center justify-between">
           <h2
             className="text-base font-semibold text-[#2D2D2D]"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Vendor Pipeline
           </h2>
