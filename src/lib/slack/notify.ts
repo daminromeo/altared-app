@@ -115,3 +115,30 @@ export async function notifySubscriptionCanceled(params: {
     ],
   })
 }
+
+export async function notifySubscriptionCancelScheduled(params: {
+  email?: string | null
+  plan: string
+  cancelAt?: number | null
+}): Promise<void> {
+  const { email, plan, cancelAt } = params
+  const when = cancelAt
+    ? new Date(cancelAt * 1000).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+        year: "numeric",
+      })
+    : "end of period"
+  await postToSlack({
+    text: `:hourglass: ${planLabel(plan)} subscription set to cancel ${when}: ${email ?? "unknown"}`,
+    blocks: [
+      {
+        type: "section",
+        text: {
+          type: "mrkdwn",
+          text: `:hourglass: *Cancellation scheduled* — *${planLabel(plan)}* ends ${when}\n${email ?? "—"}`,
+        },
+      },
+    ],
+  })
+}

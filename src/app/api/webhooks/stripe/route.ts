@@ -6,6 +6,7 @@ import { trackTikTokEvent } from "@/lib/tiktok/events";
 import {
   notifyNewSubscription,
   notifySubscriptionCanceled,
+  notifySubscriptionCancelScheduled,
   notifySubscriptionUpdated,
 } from "@/lib/slack/notify";
 
@@ -99,7 +100,7 @@ export async function POST(request: NextRequest) {
             contentName: `${plan.charAt(0).toUpperCase() + plan.slice(1)} Plan`,
           });
 
-          void notifyNewSubscription({
+          await notifyNewSubscription({
             email: customerEmail,
             plan,
             amount,
@@ -154,17 +155,30 @@ export async function POST(request: NextRequest) {
           (event.data as { previous_attributes?: Record<string, unknown> })
             .previous_attributes ?? {};
         const planChanged = "items" in prev;
-        if (planChanged) {
+        // Canceling in the billing portal schedules the cancellation for the
+        // end of the period — that's an update, not a deletion.
+        const cancelScheduled =
+          ("cancel_at_period_end" in prev || "cancel_at" in prev) &&
+          (subscription.cancel_at_period_end || subscription.cancel_at !== null);
+        if (planChanged || cancelScheduled) {
           const { data: profile } = await supabase
             .from("profiles")
             .select("email")
             .eq("stripe_customer_id", customerId)
             .maybeSingle();
-          void notifySubscriptionUpdated({
-            email: profile?.email,
-            plan: isActive ? plan : "free",
-            status,
-          });
+          if (cancelScheduled) {
+            await notifySubscriptionCancelScheduled({
+              email: profile?.email,
+              plan,
+              cancelAt: subscription.cancel_at,
+            });
+          } else {
+            await notifySubscriptionUpdated({
+              email: profile?.email,
+              plan: isActive ? plan : "free",
+              status,
+            });
+          }
         }
         break;
       }
@@ -195,7 +209,7 @@ export async function POST(request: NextRequest) {
           );
         }
 
-        void notifySubscriptionCanceled({ email: profile?.email });
+        await notifySubscriptionCanceled({ email: profile?.email });
         break;
       }
 
