@@ -65,8 +65,20 @@ async function handleMessage(event: HelloMessageEvent) {
       return;
     }
 
+    // The first message is the join code that linked the phone, so greet instead of answering it
+    if (event.is_first_message) {
+      const name = profile.full_name?.split(" ")[0];
+      await sendText(
+        event.from,
+        `${name ? `Hi ${name}! ` : "Hi! "}You're connected to your Altared planner. Text me anytime, like:\n- What's due this week?\n- Paid the florist $500 deposit\n- What's left in the photography budget?\n- What's the caterer's phone number?`
+      );
+      return;
+    }
+
     if (!event.text?.trim()) {
-      await sendText(event.from, "I can't read photos yet. Text me what you need and I'll help.");
+      if (event.image_count) {
+        await sendText(event.from, "I can't read photos yet. Text me what you need and I'll help.");
+      }
       return;
     }
 
