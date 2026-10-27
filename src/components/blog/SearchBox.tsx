@@ -38,7 +38,7 @@ export function SearchableGrid({ posts }: Props) {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search wedding tips, vendors, budgets…"
-          className="w-full rounded-xl border border-[#E8E4DE] bg-white px-4 py-3 pl-11 text-sm text-[#2D2D2D] placeholder:text-[#9A9A9A] focus:border-[#8B9F82] focus:outline-none focus:ring-2 focus:ring-[#8B9F82]/20"
+          className="w-full rounded-xl border border-hairline bg-white px-4 py-3 pl-11 text-sm text-ink placeholder:text-[#9A9A9A] focus:border-moss focus:outline-none focus:ring-2 focus:ring-moss/20"
           aria-label="Search blog posts"
         />
         <svg
@@ -58,8 +58,8 @@ export function SearchableGrid({ posts }: Props) {
       </div>
 
       {filtered.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-[#E8E4DE] bg-white p-12 text-center">
-          <p className="text-sm text-[#7A7A7A]">
+        <div className="rounded-xl border border-dashed border-hairline bg-white p-12 text-center">
+          <p className="text-sm text-ink-muted">
             No posts match &ldquo;{query}&rdquo;. Try a different search.
           </p>
         </div>

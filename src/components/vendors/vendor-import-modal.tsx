@@ -123,7 +123,7 @@ export function VendorImportModal({
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Upload className="size-5 text-[#8B9F82]" />
+            <Upload className="size-5 text-moss" />
             Import Vendor
           </DialogTitle>
           <DialogDescription>
@@ -135,7 +135,7 @@ export function VendorImportModal({
           <div className="space-y-2">
             <Label htmlFor="import-url">Vendor Listing URL</Label>
             <div className="relative">
-              <LinkIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-[#7A7A7A]" />
+              <LinkIcon className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-ink-muted" />
               <Input
                 id="import-url"
                 placeholder="https://www.theknot.com/marketplace/..."
@@ -176,7 +176,7 @@ export function VendorImportModal({
           <Button
             onClick={handleImport}
             disabled={importing || !url.trim()}
-            className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+            className="bg-moss hover:bg-moss-light text-white"
           >
             {importing ? (
               <>

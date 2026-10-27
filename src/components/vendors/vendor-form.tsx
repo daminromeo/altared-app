@@ -123,7 +123,7 @@ function StarRatingInput({
             <Star
               className={`size-5 ${
                 isFilled
-                  ? 'fill-[#C9A96E] text-[#C9A96E]'
+                  ? 'fill-champagne text-brass'
                   : 'fill-transparent text-[#D1D5DB]'
               }`}
             />
@@ -134,7 +134,7 @@ function StarRatingInput({
         <button
           type="button"
           onClick={() => onChange(null)}
-          className="ml-1 text-xs text-[#7A7A7A] hover:text-[#2D2D2D]"
+          className="ml-1 text-xs text-ink-muted hover:text-ink"
         >
           Clear
         </button>
@@ -178,7 +178,7 @@ function CustomSelect({
         onClick={() => setIsOpen(!isOpen)}
         className="flex h-9 w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
       >
-        <span className={selectedOption ? 'text-[#2D2D2D]' : 'text-[#7A7A7A]'}>
+        <span className={selectedOption ? 'text-ink' : 'text-ink-muted'}>
           {selectedOption
             ? <>
                 {selectedOption.icon && <span className="mr-1.5">{selectedOption.icon}</span>}
@@ -186,7 +186,7 @@ function CustomSelect({
               </>
             : placeholder}
         </span>
-        <ChevronDown className={`size-4 text-[#7A7A7A] transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`size-4 text-ink-muted transition-transform ${isOpen ? 'rotate-180' : ''}`} />
       </button>
       {isOpen && (
         <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-lg border bg-white py-1 shadow-md">
@@ -198,11 +198,11 @@ function CustomSelect({
                 onChange(option.value);
                 setIsOpen(false);
               }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#2D2D2D] hover:bg-[#FAF8F5]"
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-paper"
             >
               {option.icon && <span>{option.icon}</span>}
               <span className="flex-1 text-left">{option.label}</span>
-              {value === option.value && <Check className="size-4 text-[#8B9F82]" />}
+              {value === option.value && <Check className="size-4 text-moss" />}
             </button>
           ))}
         </div>
@@ -236,12 +236,12 @@ function TagInput({
     <div className="space-y-2">
       <div className="flex flex-wrap gap-1.5 min-h-[28px]">
         {tags.map((tag) => (
-          <Badge key={tag} variant="secondary" className="gap-1 bg-[#8B9F82]/10 text-[#8B9F82]">
+          <Badge key={tag} variant="secondary" className="gap-1 bg-moss/10 text-moss">
             {tag}
             <button
               type="button"
               onClick={() => removeTag(tag)}
-              className="ml-0.5 hover:text-[#DC2626]"
+              className="ml-0.5 hover:text-error"
               aria-label={`Remove tag ${tag}`}
             >
               <X className="size-3" />
@@ -458,7 +458,7 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-[#2D2D2D]">
+          <DialogTitle className="text-ink">
             {isEditing ? 'Edit Vendor' : 'Add New Vendor'}
           </DialogTitle>
           <DialogDescription>
@@ -472,7 +472,7 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
           {/* Name */}
           <div className="space-y-1.5">
             <Label htmlFor="vendor-name">
-              Vendor Name <span className="text-[#DC2626]">*</span>
+              Vendor Name <span className="text-error">*</span>
             </Label>
             <Input
               id="vendor-name"
@@ -481,7 +481,7 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
               aria-invalid={!!errors.name}
             />
             {errors.name && (
-              <p className="text-xs text-[#DC2626]">{errors.name.message}</p>
+              <p className="text-xs text-error">{errors.name.message}</p>
             )}
           </div>
 
@@ -533,7 +533,7 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
                 aria-invalid={!!errors.email}
               />
               {errors.email && (
-                <p className="text-xs text-[#DC2626]">{errors.email.message}</p>
+                <p className="text-xs text-error">{errors.email.message}</p>
               )}
             </div>
             <div className="space-y-1.5">
@@ -559,7 +559,7 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
                 aria-invalid={!!errors.website}
               />
               {errors.website && (
-                <p className="text-xs text-[#DC2626]">{errors.website.message}</p>
+                <p className="text-xs text-error">{errors.website.message}</p>
               )}
             </div>
             <div className="space-y-1.5">
@@ -593,7 +593,7 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
           <div className="space-y-1.5">
             <Label htmlFor="vendor-price">Quoted Price</Label>
             <div className="relative">
-              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-[#7A7A7A]">$</span>
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-sm text-ink-muted">$</span>
               <Input
                 id="vendor-price"
                 type="number"
@@ -640,7 +640,7 @@ export function VendorForm({ open, onOpenChange, vendor, onSuccess }: VendorForm
             <Button
               type="submit"
               disabled={saving}
-              className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+              className="bg-moss hover:bg-moss-light text-white"
             >
               {saving ? (
                 <>

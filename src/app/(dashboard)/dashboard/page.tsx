@@ -1,63 +1,81 @@
 'use client'
 
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import Link from 'next/link'
+import { useEffect, useState, useCallback, useMemo, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/providers/auth-provider'
 import { toast } from 'sonner'
-import { StatsCards } from '@/components/dashboard/stats-cards'
 import { VendorPipeline, type BookingPaymentInfo } from '@/components/dashboard/vendor-pipeline'
-import { UpcomingTasks } from '@/components/dashboard/upcoming-tasks'
-import { RecentActivity } from '@/components/dashboard/recent-activity'
-import { GettingStarted } from '@/components/dashboard/getting-started'
+import { Countdown } from '@/components/dashboard/countdown'
+import { BudgetBar, type CategorySpend } from '@/components/dashboard/budget-bar'
+import { NextUp, type NextUpItem } from '@/components/dashboard/next-up'
+import { StarterPlanCard, type PlanTask } from '@/components/dashboard/starter-plan-card'
 import { DashboardUpgradeCard } from '@/components/dashboard/upgrade-card'
-import { UpcomingPayments, type UpcomingPayment } from '@/components/dashboard/upcoming-payments'
 import { DashboardSkeleton } from '@/components/shared/loading-skeleton'
 import { useSubscription } from '@/lib/hooks/use-subscription'
-import { PLANS } from '@/lib/stripe/config'
+import { PLANS, TRIAL_LAUNCH_DATE } from '@/lib/stripe/config'
 import { trackEvent } from '@/lib/analytics'
+import { addStarterPlan, clearStarterPlan, weddingAnchor, type WeddingAnchor } from '@/lib/starter-plan'
+
+type Stage = 'researching' | 'contacted' | 'quoted' | 'meeting' | 'negotiating' | 'booked' | 'declined'
 
 interface DashboardData {
-  stats: {
-    totalBudget: number
-    spentBudget: number
-    vendorsContacted: number
-    vendorsBooked: number
-    weddingDate: string | null
-    proposalCount: number
-  }
+  anchor: WeddingAnchor
+  dateEstimate: string | null
+  location: string | null
+  totalBudget: number
+  committed: CategorySpend[]
+  paid: number
+  quoteCount: number
   vendors: Array<{
     id: string
     name: string
     category: string
     price: number | null
-    stage: 'researching' | 'contacted' | 'quoted' | 'meeting' | 'negotiating' | 'booked' | 'declined'
+    stage: Stage
   }>
-  tasks: Array<{
-    id: string
-    title: string
-    due_date: string
-    type: 'payment' | 'meeting' | 'deadline' | 'follow_up' | 'other'
-    completed: boolean
-    vendor?: {
-      name: string
-      category_name?: string | null
-      category_icon?: string | null
-    } | null
-  }>
-  activities: Array<{
-    id: string
-    type: 'vendor_added' | 'vendor_contacted' | 'vendor_booked' | 'payment_made' | 'proposal_received' | 'message_sent' | 'task_completed' | 'review_added'
-    description: string
-    created_at: string
-    link?: string
-  }>
-  checklist: {
-    hasVendors: boolean
-    hasBudget: boolean
-    hasBookedVendor: boolean
-    hasTask: boolean
-  }
-  upcomingPayments: UpcomingPayment[]
+  nextUp: NextUpItem[]
+  plan: PlanTask[]
+}
+
+interface Profile {
+  total_budget: number | null
+  wedding_date: string | null
+  wedding_date_estimate?: string | null
+  wedding_location: string | null
+  onboarding_completed: boolean | null
+  created_at: string | null
+  /** Missing (undefined) until migration 010 has run */
+  starter_plan_at?: string | null
+}
+
+interface ReminderRow {
+  id: string
+  title: string
+  due_date: string
+  reminder_type: string | null
+  is_completed: boolean | null
+  plan_key?: string | null
+  vendors: { name: string; vendor_categories: { name: string } | null } | null
+}
+
+const DAY_MS = 24 * 60 * 60 * 1000
+const NEXT_UP_LIMIT = 4
+/** Stages where a vendor has (or is about to have) a quote worth comparing */
+const COMPARABLE_STAGES = ['quoted', 'meeting_scheduled', 'negotiating']
+
+const money = (n: number) =>
+  new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(n)
+
+function daysFromNow(iso: string) {
+  return Math.ceil((new Date(iso).getTime() - Date.now()) / DAY_MS)
+}
+
+function dueText(iso: string) {
+  const days = daysFromNow(iso)
+  if (days < 0) return `${-days} ${days === -1 ? 'day' : 'days'} late`
+  if (days === 0) return 'due today'
+  return `due in ${days} ${days === 1 ? 'day' : 'days'}`
 }
 
 export default function DashboardPage() {
@@ -66,6 +84,7 @@ export default function DashboardPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { refetch: refetchSubscription } = useSubscription()
+  const seeding = useRef(false)
 
   const supabase = useMemo(() => createClient(), [])
 
@@ -77,60 +96,53 @@ export default function DashboardPage() {
 
       const user = authUser
 
-      // Fetch all dashboard data in parallel
-      const [
-        weddingResult,
-        vendorsResult,
-        remindersResult,
-        activitiesResult,
-        proposalsResult,
-      ] = await Promise.all([
-        // Profile for budget and date
-        supabase
-          .from('profiles')
-          .select('total_budget, wedding_date')
-          .eq('id', user.id)
-          .single(),
+      // '*' so a schema without the newer columns still loads
+      const { data: profileRow } = await supabase.from('profiles').select('*').eq('id', user.id).single()
+      const profile = profileRow as Profile | null
 
-        // Vendors with pipeline info (join category name)
+      // New couples get the starter plan on their first visit. Older accounts
+      // are offered it from the plan card instead.
+      const isNewAccount =
+        !!profile?.created_at && new Date(profile.created_at) >= new Date(`${TRIAL_LAUNCH_DATE}T00:00:00Z`)
+      if (profile?.onboarding_completed && profile.starter_plan_at === null && isNewAccount && !seeding.current) {
+        seeding.current = true
+        try {
+          await addStarterPlan(supabase, user.id)
+        } catch (err) {
+          console.error('Starter plan not added:', err)
+        }
+      }
+
+      const [vendorsResult, remindersResult, proposalsResult] = await Promise.all([
         supabase
           .from('vendors')
           .select('id, name, category_id, quoted_price, final_price, status, deposit_paid, deposit_amount, deposit_due_date, metadata, vendor_categories(name)')
           .eq('user_id', user.id)
           .order('updated_at', { ascending: false }),
 
-        // Upcoming reminders / tasks (join linked vendor + category)
         supabase
           .from('reminders')
-          .select('id, title, due_date, reminder_type, is_completed, vendors(name, vendor_categories(name, icon))')
+          .select('*, vendors(name, vendor_categories(name))')
           .eq('user_id', user.id)
           .order('due_date', { ascending: true })
-          .limit(5),
+          .limit(200),
 
-        // Recent activity (using vendors as proxy since activities table doesn't exist)
-        supabase
-          .from('vendors')
-          .select('id, name, status, created_at')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(10),
-
-        // Proposals count
         supabase
           .from('proposals')
           .select('id', { count: 'exact', head: true })
           .eq('user_id', user.id),
       ])
 
-      // Compute stats
-      const profileData = weddingResult.data
       const vendors = vendorsResult.data || []
+      const reminders = (remindersResult.data || []) as ReminderRow[]
+      const categoryOf = (v: (typeof vendors)[number]) =>
+        ((v as Record<string, unknown>).vendor_categories as { name: string } | null)?.name ?? 'Other'
 
       // Spent = sum of what's actually been paid
       // "paid_in_full" vendors: count full price (final_price ?? quoted_price)
       // "deposit_paid" vendors: count deposit_amount
       // "unpaid" vendors: count nothing
-      const spentBudget = vendors
+      const paid = vendors
         .filter((v) => v.status === 'booked' && v.deposit_paid)
         .reduce((sum, v) => {
           const meta = v.metadata as Record<string, unknown> | null
@@ -142,78 +154,80 @@ export default function DashboardPage() {
           return sum + (v.deposit_amount || 0)
         }, 0)
 
-      const vendorsContacted = vendors.filter(
-        (v) => v.status !== 'researching'
-      ).length
-      const vendorsBooked = vendors.filter(
-        (v) => v.status === 'booked'
-      ).length
+      // Committed = the full price of every booked vendor, by category
+      const committedByCategory = new Map<string, number>()
+      for (const v of vendors) {
+        if (v.status !== 'booked') continue
+        const price = v.final_price || v.quoted_price || 0
+        if (price > 0) committedByCategory.set(categoryOf(v), (committedByCategory.get(categoryOf(v)) ?? 0) + price)
+      }
+
+      // Next up: unpaid deposits, then quotes to compare, then tasks, by date
+      const payments: NextUpItem[] = vendors
+        .filter((v) => v.status === 'booked' && v.deposit_due_date && !v.deposit_paid)
+        .map((v) => ({
+          id: `payment-${v.id}`,
+          title: `Deposit · ${v.name}`,
+          detail: `${v.deposit_amount ? `${money(v.deposit_amount)} · ` : ''}${dueText(v.deposit_due_date as string)}`,
+          href: `/vendors/${v.id}`,
+          date: v.deposit_due_date as string,
+          kind: 'payment' as const,
+          dueSoon: daysFromNow(v.deposit_due_date as string) <= 7,
+        }))
+
+      const comparable = new Map<string, typeof vendors>()
+      for (const v of vendors) {
+        if (!COMPARABLE_STAGES.includes(v.status)) continue
+        comparable.set(categoryOf(v), [...(comparable.get(categoryOf(v)) ?? []), v])
+      }
+      const compares: NextUpItem[] = [...comparable.entries()]
+        .filter(([, group]) => group.length >= 2)
+        .map(([category, group]) => ({
+          id: `compare-${category}`,
+          title: `Compare ${category.toLowerCase()} quotes`,
+          detail: `${group.length} quotes in`,
+          href: `/vendors/compare?ids=${group.slice(0, 4).map((v) => v.id).join(',')}`,
+          date: null,
+          kind: 'compare' as const,
+        }))
+
+      const tasks: NextUpItem[] = reminders
+        .filter((r) => !r.is_completed && daysFromNow(r.due_date) <= 30)
+        .map((r) => ({
+          id: `task-${r.id}`,
+          title: r.vendors ? `${r.title} · ${r.vendors.name}` : r.title,
+          detail: r.plan_key ? `From your plan · ${dueText(r.due_date)}` : dueText(r.due_date),
+          href: '/tasks',
+          date: r.due_date,
+          kind: r.plan_key ? ('plan' as const) : ('task' as const),
+          dueSoon: daysFromNow(r.due_date) <= 3,
+        }))
+
+      const byDate = (a: NextUpItem, b: NextUpItem) => new Date(a.date!).getTime() - new Date(b.date!).getTime()
+      const dated = [...payments, ...tasks].sort(byDate)
+      const urgent = dated.filter((item) => item.dueSoon)
+      const later = dated.filter((item) => !item.dueSoon)
+      const nextUp = [...urgent, ...compares, ...later].slice(0, NEXT_UP_LIMIT)
 
       setData({
-        stats: {
-          totalBudget: profileData?.total_budget || 0,
-          spentBudget,
-          vendorsContacted,
-          vendorsBooked,
-          weddingDate: profileData?.wedding_date || null,
-          proposalCount: proposalsResult.count || 0,
-        },
+        anchor: weddingAnchor(profile ?? { wedding_date: null }),
+        dateEstimate: profile?.wedding_date_estimate ?? null,
+        location: profile?.wedding_location ?? null,
+        totalBudget: profile?.total_budget || 0,
+        committed: [...committedByCategory.entries()].map(([category, amount]) => ({ category, amount })),
+        paid,
+        quoteCount: proposalsResult.count || 0,
         vendors: vendors.map((v) => ({
           id: v.id,
           name: v.name,
-          category: (v as Record<string, unknown>).vendor_categories
-            ? ((v as Record<string, unknown>).vendor_categories as { name: string }).name
-            : 'Uncategorized',
+          category: categoryOf(v),
           price: v.final_price || v.quoted_price,
-          stage: (v.status === 'meeting_scheduled' ? 'meeting' : v.status as DashboardData['vendors'][number]['stage']) || 'researching',
+          stage: (v.status === 'meeting_scheduled' ? 'meeting' : (v.status as Stage)) || 'researching',
         })),
-        tasks: (remindersResult.data || []).map((r) => {
-          const rv = (r as Record<string, unknown>).vendors as { name: string; vendor_categories: { name: string; icon: string | null } | null } | null
-          return {
-            id: r.id,
-            title: r.title,
-            due_date: r.due_date,
-            type: (r.reminder_type as DashboardData['tasks'][number]['type']) || 'other',
-            completed: r.is_completed || false,
-            vendor: rv ? {
-              name: rv.name,
-              category_name: rv.vendor_categories?.name ?? null,
-              category_icon: rv.vendor_categories?.icon ?? null,
-            } : null,
-          }
-        }),
-        activities: (activitiesResult.data || []).map((a) => ({
-          id: a.id,
-          type: 'vendor_added' as DashboardData['activities'][number]['type'],
-          description: `${a.name} - ${a.status}`,
-          created_at: a.created_at,
-          link: undefined,
-        })),
-        checklist: {
-          hasVendors: vendors.length > 0,
-          hasBudget: (profileData?.total_budget || 0) > 0,
-          hasBookedVendor: vendors.some((v) => v.status === 'booked'),
-          hasTask: (remindersResult.data || []).length > 0,
-        },
-        upcomingPayments: vendors
-          .filter(
-            (v) =>
-              v.status === 'booked' &&
-              v.deposit_due_date &&
-              !v.deposit_paid
-          )
-          .map((v) => ({
-            id: v.id,
-            vendorName: v.name,
-            amount: v.deposit_amount || v.final_price || v.quoted_price || 0,
-            dueDate: v.deposit_due_date as string,
-            type: 'deposit' as const,
-          }))
-          .sort(
-            (a, b) =>
-              new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()
-          )
-          .slice(0, 5),
+        nextUp,
+        plan: reminders
+          .filter((r) => r.plan_key)
+          .map((r) => ({ id: r.id, title: r.title, due_date: r.due_date, completed: !!r.is_completed })),
       })
     } catch (err) {
       setError('Failed to load dashboard data. Please refresh the page.')
@@ -239,15 +253,41 @@ export default function DashboardPage() {
     return () => timers.forEach(clearTimeout)
   }, [refetchSubscription])
 
-  const handleTaskToggle = (taskId: string, completed: boolean) => {
-    if (!data) return
-    setData({
-      ...data,
-      tasks: data.tasks.map((t) =>
-        t.id === taskId ? { ...t, completed } : t
-      ),
-    })
-  }
+  const handlePlanToggle = useCallback(async (taskId: string, completed: boolean) => {
+    setData((d) => d && { ...d, plan: d.plan.map((t) => (t.id === taskId ? { ...t, completed } : t)) })
+    const { error } = await supabase.from('reminders').update({ is_completed: completed }).eq('id', taskId)
+    if (error) {
+      toast.error("Couldn't update that task. Try again.")
+      fetchDashboardData()
+    }
+  }, [supabase, fetchDashboardData])
+
+  const handleAddPlan = useCallback(async () => {
+    if (!authUser) return
+    try {
+      const added = await addStarterPlan(supabase, authUser.id)
+      toast.success(added > 0 ? `Added ${added} tasks to your plan.` : 'Your plan is already up to date.')
+      trackEvent('starter_plan_added', { tasks: added })
+      fetchDashboardData()
+    } catch (err) {
+      console.error('Starter plan not added:', err)
+      toast.error("Couldn't add the plan. Try again in a moment.")
+    }
+  }, [authUser, supabase, fetchDashboardData])
+
+  const handleClearPlan = useCallback(async () => {
+    if (!authUser) return
+    try {
+      await clearStarterPlan(supabase, authUser.id)
+      trackEvent('starter_plan_cleared')
+      toast.success('Plan cleared.')
+      fetchDashboardData()
+    } catch (err) {
+      console.error('Starter plan not cleared:', err)
+      toast.error("Couldn't clear the plan. Try again in a moment.")
+      throw err
+    }
+  }, [authUser, supabase, fetchDashboardData])
 
   const handleStageChange = useCallback(async (vendorId: string, newStage: string, paymentInfo?: BookingPaymentInfo) => {
     if (!data) return
@@ -256,7 +296,7 @@ export default function DashboardPage() {
     setData({
       ...data,
       vendors: data.vendors.map((v) =>
-        v.id === vendorId ? { ...v, stage: newStage as DashboardData['vendors'][number]['stage'] } : v
+        v.id === vendorId ? { ...v, stage: newStage as Stage } : v
       ),
     })
 
@@ -328,10 +368,10 @@ export default function DashboardPage() {
   if (error && !data) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <p className="text-sm text-red-600">{error}</p>
+        <p className="text-sm text-error">{error}</p>
         <button
           onClick={fetchDashboardData}
-          className="mt-3 text-sm font-medium text-[#8B9F82] hover:underline"
+          className="mt-3 text-sm font-medium text-moss hover:underline"
         >
           Try again
         </button>
@@ -342,44 +382,40 @@ export default function DashboardPage() {
   if (!data) return null
 
   return (
-    <div className="space-y-4 sm:space-y-6">
-      {/* Welcome message */}
-      <div>
-        <h2
-          className="text-lg sm:text-xl font-bold text-[#2D2D2D] lg:text-2xl"
-          style={{ fontFamily: "var(--font-manrope), sans-serif" }}
-        >
-          Welcome back
-        </h2>
-        <p className="mt-1 text-xs sm:text-sm text-[#7A7A7A]">
-          Here&apos;s an overview of your wedding planning progress.
-        </p>
+    <div className="mx-auto max-w-6xl space-y-4 sm:space-y-5">
+      <DashboardUpgradeCard vendors={data.vendors.length} quotes={data.quoteCount} />
+
+      <div className="flex flex-col gap-4 pb-1 pt-2 sm:flex-row sm:items-end sm:justify-between">
+        <Countdown anchor={data.anchor} estimate={data.dateEstimate} location={data.location} />
+        <div className="flex gap-2">
+          <Link
+            href="/tasks"
+            className="inline-flex h-11 items-center rounded-full border border-hairline bg-white px-4 font-display text-sm font-bold text-ink transition-colors hover:bg-paper"
+          >
+            Add a task
+          </Link>
+          <Link
+            href="/proposals/upload"
+            className="inline-flex h-11 flex-1 items-center justify-center rounded-full bg-moss px-5 font-display text-sm font-bold text-white transition-colors hover:bg-moss-light sm:flex-none"
+          >
+            {data.quoteCount === 0 ? 'Add your first quote' : 'Add a quote'}
+          </Link>
+        </div>
       </div>
 
-      {/* Getting started checklist */}
-      <GettingStarted {...data.checklist} />
+      <BudgetBar totalBudget={data.totalBudget} committed={data.committed} paid={data.paid} />
 
-      {/* Upgrade card for free users */}
-      <DashboardUpgradeCard />
-
-      {/* Stats cards */}
-      <StatsCards data={data.stats} loading={loading} />
-
-      {/* Vendor pipeline */}
-      <VendorPipeline vendors={data.vendors} loading={loading} onStageChange={handleStageChange} />
-
-      {/* Bottom row: payments + tasks + activity */}
-      <div className="grid gap-4 lg:grid-cols-2">
-        <UpcomingPayments payments={data.upcomingPayments} loading={loading} />
-        <UpcomingTasks
-          tasks={data.tasks}
-          loading={loading}
-          onTaskToggle={handleTaskToggle}
+      <div className="grid gap-4 sm:gap-5 lg:grid-cols-2">
+        <NextUp items={data.nextUp} />
+        <StarterPlanCard
+          tasks={data.plan}
+          onToggle={handlePlanToggle}
+          onAdd={handleAddPlan}
+          onClear={handleClearPlan}
         />
       </div>
 
-      {/* Activity */}
-      <RecentActivity activities={data.activities} loading={loading} />
+      <VendorPipeline vendors={data.vendors} loading={loading} onStageChange={handleStageChange} />
     </div>
   )
 }

@@ -32,24 +32,24 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-[#FAF8F5]">
+    <div className="min-h-screen bg-paper">
       <header className="border-b border-border bg-white">
         <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
           <div className="flex items-center gap-4">
             <a
               href="/admin"
-              className="text-xl font-bold tracking-tight text-[#8B9F82]"
+              className="text-xl font-bold tracking-tight text-moss"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               Altared
             </a>
-            <span className="rounded-full bg-[#8B9F82]/10 px-3 py-1 text-xs font-medium text-[#8B9F82]">
+            <span className="rounded-full bg-moss/10 px-3 py-1 text-xs font-medium text-moss">
               Admin
             </span>
           </div>
           <a
             href="/dashboard"
-            className="text-sm text-[#7A7A7A] hover:text-[#2D2D2D] transition-colors"
+            className="text-sm text-ink-muted hover:text-ink transition-colors"
           >
             Back to App
           </a>

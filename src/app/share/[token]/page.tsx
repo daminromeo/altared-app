@@ -205,14 +205,14 @@ export default function SharedViewPage({
     return (
       <div className="flex min-h-[80vh] items-center justify-center p-4">
         <div className="max-w-md space-y-4 text-center">
-          <AlertCircle className="mx-auto h-12 w-12 text-[#C9A96E]" />
+          <AlertCircle className="mx-auto h-12 w-12 text-brass" />
           <h1
-            className="text-2xl font-bold text-[#2D2D2D]"
+            className="text-2xl font-bold text-ink"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Link Expired
           </h1>
-          <p className="text-[#7A7A7A]">
+          <p className="text-ink-muted">
             This shared link is no longer active. Ask them to generate a
             new one from their Altared dashboard.
           </p>
@@ -226,10 +226,10 @@ export default function SharedViewPage({
       <div className="flex min-h-[80vh] items-center justify-center p-4">
         <div className="max-w-md space-y-4 text-center">
           <AlertCircle className="mx-auto h-12 w-12 text-red-400" />
-          <h1 className="text-2xl font-bold text-[#2D2D2D]">
+          <h1 className="text-2xl font-bold text-ink">
             Something went wrong
           </h1>
-          <p className="text-[#7A7A7A]">
+          <p className="text-ink-muted">
             We couldn&apos;t load the shared data. Please try again later.
           </p>
         </div>
@@ -240,7 +240,7 @@ export default function SharedViewPage({
   if (loading || !nameChecked) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#8B9F82]" />
+        <Loader2 className="h-8 w-8 animate-spin text-moss" />
       </div>
     );
   }
@@ -260,7 +260,7 @@ export default function SharedViewPage({
   if (!data) {
     return (
       <div className="flex min-h-[80vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#8B9F82]" />
+        <Loader2 className="h-8 w-8 animate-spin text-moss" />
       </div>
     );
   }
@@ -313,25 +313,25 @@ export default function SharedViewPage({
     <div className="mx-auto max-w-6xl p-4 sm:p-6 lg:p-8">
       {/* Wedding Header */}
       <div className="mb-8 space-y-2">
-        <p className="text-sm text-[#7A7A7A]">
+        <p className="text-sm text-ink-muted">
           Hi {partnerName}! Here&apos;s what&apos;s been planned so far.
         </p>
         <h1
-          className="text-3xl font-bold text-[#2D2D2D]"
+          className="text-3xl font-bold text-ink"
           style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           {data.profile?.wedding_name ?? "Our Wedding"}
         </h1>
-        <div className="flex flex-wrap gap-4 text-sm text-[#7A7A7A]">
+        <div className="flex flex-wrap gap-4 text-sm text-ink-muted">
           {data.profile?.wedding_date && (
             <span className="flex items-center gap-1.5">
-              <Calendar className="h-4 w-4 text-[#8B9F82]" />
+              <Calendar className="h-4 w-4 text-moss" />
               {formatDate(data.profile.wedding_date)}
             </span>
           )}
           {data.profile?.wedding_location && (
             <span className="flex items-center gap-1.5">
-              <MapPin className="h-4 w-4 text-[#8B9F82]" />
+              <MapPin className="h-4 w-4 text-moss" />
               {data.profile.wedding_location}
             </span>
           )}
@@ -340,42 +340,42 @@ export default function SharedViewPage({
 
       {/* Quick Stats */}
       <div className="mb-8 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        <Card className="border-[#E8E4DF]">
+        <Card className="border-hairline">
           <CardContent className="p-4">
-            <p className="text-xs font-medium text-[#7A7A7A]">Vendors</p>
-            <p className="mt-1 text-2xl font-bold text-[#2D2D2D]">
+            <p className="text-xs font-medium text-ink-muted">Vendors</p>
+            <p className="mt-1 text-2xl font-bold text-ink">
               {data.vendors.length}
             </p>
-            <p className="text-xs text-[#8B9F82]">
+            <p className="text-xs text-moss">
               {bookedVendors} booked
             </p>
           </CardContent>
         </Card>
-        <Card className="border-[#E8E4DF]">
+        <Card className="border-hairline">
           <CardContent className="p-4">
-            <p className="text-xs font-medium text-[#7A7A7A]">Budget</p>
-            <p className="mt-1 text-2xl font-bold text-[#2D2D2D]">
+            <p className="text-xs font-medium text-ink-muted">Budget</p>
+            <p className="mt-1 text-2xl font-bold text-ink">
               {totalBudget > 0 ? formatPrice(totalBudget) : "—"}
             </p>
-            <p className="text-xs text-[#7A7A7A]">total budget</p>
+            <p className="text-xs text-ink-muted">total budget</p>
           </CardContent>
         </Card>
-        <Card className="border-[#E8E4DF]">
+        <Card className="border-hairline">
           <CardContent className="p-4">
-            <p className="text-xs font-medium text-[#7A7A7A]">Estimated Total</p>
-            <p className="mt-1 text-2xl font-bold text-[#2D2D2D]">
+            <p className="text-xs font-medium text-ink-muted">Estimated Total</p>
+            <p className="mt-1 text-2xl font-bold text-ink">
               {formatPrice(committed)}
             </p>
-            <p className="text-xs text-[#7A7A7A]">estimated</p>
+            <p className="text-xs text-ink-muted">estimated</p>
           </CardContent>
         </Card>
-        <Card className="border-[#E8E4DF]">
+        <Card className="border-hairline">
           <CardContent className="p-4">
-            <p className="text-xs font-medium text-[#7A7A7A]">Paid</p>
-            <p className="mt-1 text-2xl font-bold text-[#8B9F82]">
+            <p className="text-xs font-medium text-ink-muted">Paid</p>
+            <p className="mt-1 text-2xl font-bold text-moss">
               {formatPrice(totalPaid)}
             </p>
-            <p className="text-xs text-[#7A7A7A]">so far</p>
+            <p className="text-xs text-ink-muted">so far</p>
           </CardContent>
         </Card>
       </div>
@@ -396,16 +396,16 @@ export default function SharedViewPage({
         {/* Vendors Tab */}
         <TabsContent value="vendors" className="mt-6">
           {data.vendors.length === 0 ? (
-            <Card className="border-[#E8E4DF]">
+            <Card className="border-hairline">
               <CardContent className="py-12 text-center">
-                <p className="text-[#7A7A7A]">No vendors added yet.</p>
+                <p className="text-ink-muted">No vendors added yet.</p>
               </CardContent>
             </Card>
           ) : (
             <div className="space-y-8">
               {sortedCategories.map(([key, { name, vendors: catVendors }]) => (
                 <div key={key}>
-                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-[#7A7A7A]">
+                  <h3 className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-muted">
                     {name}{" "}
                     <span className="font-normal">({catVendors.length})</span>
                   </h3>
@@ -428,8 +428,8 @@ export default function SharedViewPage({
 
           {/* Reaction summary */}
           {data.reactions.length > 0 && (
-            <div className="mt-6 rounded-lg border border-[#E8E4DF] bg-white p-4">
-              <h3 className="text-sm font-semibold text-[#2D2D2D]">
+            <div className="mt-6 rounded-lg border border-hairline bg-white p-4">
+              <h3 className="text-sm font-semibold text-ink">
                 Your Reactions Summary
               </h3>
               <div className="mt-3 flex flex-wrap gap-2">
@@ -460,21 +460,21 @@ export default function SharedViewPage({
         {/* Budget Tab */}
         <TabsContent value="budget" className="mt-6">
           {totalBudget > 0 && (
-            <Card className="mb-6 border-[#E8E4DF]">
+            <Card className="mb-6 border-hairline">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm text-[#7A7A7A]">Total Budget</p>
-                    <p className="text-3xl font-bold text-[#2D2D2D]">
+                    <p className="text-sm text-ink-muted">Total Budget</p>
+                    <p className="text-3xl font-bold text-ink">
                       {formatPrice(totalBudget)}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm text-[#7A7A7A]">Remaining</p>
+                    <p className="text-sm text-ink-muted">Remaining</p>
                     <p
                       className={`text-3xl font-bold ${
                         totalBudget - committed >= 0
-                          ? "text-[#8B9F82]"
+                          ? "text-moss"
                           : "text-red-500"
                       }`}
                     >
@@ -483,15 +483,15 @@ export default function SharedViewPage({
                   </div>
                 </div>
                 {/* Progress bar */}
-                <div className="mt-4 h-3 overflow-hidden rounded-full bg-[#E8E4DF]">
+                <div className="mt-4 h-3 overflow-hidden rounded-full bg-hairline">
                   <div
-                    className="h-full rounded-full bg-[#8B9F82] transition-all"
+                    className="h-full rounded-full bg-moss transition-all"
                     style={{
                       width: `${Math.min((committed / totalBudget) * 100, 100)}%`,
                     }}
                   />
                 </div>
-                <p className="mt-1 text-xs text-[#7A7A7A]">
+                <p className="mt-1 text-xs text-ink-muted">
                   {Math.round((committed / totalBudget) * 100)}% allocated
                 </p>
               </CardContent>
@@ -499,15 +499,15 @@ export default function SharedViewPage({
           )}
 
           {data.budgetItems.length === 0 ? (
-            <Card className="border-[#E8E4DF]">
+            <Card className="border-hairline">
               <CardContent className="py-12 text-center">
-                <p className="text-[#7A7A7A]">No budget items yet.</p>
+                <p className="text-ink-muted">No budget items yet.</p>
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-[#E8E4DF]">
+            <Card className="border-hairline">
               <CardHeader>
-                <CardTitle className="text-[#2D2D2D]">Budget Items</CardTitle>
+                <CardTitle className="text-ink">Budget Items</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
@@ -517,32 +517,32 @@ export default function SharedViewPage({
                     let paymentColor: string;
                     if (item.is_paid) {
                       paymentLabel = "Paid in full";
-                      paymentColor = "text-[#8B9F82]";
+                      paymentColor = "text-moss";
                     } else if (item.deposit_paid) {
                       paymentLabel = "Deposit paid";
-                      paymentColor = "text-[#C9A96E]";
+                      paymentColor = "text-brass";
                     } else {
                       paymentLabel = "Not paid yet";
-                      paymentColor = "text-[#7A7A7A]";
+                      paymentColor = "text-ink-muted";
                     }
 
                     return (
                       <div
                         key={item.id}
-                        className="flex items-center justify-between rounded-lg border border-[#E8E4DF] px-4 py-3"
+                        className="flex items-center justify-between rounded-lg border border-hairline px-4 py-3"
                       >
                         <div>
-                          <p className="font-medium text-[#2D2D2D]">
+                          <p className="font-medium text-ink">
                             {item.description}
                           </p>
                           {item.vendor_categories && (
-                            <p className="text-xs text-[#7A7A7A]">
+                            <p className="text-xs text-ink-muted">
                               {(item.vendor_categories as { name: string }).name}
                             </p>
                           )}
                         </div>
                         <div className="text-right">
-                          <p className="font-semibold text-[#2D2D2D]">
+                          <p className="font-semibold text-ink">
                             {formatPrice(
                               item.actual_cost || item.estimated_cost
                             )}
@@ -562,10 +562,10 @@ export default function SharedViewPage({
       </Tabs>
 
       {/* Footer */}
-      <div className="mt-12 border-t border-[#E8E4DF] pt-6 text-center text-xs text-[#7A7A7A]">
+      <div className="mt-12 border-t border-hairline pt-6 text-center text-xs text-ink-muted">
         <p>
           Powered by{" "}
-          <span className="font-semibold text-[#8B9F82]">Altared</span> &middot;
+          <span className="font-semibold text-moss">Altared</span> &middot;
           Wedding Planning Made Simple
         </p>
       </div>

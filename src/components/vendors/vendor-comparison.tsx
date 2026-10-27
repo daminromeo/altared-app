@@ -71,7 +71,7 @@ const formatPrice = (price: number | null) => {
 const HIGHLIGHT_CLASSES: Record<Exclude<CellHighlight, null>, string> = {
   best: 'bg-[#047857]/8 text-[#047857] font-semibold',
   mid: '',
-  worst: 'bg-[#DC2626]/5 text-[#DC2626]/80',
+  worst: 'bg-error/5 text-error/80',
 };
 
 function getHighlightClass(highlight: CellHighlight): string {
@@ -127,7 +127,7 @@ export function VendorComparison({
             {v.vendor_categories.name}
           </span>
         ) : (
-          <span className="text-[#7A7A7A]">--</span>
+          <span className="text-ink-muted">--</span>
         ),
     },
     {
@@ -148,7 +148,7 @@ export function VendorComparison({
         <div>
           <div>{formatPrice(v.deposit_amount)}</div>
           {v.deposit_due_date && (
-            <div className="text-xs text-[#7A7A7A]">
+            <div className="text-xs text-ink-muted">
               Due: {new Date(v.deposit_due_date).toLocaleDateString()}
             </div>
           )}
@@ -162,10 +162,10 @@ export function VendorComparison({
           v.deposit_paid ? (
             <CheckCircle2 className="size-4 text-[#047857] mx-auto" />
           ) : (
-            <XCircle className="size-4 text-[#DC2626] mx-auto" />
+            <XCircle className="size-4 text-error mx-auto" />
           )
         ) : (
-          <span className="text-[#7A7A7A]">--</span>
+          <span className="text-ink-muted">--</span>
         ),
     },
     {
@@ -178,7 +178,7 @@ export function VendorComparison({
                 key={i}
                 className={`size-3.5 ${
                   i < v.rating!
-                    ? 'fill-[#C9A96E] text-[#C9A96E]'
+                    ? 'fill-champagne text-brass'
                     : 'fill-transparent text-[#D1D5DB]'
                 }`}
               />
@@ -186,7 +186,7 @@ export function VendorComparison({
             <span className="ml-1 text-sm">{v.rating}/5</span>
           </div>
         ) : (
-          <span className="text-[#7A7A7A]">--</span>
+          <span className="text-ink-muted">--</span>
         ),
       getHighlight: (i) =>
         isPremiumUser ? getCellHighlight(ratings, i, true) : null,
@@ -214,13 +214,13 @@ export function VendorComparison({
                 <Star
                   className={`size-3.5 transition-colors ${
                     i < value
-                      ? 'fill-[#8B9F82] text-[#8B9F82]'
-                      : 'fill-transparent text-[#D1D5DB] hover:text-[#8B9F82]/50'
+                      ? 'fill-moss text-moss'
+                      : 'fill-transparent text-[#D1D5DB] hover:text-moss/50'
                   }`}
                 />
               </button>
             ))}
-            {value > 0 && <span className="ml-1 text-xs text-[#7A7A7A]">{value}/5</span>}
+            {value > 0 && <span className="ml-1 text-xs text-ink-muted">{value}/5</span>}
           </div>
         );
       },
@@ -244,13 +244,13 @@ export function VendorComparison({
                 <Star
                   className={`size-3.5 transition-colors ${
                     i < value
-                      ? 'fill-[#C9A96E] text-[#C9A96E]'
-                      : 'fill-transparent text-[#D1D5DB] hover:text-[#C9A96E]/50'
+                      ? 'fill-champagne text-brass'
+                      : 'fill-transparent text-[#D1D5DB] hover:text-brass/50'
                   }`}
                 />
               </button>
             ))}
-            {value > 0 && <span className="ml-1 text-xs text-[#7A7A7A]">{value}/5</span>}
+            {value > 0 && <span className="ml-1 text-xs text-ink-muted">{value}/5</span>}
           </div>
         );
       },
@@ -259,9 +259,9 @@ export function VendorComparison({
       label: 'Notes',
       render: (v) =>
         v.notes ? (
-          <p className="text-sm text-[#2D2D2D] line-clamp-3 max-w-[200px]">{v.notes}</p>
+          <p className="text-sm text-ink line-clamp-3 max-w-[200px]">{v.notes}</p>
         ) : (
-          <span className="text-[#7A7A7A]">--</span>
+          <span className="text-ink-muted">--</span>
         ),
     },
     {
@@ -278,7 +278,7 @@ export function VendorComparison({
             Visit
           </a>
         ) : (
-          <span className="text-[#7A7A7A]">--</span>
+          <span className="text-ink-muted">--</span>
         ),
     },
     {
@@ -296,7 +296,7 @@ export function VendorComparison({
             ))}
           </div>
         ) : (
-          <span className="text-[#7A7A7A]">--</span>
+          <span className="text-ink-muted">--</span>
         ),
     },
   ];
@@ -312,20 +312,20 @@ export function VendorComparison({
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead className="min-w-[140px] bg-[#FAF8F5] sticky left-0 z-10">
+            <TableHead className="min-w-[140px] bg-paper sticky left-0 z-10">
               Feature
             </TableHead>
             {vendors.map((vendor) => (
               <TableHead key={vendor.id} className="min-w-[200px] text-center">
                 <div className="space-y-1">
                   <div
-                    className="font-semibold text-[#2D2D2D] cursor-pointer hover:underline"
+                    className="font-semibold text-ink cursor-pointer hover:underline"
                     onClick={() => router.push(`/vendors/${vendor.id}`)}
                   >
                     {vendor.name}
                   </div>
                   {vendor.company_name && (
-                    <div className="text-xs font-normal text-[#7A7A7A]">
+                    <div className="text-xs font-normal text-ink-muted">
                       {vendor.company_name}
                     </div>
                   )}
@@ -337,8 +337,8 @@ export function VendorComparison({
         <TableBody>
           {/* Score bar row (premium only) */}
           {isPremiumUser && scores.length > 0 && (
-            <TableRow className="border-b-2 border-[#E8E4DF]">
-              <TableCell className="font-medium text-[#2D2D2D] bg-[#FAF8F5] sticky left-0 z-10">
+            <TableRow className="border-b-2 border-hairline">
+              <TableCell className="font-medium text-ink bg-paper sticky left-0 z-10">
                 Match Score
               </TableCell>
               {vendors.map((vendor) => {
@@ -358,7 +358,7 @@ export function VendorComparison({
           {/* Data rows */}
           {visibleRows.map((row) => (
             <TableRow key={row.label}>
-              <TableCell className="font-medium text-[#2D2D2D] bg-[#FAF8F5] sticky left-0 z-10">
+              <TableCell className="font-medium text-ink bg-paper sticky left-0 z-10">
                 {row.label}
               </TableCell>
               {vendors.map((vendor, idx) => {
@@ -377,8 +377,8 @@ export function VendorComparison({
 
           {/* Pros/Cons row (premium only) */}
           {isPremiumUser && prosCons.length > 0 && (
-            <TableRow className="border-t-2 border-[#E8E4DF]">
-              <TableCell className="font-medium text-[#2D2D2D] bg-[#FAF8F5] sticky left-0 z-10">
+            <TableRow className="border-t-2 border-hairline">
+              <TableCell className="font-medium text-ink bg-paper sticky left-0 z-10">
                 Insights
               </TableCell>
               {vendors.map((vendor) => {
@@ -388,7 +388,7 @@ export function VendorComparison({
                     {data ? (
                       <ProsCons data={data} />
                     ) : (
-                      <span className="text-[#7A7A7A]">--</span>
+                      <span className="text-ink-muted">--</span>
                     )}
                   </TableCell>
                 );
@@ -398,7 +398,7 @@ export function VendorComparison({
 
           {/* Book action row */}
           <TableRow>
-            <TableCell className="font-medium text-[#2D2D2D] bg-[#FAF8F5] sticky left-0 z-10">
+            <TableCell className="font-medium text-ink bg-paper sticky left-0 z-10">
               Action
             </TableCell>
             {vendors.map((vendor) => (
@@ -409,7 +409,7 @@ export function VendorComparison({
                   className={
                     vendor.id === bestScoreId && isPremiumUser
                       ? 'bg-[#047857] hover:bg-[#065F46] text-white'
-                      : 'bg-[#8B9F82] hover:bg-[#7A8E71] text-white'
+                      : 'bg-moss hover:bg-moss-light text-white'
                   }
                 >
                   {vendor.is_booked

@@ -60,7 +60,7 @@ function StarRating({ rating }: { rating: number | null }) {
           key={i}
           className={`size-3.5 ${
             i < rating
-              ? 'fill-[#C9A96E] text-[#C9A96E]'
+              ? 'fill-champagne text-brass'
               : 'fill-transparent text-[#D1D5DB]'
           }`}
         />
@@ -100,7 +100,7 @@ export function VendorCard({
               onSelect?.(vendor.id);
             }}
             onClick={(e) => e.stopPropagation()}
-            className="size-4 rounded border-[#D1D5DB] text-[#8B9F82] focus:ring-[#8B9F82] cursor-pointer"
+            className="size-4 rounded border-[#D1D5DB] text-moss focus:ring-moss cursor-pointer"
             aria-label={`Select ${vendor.name} for comparison`}
           />
         </div>
@@ -109,9 +109,9 @@ export function VendorCard({
       <CardHeader className="pb-0">
         <div className="flex items-start justify-between gap-2 pr-6">
           <div className="min-w-0 flex-1">
-            <CardTitle className="truncate text-[#2D2D2D]">{vendor.name}</CardTitle>
+            <CardTitle className="truncate text-ink">{vendor.name}</CardTitle>
             {vendor.company_name && (
-              <p className="text-xs text-[#7A7A7A] truncate mt-0.5">
+              <p className="text-xs text-ink-muted truncate mt-0.5">
                 {vendor.company_name}
               </p>
             )}
@@ -122,7 +122,7 @@ export function VendorCard({
       <CardContent className="space-y-3">
         <div className="flex flex-wrap items-center gap-1.5">
           {vendor.vendor_categories && (
-            <Badge variant="secondary" className="bg-[#8B9F82]/10 text-[#8B9F82] border-transparent text-xs">
+            <Badge variant="secondary" className="bg-moss/10 text-moss border-transparent text-xs">
               {vendor.vendor_categories.icon && (
                 <span className="mr-0.5">{getVendorEmoji(vendor.vendor_categories.icon)}</span>
               )}
@@ -134,15 +134,15 @@ export function VendorCard({
 
         <div className="flex items-center justify-between">
           {displayPrice !== null && displayPrice !== undefined ? (
-            <div className="flex items-center gap-1 text-sm font-semibold text-[#2D2D2D]">
-              <DollarSign className="size-3.5 text-[#8B9F82]" />
+            <div className="flex items-center gap-1 text-sm font-semibold text-ink">
+              <DollarSign className="size-3.5 text-moss" />
               {formatPrice(displayPrice)}
               {vendor.final_price && (
-                <span className="text-xs font-normal text-[#7A7A7A] ml-0.5">final</span>
+                <span className="text-xs font-normal text-ink-muted ml-0.5">final</span>
               )}
             </div>
           ) : (
-            <span className="text-xs text-[#7A7A7A]">No price yet</span>
+            <span className="text-xs text-ink-muted">No price yet</span>
           )}
           <StarRating rating={vendor.rating} />
         </div>
@@ -150,17 +150,17 @@ export function VendorCard({
         {vendor.tags && vendor.tags.length > 0 && (
           <div className="flex flex-wrap gap-1">
             {vendor.tags.slice(0, 3).map((tag) => (
-              <Badge key={tag} variant="outline" className="text-xs text-[#7A7A7A] border-[#E5E7EB]">
+              <Badge key={tag} variant="outline" className="text-xs text-ink-muted border-[#E5E7EB]">
                 {tag}
               </Badge>
             ))}
             {vendor.tags.length > 3 && (
-              <span className="text-xs text-[#7A7A7A]">+{vendor.tags.length - 3}</span>
+              <span className="text-xs text-ink-muted">+{vendor.tags.length - 3}</span>
             )}
           </div>
         )}
 
-        <div className="flex items-center gap-3 text-xs text-[#7A7A7A]">
+        <div className="flex items-center gap-3 text-xs text-ink-muted">
           {vendor.website && (
             <span className="flex items-center gap-1 truncate">
               <Globe className="size-3 shrink-0" />

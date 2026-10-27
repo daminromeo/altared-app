@@ -253,8 +253,8 @@ export default function VendorComparePage() {
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-semibold text-[#2D2D2D]">Compare Vendors</h1>
-            <p className="text-sm text-[#7A7A7A] mt-0.5">
+            <h1 className="text-2xl font-semibold text-ink">Compare Vendors</h1>
+            <p className="text-sm text-ink-muted mt-0.5">
               {isPremiumUser
                 ? 'Smart comparison with weighted scoring and AI insights'
                 : 'Side-by-side comparison of your selected vendors'}
@@ -269,7 +269,7 @@ export default function VendorComparePage() {
           <Plus className="size-4" />
           Add Vendor
           {isFreePlan && selectedIds.length >= 2 && (
-            <Badge className="ml-1.5 bg-[#C9A96E]/10 text-[#C9A96E] text-[10px]">Pass</Badge>
+            <Badge className="ml-1.5 bg-champagne/10 text-brass text-[10px]">Pass</Badge>
           )}
         </Button>
       </div>
@@ -277,19 +277,19 @@ export default function VendorComparePage() {
       {/* Selected vendor chips */}
       {selectedIds.length > 0 && (
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-sm text-[#7A7A7A]">
+          <span className="text-sm text-ink-muted">
             Comparing: {selectedIds.length} of {vendorLimit}
           </span>
           {vendors.map((vendor) => (
             <Badge
               key={vendor.id}
               variant="secondary"
-              className="gap-1.5 bg-[#8B9F82]/10 text-[#8B9F82] pr-1"
+              className="gap-1.5 bg-moss/10 text-moss pr-1"
             >
               {vendor.name}
               <button
                 onClick={() => removeVendor(vendor.id)}
-                className="ml-0.5 rounded-full p-0.5 hover:bg-[#8B9F82]/20"
+                className="ml-0.5 rounded-full p-0.5 hover:bg-moss/20"
                 aria-label={`Remove ${vendor.name} from comparison`}
               >
                 <X className="size-3" />
@@ -303,13 +303,13 @@ export default function VendorComparePage() {
       {showSelector && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-base text-[#2D2D2D]">
+            <CardTitle className="text-base text-ink">
               Select Vendors to Compare
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="relative">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-[#7A7A7A]" />
+              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-ink-muted" />
               <Input
                 placeholder="Search vendors..."
                 value={searchQuery}
@@ -319,7 +319,7 @@ export default function VendorComparePage() {
             </div>
             <div className="max-h-64 overflow-y-auto space-y-1">
               {filteredAllVendors.length === 0 ? (
-                <p className="text-sm text-[#7A7A7A] text-center py-4">
+                <p className="text-sm text-ink-muted text-center py-4">
                   No vendors found
                 </p>
               ) : (
@@ -327,22 +327,22 @@ export default function VendorComparePage() {
                   <button
                     key={vendor.id}
                     onClick={() => addVendor(vendor.id)}
-                    className="flex w-full items-center justify-between rounded-lg p-2.5 text-left transition-colors hover:bg-[#FAF8F5]"
+                    className="flex w-full items-center justify-between rounded-lg p-2.5 text-left transition-colors hover:bg-paper"
                   >
                     <div>
-                      <p className="text-sm font-medium text-[#2D2D2D]">
+                      <p className="text-sm font-medium text-ink">
                         {vendor.name}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
                         {vendor.company_name && (
-                          <span className="text-xs text-[#7A7A7A]">
+                          <span className="text-xs text-ink-muted">
                             {vendor.company_name}
                           </span>
                         )}
                         {vendor.vendor_categories && (
                           <Badge
                             variant="outline"
-                            className="text-xs border-[#E5E7EB] text-[#7A7A7A]"
+                            className="text-xs border-[#E5E7EB] text-ink-muted"
                           >
                             {vendor.vendor_categories.name}
                           </Badge>
@@ -351,10 +351,10 @@ export default function VendorComparePage() {
                     </div>
                     <div className="flex items-center gap-2">
                       <VendorStatusBadge status={vendor.status} />
-                      <span className="text-sm text-[#2D2D2D]">
+                      <span className="text-sm text-ink">
                         {formatPrice(vendor.final_price ?? vendor.quoted_price)}
                       </span>
-                      <Plus className="size-4 text-[#8B9F82]" />
+                      <Plus className="size-4 text-moss" />
                     </div>
                   </button>
                 ))
@@ -379,24 +379,24 @@ export default function VendorComparePage() {
       {loading ? (
         <div className="flex items-center justify-center py-20">
           <div className="flex flex-col items-center gap-3">
-            <Loader2 className="size-8 animate-spin text-[#8B9F82]" />
-            <p className="text-sm text-[#7A7A7A]">Loading comparison...</p>
+            <Loader2 className="size-8 animate-spin text-moss" />
+            <p className="text-sm text-ink-muted">Loading comparison...</p>
           </div>
         </div>
       ) : vendors.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="rounded-full bg-[#8B9F82]/10 p-4 mb-4">
-            <BarChart3 className="size-8 text-[#8B9F82]" />
+          <div className="rounded-full bg-moss/10 p-4 mb-4">
+            <BarChart3 className="size-8 text-moss" />
           </div>
-          <h3 className="text-lg font-medium text-[#2D2D2D] mb-1">
+          <h3 className="text-lg font-medium text-ink mb-1">
             No vendors selected
           </h3>
-          <p className="text-sm text-[#7A7A7A] mb-4 max-w-sm">
+          <p className="text-sm text-ink-muted mb-4 max-w-sm">
             Select at least 2 vendors to compare them side by side.
           </p>
           <Button
             onClick={() => setShowSelector(true)}
-            className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+            className="bg-moss hover:bg-moss-light text-white"
           >
             <Plus className="size-4" />
             Select Vendors
@@ -404,7 +404,7 @@ export default function VendorComparePage() {
         </div>
       ) : vendors.length === 1 ? (
         <div className="flex flex-col items-center justify-center py-10 text-center">
-          <p className="text-sm text-[#7A7A7A] mb-3">
+          <p className="text-sm text-ink-muted mb-3">
             Select at least one more vendor to start comparing.
           </p>
           <Button

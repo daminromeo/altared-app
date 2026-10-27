@@ -33,14 +33,14 @@ export function Slider({
       disabled={disabled}
       onChange={(e) => onChange(Number(e.target.value))}
       className={cn(
-        "h-1.5 w-full cursor-pointer appearance-none rounded-full bg-[#E8E4DF] outline-none transition-colors",
+        "h-1.5 w-full cursor-pointer appearance-none rounded-full bg-hairline outline-none transition-colors",
         "disabled:cursor-not-allowed disabled:opacity-50",
-        "[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-[#8B9F82] [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110",
-        "[&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-[#8B9F82] [&::-moz-range-thumb]:shadow-sm",
+        "[&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-moss [&::-webkit-slider-thumb]:shadow-sm [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110",
+        "[&::-moz-range-thumb]:h-4 [&::-moz-range-thumb]:w-4 [&::-moz-range-thumb]:rounded-full [&::-moz-range-thumb]:border-0 [&::-moz-range-thumb]:bg-moss [&::-moz-range-thumb]:shadow-sm",
         className
       )}
       style={{
-        background: `linear-gradient(to right, #8B9F82 0%, #8B9F82 ${percent}%, #E8E4DF ${percent}%, #E8E4DF 100%)`,
+        background: `linear-gradient(to right, #2F4A3B 0%, #2F4A3B ${percent}%, #E4DFD6 ${percent}%, #E4DFD6 100%)`,
       }}
     />
   )

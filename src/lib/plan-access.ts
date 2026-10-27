@@ -4,6 +4,7 @@
 
 import type { SupabaseClient } from "@supabase/supabase-js";
 import {
+  LEGACY_TRIAL_START,
   PASS_DAYS_AFTER_WEDDING,
   PASS_MIN_MONTHS,
   TRIAL_DAYS,
@@ -12,8 +13,8 @@ import {
   type Plan,
 } from "@/lib/stripe/config";
 
-/** Where the couple's access comes from. */
-export type AccessSource = "free" | "trial" | "pass" | "subscription";
+/** Where the couple's access comes from. "expired" means the trial ran out without a purchase. */
+export type AccessSource = "trial" | "pass" | "subscription" | "expired";
 
 export interface AccessProfile {
   subscription_status: string | null;
@@ -28,7 +29,9 @@ export const ACCESS_PROFILE_COLUMNS =
 export interface Access {
   planId: Plan["id"];
   source: AccessSource;
-  /** When the free trial ends (or ended); null for accounts without one */
+  /** True when the app should show the paywall instead of the couple's plan */
+  locked: boolean;
+  /** When the free trial ends (or ended) */
   trialEndsAt: string | null;
   /** When pass access ends; null unless source is "pass" */
   accessEndsAt: string | null;
@@ -53,15 +56,17 @@ export function passExpiryAtPurchase(weddingDate: string | null, now = new Date(
 export function resolveAccess(profile: AccessProfile | null, now = new Date()): Access {
   const status = profile?.subscription_status ?? "free";
   const createdAt = profile?.created_at ? new Date(profile.created_at) : null;
-  const trialEnd =
+  const trialStart =
     createdAt && createdAt >= new Date(`${TRIAL_LAUNCH_DATE}T00:00:00Z`)
-      ? addDays(createdAt, TRIAL_DAYS)
-      : null;
-  const trialEndsAt = trialEnd?.toISOString() ?? null;
+      ? createdAt
+      : new Date(`${LEGACY_TRIAL_START}T00:00:00Z`);
+  const trialEnd = addDays(trialStart, TRIAL_DAYS);
+  const trialEndsAt = trialEnd.toISOString();
+  const open = { locked: false, trialEndsAt };
 
   // Monthly subscribers from before the pass keep full access while subscribed
   if (status === "pro" || status === "premium") {
-    return { planId: "pass", source: "subscription", trialEndsAt, accessEndsAt: null };
+    return { planId: "pass", source: "subscription", ...open, accessEndsAt: null };
   }
 
   if (status === "pass" && profile?.pass_expires_at) {
@@ -75,15 +80,15 @@ export function resolveAccess(profile: AccessProfile | null, now = new Date()): 
       if (afterWedding > end) end = afterWedding;
     }
     if (now < end) {
-      return { planId: "pass", source: "pass", trialEndsAt, accessEndsAt: end.toISOString() };
+      return { planId: "pass", source: "pass", ...open, accessEndsAt: end.toISOString() };
     }
   }
 
-  if (trialEnd && now < trialEnd) {
-    return { planId: "pass", source: "trial", trialEndsAt, accessEndsAt: null };
+  if (now < trialEnd) {
+    return { planId: "pass", source: "trial", ...open, accessEndsAt: null };
   }
 
-  return { planId: "free", source: "free", trialEndsAt, accessEndsAt: null };
+  return { planId: "free", source: "expired", locked: true, trialEndsAt, accessEndsAt: null };
 }
 
 /** Whole days left in the trial, rounded up; 0 once it has ended. */

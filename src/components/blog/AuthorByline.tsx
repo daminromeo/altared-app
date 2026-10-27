@@ -14,13 +14,13 @@ export function AuthorByline({
     <div className="not-prose mt-6 flex items-center gap-3 text-sm text-[#5A5A5A]">
       <div
         aria-hidden
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-[#8B9F82] text-xs font-semibold text-white"
+        className="flex h-9 w-9 items-center justify-center rounded-full bg-moss text-xs font-semibold text-white"
       >
         {initials(name)}
       </div>
       <div className="flex flex-col leading-tight">
-        <span className="font-medium text-[#2D2D2D]">{name}</span>
-        <span className="text-xs text-[#7A7A7A]">
+        <span className="font-medium text-ink">{name}</span>
+        <span className="text-xs text-ink-muted">
           {format(new Date(publishedAt), "MMMM d, yyyy")} · {readingMinutes} min
           read
         </span>

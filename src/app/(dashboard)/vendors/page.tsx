@@ -142,10 +142,10 @@ const STATUS_DISPLAY: Record<VendorStatus, { label: string; color: string; bg: s
   researching: { label: 'Researching', color: 'text-[#6B7280]', bg: 'bg-[#F3F4F6]', activeBg: 'bg-[#6B7280] text-white' },
   contacted: { label: 'Contacted', color: 'text-[#2563EB]', bg: 'bg-[#DBEAFE]', activeBg: 'bg-[#2563EB] text-white' },
   quoted: { label: 'Quoted', color: 'text-[#7C3AED]', bg: 'bg-[#EDE9FE]', activeBg: 'bg-[#7C3AED] text-white' },
-  meeting_scheduled: { label: 'Meeting', color: 'text-[#C9A96E]', bg: 'bg-[#C9A96E]/10', activeBg: 'bg-[#C9A96E] text-white' },
+  meeting_scheduled: { label: 'Meeting', color: 'text-brass', bg: 'bg-champagne/10', activeBg: 'bg-champagne text-white' },
   negotiating: { label: 'Negotiating', color: 'text-[#EA580C]', bg: 'bg-[#FFF7ED]', activeBg: 'bg-[#EA580C] text-white' },
   booked: { label: 'Booked', color: 'text-[#047857]', bg: 'bg-[#D1FAE5]', activeBg: 'bg-[#047857] text-white' },
-  declined: { label: 'Declined', color: 'text-[#DC2626]', bg: 'bg-[#FEE2E2]', activeBg: 'bg-[#DC2626] text-white' },
+  declined: { label: 'Declined', color: 'text-error', bg: 'bg-[#FEE2E2]', activeBg: 'bg-error text-white' },
   archived: { label: 'Archived', color: 'text-[#6B7280]', bg: 'bg-[#F3F4F6]', activeBg: 'bg-[#6B7280] text-white' },
 };
 
@@ -187,8 +187,8 @@ function CategoryFilterDropdown({
           onClick={() => setOpen(!open)}
           className={`inline-flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors ${
             selected.size > 0
-              ? 'border-[#8B9F82] bg-[#8B9F82]/5 text-[#2D2D2D]'
-              : 'border-input bg-transparent text-[#7A7A7A] hover:text-[#2D2D2D]'
+              ? 'border-moss bg-moss/5 text-ink'
+              : 'border-input bg-transparent text-ink-muted hover:text-ink'
           }`}
         >
           <span className="max-w-[200px] truncate sm:max-w-none">
@@ -212,12 +212,12 @@ function CategoryFilterDropdown({
                     key={cat.id}
                     type="button"
                     onClick={() => onToggle(cat.id)}
-                    className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-[#2D2D2D] hover:bg-[#FAF8F5] transition-colors"
+                    className="flex w-full items-center gap-2.5 px-3 py-2 text-sm text-ink hover:bg-paper transition-colors"
                   >
                     <div
                       className={`flex size-4 shrink-0 items-center justify-center rounded border transition-colors ${
                         isActive
-                          ? 'border-[#8B9F82] bg-[#8B9F82]'
+                          ? 'border-moss bg-moss'
                           : 'border-[#D1D5DB]'
                       }`}
                     >
@@ -238,7 +238,7 @@ function CategoryFilterDropdown({
                     onClear();
                     setOpen(false);
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#7A7A7A] hover:text-[#2D2D2D] transition-colors"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-xs text-ink-muted hover:text-ink transition-colors"
                 >
                   <X className="size-3" />
                   Clear selection
@@ -258,7 +258,7 @@ function CategoryFilterDropdown({
               <Badge
                 key={cat.id}
                 variant="secondary"
-                className="gap-1 bg-[#8B9F82]/10 text-[#8B9F82] text-xs cursor-pointer hover:bg-[#8B9F82]/20 transition-colors"
+                className="gap-1 bg-moss/10 text-moss text-xs cursor-pointer hover:bg-moss/20 transition-colors"
                 onClick={() => onToggle(cat.id)}
               >
                 {getVendorEmoji(cat.icon)} {cat.name}
@@ -573,14 +573,14 @@ export default function VendorsPage() {
       {/* Page header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#2D2D2D]">Vendors</h1>
-          <p className="text-sm text-[#7A7A7A] mt-1">
+          <h1 className="text-2xl font-semibold text-ink">Vendors</h1>
+          <p className="text-sm text-ink-muted mt-1">
             Manage and compare your wedding vendors
           </p>
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger
-            className="inline-flex items-center gap-1.5 rounded-lg bg-[#8B9F82] px-3 h-8 text-sm font-medium text-white transition-colors hover:bg-[#7A8E71] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-moss px-3 h-8 text-sm font-medium text-white transition-colors hover:bg-moss-light outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <Plus className="size-4" />
             Add Vendor
@@ -602,7 +602,7 @@ export default function VendorsPage() {
       {/* Search and view toggle */}
       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
         <div className="relative flex-1 min-w-[180px]">
-          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-[#7A7A7A]" />
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-ink-muted" />
           <Input
             placeholder="Search vendors..."
             value={searchQuery}
@@ -615,7 +615,7 @@ export default function VendorsPage() {
           variant="outline"
           size="icon"
           onClick={() => setShowFilters((f) => !f)}
-          className={`shrink-0 ${showFilters ? 'border-[#8B9F82] text-[#8B9F82]' : ''}`}
+          className={`shrink-0 ${showFilters ? 'border-moss text-moss' : ''}`}
         >
           <SlidersHorizontal className="size-4" />
         </Button>
@@ -625,8 +625,8 @@ export default function VendorsPage() {
             onClick={() => setViewMode('grid')}
             className={`p-1.5 transition-colors ${
               viewMode === 'grid'
-                ? 'bg-[#8B9F82] text-white'
-                : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
+                ? 'bg-moss text-white'
+                : 'text-ink-muted hover:text-ink'
             }`}
             aria-label="Grid view"
           >
@@ -636,8 +636,8 @@ export default function VendorsPage() {
             onClick={() => setViewMode('list')}
             className={`p-1.5 transition-colors ${
               viewMode === 'list'
-                ? 'bg-[#8B9F82] text-white'
-                : 'text-[#7A7A7A] hover:text-[#2D2D2D]'
+                ? 'bg-moss text-white'
+                : 'text-ink-muted hover:text-ink'
             }`}
             aria-label="List view"
           >
@@ -679,8 +679,8 @@ export default function VendorsPage() {
           onClick={() => setFilterStatus('all')}
           className={`rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${
             filterStatus === 'all'
-              ? 'bg-[#2D2D2D] text-white'
-              : 'bg-[#F3F4F6] text-[#7A7A7A] hover:bg-[#E5E7EB] hover:text-[#2D2D2D]'
+              ? 'bg-ink text-white'
+              : 'bg-[#F3F4F6] text-ink-muted hover:bg-[#E5E7EB] hover:text-ink'
           }`}
         >
           All
@@ -719,7 +719,7 @@ export default function VendorsPage() {
       {showFilters && (
         <div className="flex flex-wrap items-end gap-3 rounded-lg border border-[#E5E7EB] bg-white p-4">
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-[#7A7A7A]">Status</label>
+            <label className="text-xs font-medium text-ink-muted">Status</label>
             <Select value={filterStatus} onValueChange={(v) => setFilterStatus(v ?? 'all')}>
               <SelectTrigger className="w-[180px]">
                 <SelectValue placeholder="All Statuses" />
@@ -736,7 +736,7 @@ export default function VendorsPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-[#7A7A7A]">Min Price</label>
+            <label className="text-xs font-medium text-ink-muted">Min Price</label>
             <Input
               type="number"
               placeholder="$0"
@@ -747,7 +747,7 @@ export default function VendorsPage() {
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-xs font-medium text-[#7A7A7A]">Max Price</label>
+            <label className="text-xs font-medium text-ink-muted">Max Price</label>
             <Input
               type="number"
               placeholder="$∞"
@@ -758,7 +758,7 @@ export default function VendorsPage() {
           </div>
 
           {hasActiveFilters && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-[#7A7A7A]">
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="text-ink-muted">
               <X className="size-3.5" />
               Clear all
             </Button>
@@ -768,14 +768,14 @@ export default function VendorsPage() {
 
       {/* Comparison bar */}
       {selectedForCompare.size > 0 && (
-        <div className="flex items-center justify-between rounded-lg border border-[#8B9F82] bg-[#8B9F82]/5 p-3">
-          <div className="flex items-center gap-2 text-sm text-[#2D2D2D]">
+        <div className="flex items-center justify-between rounded-lg border border-moss bg-moss/5 p-3">
+          <div className="flex items-center gap-2 text-sm text-ink">
             <span className="font-medium">{selectedForCompare.size} vendor(s) selected</span>
             <Button
               variant="ghost"
               size="xs"
               onClick={() => setSelectedForCompare(new Set())}
-              className="text-[#7A7A7A]"
+              className="text-ink-muted"
             >
               Clear
             </Button>
@@ -783,7 +783,7 @@ export default function VendorsPage() {
           <Button
             onClick={goToCompare}
             disabled={selectedForCompare.size < 2}
-            className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+            className="bg-moss hover:bg-moss-light text-white"
             size="sm"
           >
             Compare Selected
@@ -793,15 +793,15 @@ export default function VendorsPage() {
 
       {/* Sharing CTA */}
       {!sharingCtaDismissed && vendors.length >= 2 && (
-        <div className="relative flex flex-col gap-3 rounded-xl border border-[#C4A0A0]/30 bg-gradient-to-r from-[#C4A0A0]/5 to-[#8B9F82]/5 px-5 py-4 sm:flex-row sm:items-center sm:gap-4">
+        <div className="relative flex flex-col gap-3 rounded-xl border border-[#C4A0A0]/30 bg-gradient-to-r from-[#C4A0A0]/5 to-moss/5 px-5 py-4 sm:flex-row sm:items-center sm:gap-4">
           <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#C4A0A0]/10">
             <Users className="size-5 text-[#C4A0A0]" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-sm font-semibold text-[#2D2D2D]">
+            <p className="text-sm font-semibold text-ink">
               Get a second opinion
             </p>
-            <p className="mt-0.5 text-xs text-[#7A7A7A]">
+            <p className="mt-0.5 text-xs text-ink-muted">
               {canUseFeature('partner_sharing')
                 ? 'Share a magic link so your partner, family, or wedding planner can browse vendors, view budgets, and leave reactions — no account needed.'
                 : 'Get the Wedding Pass to share a live view with your partner, family, or wedding planner and get their reactions on every vendor.'}
@@ -823,7 +823,7 @@ export default function VendorsPage() {
               onClick={() => {
                 vendorCheckout.mutate({ location: 'vendors_sharing_cta' });
               }}
-              className="inline-flex w-full shrink-0 items-center justify-center gap-1.5 rounded-lg bg-[#C9A96E] px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-[#B8985D] sm:w-auto"
+              className="inline-flex w-full shrink-0 items-center justify-center gap-1.5 rounded-lg bg-champagne px-3.5 py-2 text-xs font-medium text-white transition-colors hover:bg-[#B8985D] sm:w-auto"
             >
               {vendorCheckout.isPending ? 'Opening…' : `Get the pass · $${PLANS.pass.price}`}
             </button>
@@ -831,7 +831,7 @@ export default function VendorsPage() {
           <button
             type="button"
             onClick={dismissSharingCta}
-            className="absolute right-2 top-2 rounded-md p-0.5 text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
+            className="absolute right-2 top-2 rounded-md p-0.5 text-ink-muted transition-colors hover:text-ink"
             aria-label="Dismiss"
           >
             <X className="size-3.5" />
@@ -850,22 +850,22 @@ export default function VendorsPage() {
           </DialogHeader>
           {shareLoading ? (
             <div className="flex items-center justify-center py-4">
-              <Loader2 className="size-5 animate-spin text-[#8B9F82]" />
+              <Loader2 className="size-5 animate-spin text-moss" />
             </div>
           ) : shareLink ? (
             <div className="space-y-3">
-              <div className="flex items-center gap-2 rounded-lg border border-[#E8E4DF] bg-[#FAFAF8] p-2.5">
-                <Link2 className="size-4 shrink-0 text-[#8B9F82]" />
+              <div className="flex items-center gap-2 rounded-lg border border-hairline bg-[#FAFAF8] p-2.5">
+                <Link2 className="size-4 shrink-0 text-moss" />
                 <input
                   readOnly
                   value={shareLink}
-                  className="min-w-0 flex-1 bg-transparent text-xs text-[#7A7A7A] outline-none"
+                  className="min-w-0 flex-1 bg-transparent text-xs text-ink-muted outline-none"
                   onFocus={(e) => e.target.select()}
                 />
               </div>
               <Button
                 onClick={handleCopyShareLink}
-                className="w-full bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+                className="w-full bg-moss text-white hover:bg-moss-light"
               >
                 {shareCopied ? (
                   <>
@@ -881,13 +881,13 @@ export default function VendorsPage() {
               </Button>
             </div>
           ) : (
-            <p className="text-center text-sm text-[#7A7A7A]">
+            <p className="text-center text-sm text-ink-muted">
               Something went wrong. Please try again.
             </p>
           )}
-          <p className="text-center text-xs text-[#7A7A7A]">
+          <p className="text-center text-xs text-ink-muted">
             Manage this link in{' '}
-            <Link href="/settings?tab=sharing" className="underline hover:text-[#2D2D2D]">
+            <Link href="/settings?tab=sharing" className="underline hover:text-ink">
               Settings
             </Link>
           </p>
@@ -898,18 +898,18 @@ export default function VendorsPage() {
       {(authLoading || loading) ? (
         <div className="flex items-center justify-center py-20">
           <div className="flex flex-col items-center gap-3">
-            <div className="size-8 animate-spin rounded-full border-2 border-[#8B9F82]/30 border-t-[#8B9F82]" />
-            <p className="text-sm text-[#7A7A7A]">Loading vendors...</p>
+            <div className="size-8 animate-spin rounded-full border-2 border-moss/30 border-t-moss" />
+            <p className="text-sm text-ink-muted">Loading vendors...</p>
           </div>
         </div>
       ) : filteredVendors.length === 0 ? (
         /* Empty state */
         <div className="flex flex-col items-center justify-center py-20 text-center">
-          <div className="rounded-full bg-[#8B9F82]/10 p-4 mb-4">
-            <Package className="size-8 text-[#8B9F82]" />
+          <div className="rounded-full bg-moss/10 p-4 mb-4">
+            <Package className="size-8 text-moss" />
           </div>
-          <h3 className="text-lg font-medium text-[#2D2D2D] mb-1">No vendors found</h3>
-          <p className="text-sm text-[#7A7A7A] mb-4 max-w-sm">
+          <h3 className="text-lg font-medium text-ink mb-1">No vendors found</h3>
+          <p className="text-sm text-ink-muted mb-4 max-w-sm">
             {hasActiveFilters || searchQuery
               ? 'Try adjusting your filters or search query.'
               : 'Get started by adding your first vendor or importing from a listing site.'}
@@ -922,7 +922,7 @@ export default function VendorsPage() {
             ) : null}
             <DropdownMenu>
               <DropdownMenuTrigger
-                className="inline-flex items-center gap-1.5 rounded-lg bg-[#8B9F82] px-3 h-8 text-sm font-medium text-white transition-colors hover:bg-[#7A8E71] outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-moss px-3 h-8 text-sm font-medium text-white transition-colors hover:bg-moss-light outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 <Plus className="size-4" />
                 Add Vendor
@@ -1013,15 +1013,15 @@ export default function VendorsPage() {
                       type="checkbox"
                       checked={selectedForCompare.has(vendor.id)}
                       onChange={() => toggleCompare(vendor.id)}
-                      className="size-4 rounded border-[#D1D5DB] text-[#8B9F82] focus:ring-[#8B9F82]"
+                      className="size-4 rounded border-[#D1D5DB] text-moss focus:ring-moss"
                       aria-label={`Select ${vendor.name}`}
                     />
                   </TableCell>
                   <TableCell>
                     <div>
-                      <p className="font-medium text-[#2D2D2D]">{vendor.name}</p>
+                      <p className="font-medium text-ink">{vendor.name}</p>
                       {vendor.company_name && (
-                        <p className="text-xs text-[#7A7A7A]">{vendor.company_name}</p>
+                        <p className="text-xs text-ink-muted">{vendor.company_name}</p>
                       )}
                     </div>
                   </TableCell>
@@ -1029,7 +1029,7 @@ export default function VendorsPage() {
                     {vendor.vendor_categories ? (
                       <Badge
                         variant="secondary"
-                        className="bg-[#8B9F82]/10 text-[#8B9F82] border-transparent text-xs"
+                        className="bg-moss/10 text-moss border-transparent text-xs"
                       >
                         {vendor.vendor_categories.icon && (
                           <span className="mr-0.5">{getVendorEmoji(vendor.vendor_categories.icon)}</span>
@@ -1037,7 +1037,7 @@ export default function VendorsPage() {
                         {vendor.vendor_categories.name}
                       </Badge>
                     ) : (
-                      <span className="text-[#7A7A7A]">--</span>
+                      <span className="text-ink-muted">--</span>
                     )}
                   </TableCell>
                   <TableCell>
@@ -1053,10 +1053,10 @@ export default function VendorsPage() {
                         {'☆'.repeat(5 - vendor.rating)}
                       </span>
                     ) : (
-                      <span className="text-[#7A7A7A]">--</span>
+                      <span className="text-ink-muted">--</span>
                     )}
                   </TableCell>
-                  <TableCell className="text-[#7A7A7A]">
+                  <TableCell className="text-ink-muted">
                     {new Date(vendor.created_at).toLocaleDateString()}
                   </TableCell>
                 </TableRow>

@@ -92,10 +92,10 @@ export default function ProposalDetailPage() {
     await supabase.storage.from('proposals').remove([proposal.file_url])
     const { error } = await supabase.from('proposals').delete().eq('id', proposal.id)
     if (error) {
-      toast.error('Failed to delete proposal')
+      toast.error('Failed to delete quote')
       return
     }
-    toast.success('Proposal deleted')
+    toast.success('Quote deleted')
     router.push('/proposals')
   }
 
@@ -109,7 +109,7 @@ export default function ProposalDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="size-8 animate-spin text-[#8B9F82]" />
+        <Loader2 className="size-8 animate-spin text-moss" />
       </div>
     )
   }
@@ -117,14 +117,14 @@ export default function ProposalDetailPage() {
   if (!proposal) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <AlertCircle className="size-10 text-[#DC2626] mb-3" />
-        <h3 className="text-lg font-medium text-[#2D2D2D] mb-1">Proposal not found</h3>
-        <p className="text-sm text-[#7A7A7A] mb-4">
-          This proposal may have been deleted.
+        <AlertCircle className="size-10 text-error mb-3" />
+        <h3 className="text-lg font-medium text-ink mb-1">Quote not found</h3>
+        <p className="text-sm text-ink-muted mb-4">
+          This quote may have been deleted.
         </p>
         <Button variant="outline" onClick={() => router.push('/proposals')}>
           <ArrowLeft className="size-4" />
-          Back to Proposals
+          Back to Quotes
         </Button>
       </div>
     )
@@ -139,15 +139,15 @@ export default function ProposalDetailPage() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Link href="/proposals">
-            <Button variant="ghost" size="icon-sm" className="text-[#7A7A7A]">
+            <Button variant="ghost" size="icon-sm" className="text-ink-muted">
               <ArrowLeft className="size-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-[#2D2D2D]">
+            <h1 className="text-2xl font-bold tracking-tight text-ink">
               {proposal.extracted_vendor_name || proposal.file_name}
             </h1>
-            <p className="mt-0.5 text-sm text-[#7A7A7A]">
+            <p className="mt-0.5 text-sm text-ink-muted">
               {proposal.file_name}
               {proposal.file_size ? ` · ${formatFileSize(proposal.file_size)}` : ''}
               {' · '}Uploaded {formatDate(proposal.created_at)}
@@ -163,7 +163,7 @@ export default function ProposalDetailPage() {
             variant="outline"
             size="sm"
             onClick={handleDelete}
-            className="text-[#DC2626] border-[#DC2626]/30 hover:bg-[#DC2626]/5 hover:text-[#DC2626]"
+            className="text-error border-error/30 hover:bg-error/5 hover:text-error"
           >
             <Trash2 className="size-3.5" />
             Delete
@@ -174,10 +174,10 @@ export default function ProposalDetailPage() {
       {/* Linked vendor */}
       {proposal.vendors && (
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-[#7A7A7A]">Linked to:</span>
+          <span className="text-ink-muted">Linked to:</span>
           <Link
             href={`/vendors/${proposal.vendor_id}`}
-            className="font-medium text-[#8B9F82] hover:underline"
+            className="font-medium text-moss hover:underline"
           >
             {proposal.vendors.name}
           </Link>
@@ -190,7 +190,7 @@ export default function ProposalDetailPage() {
           className={
             proposal.scan_status === 'failed'
               ? 'bg-red-100 text-red-700 border-0'
-              : 'bg-[#7A7A7A]/10 text-[#7A7A7A] border-0'
+              : 'bg-ink-muted/10 text-ink-muted border-0'
           }
         >
           Scan: {proposal.scan_status}
@@ -201,30 +201,30 @@ export default function ProposalDetailPage() {
       {(proposal.extracted_total_price || proposal.extracted_deposit_amount) && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-[#2D2D2D]">Pricing</CardTitle>
+            <CardTitle className="text-sm text-ink">Pricing</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 sm:grid-cols-3">
               {proposal.extracted_total_price != null && (
                 <div>
-                  <p className="text-xs text-[#7A7A7A]">Total Price</p>
-                  <p className="text-lg font-semibold text-[#2D2D2D]">
+                  <p className="text-xs text-ink-muted">Total Price</p>
+                  <p className="text-lg font-semibold text-ink">
                     {formatCurrency(proposal.extracted_total_price)}
                   </p>
                 </div>
               )}
               {proposal.extracted_deposit_amount != null && (
                 <div>
-                  <p className="text-xs text-[#7A7A7A]">Deposit</p>
-                  <p className="text-lg font-semibold text-[#2D2D2D]">
+                  <p className="text-xs text-ink-muted">Deposit</p>
+                  <p className="text-lg font-semibold text-ink">
                     {formatCurrency(proposal.extracted_deposit_amount)}
                   </p>
                 </div>
               )}
               {proposal.extracted_deposit_due_date && (
                 <div>
-                  <p className="text-xs text-[#7A7A7A]">Deposit Due</p>
-                  <p className="text-lg font-semibold text-[#2D2D2D]">
+                  <p className="text-xs text-ink-muted">Deposit Due</p>
+                  <p className="text-lg font-semibold text-ink">
                     {formatDate(proposal.extracted_deposit_due_date)}
                   </p>
                 </div>
@@ -238,14 +238,14 @@ export default function ProposalDetailPage() {
       {services.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-[#2D2D2D]">Services Included</CardTitle>
+            <CardTitle className="text-sm text-ink">Services Included</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {services.map((service) => (
                 <span
                   key={service}
-                  className="rounded-full bg-[#8B9F82]/10 px-3 py-1 text-xs font-medium text-[#8B9F82]"
+                  className="rounded-full bg-moss/10 px-3 py-1 text-xs font-medium text-moss"
                 >
                   {service}
                 </span>
@@ -259,7 +259,7 @@ export default function ProposalDetailPage() {
       {schedule.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-[#2D2D2D]">Payment Schedule</CardTitle>
+            <CardTitle className="text-sm text-ink">Payment Schedule</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -285,7 +285,7 @@ export default function ProposalDetailPage() {
               </TableBody>
             </Table>
             <div className="mt-3 flex justify-end border-t pt-3">
-              <p className="text-sm font-semibold text-[#2D2D2D]">
+              <p className="text-sm font-semibold text-ink">
                 Total: {formatCurrency(schedule.reduce((sum, p) => sum + p.amount, 0))}
               </p>
             </div>
@@ -297,29 +297,29 @@ export default function ProposalDetailPage() {
       {(proposal.extracted_terms || proposal.extracted_cancellation_policy || proposal.extracted_notes) && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-sm text-[#2D2D2D]">Terms & Notes</CardTitle>
+            <CardTitle className="text-sm text-ink">Terms & Notes</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             {proposal.extracted_terms && (
               <div>
-                <p className="text-xs font-medium text-[#7A7A7A] mb-1">Terms</p>
-                <p className="whitespace-pre-wrap text-sm text-[#2D2D2D]">
+                <p className="text-xs font-medium text-ink-muted mb-1">Terms</p>
+                <p className="whitespace-pre-wrap text-sm text-ink">
                   {proposal.extracted_terms}
                 </p>
               </div>
             )}
             {proposal.extracted_cancellation_policy && (
               <div>
-                <p className="text-xs font-medium text-[#7A7A7A] mb-1">Cancellation Policy</p>
-                <p className="whitespace-pre-wrap text-sm text-[#2D2D2D]">
+                <p className="text-xs font-medium text-ink-muted mb-1">Cancellation Policy</p>
+                <p className="whitespace-pre-wrap text-sm text-ink">
                   {proposal.extracted_cancellation_policy}
                 </p>
               </div>
             )}
             {proposal.extracted_notes && (
               <div>
-                <p className="text-xs font-medium text-[#7A7A7A] mb-1">Notes</p>
-                <p className="whitespace-pre-wrap text-sm text-[#2D2D2D]">
+                <p className="text-xs font-medium text-ink-muted mb-1">Notes</p>
+                <p className="whitespace-pre-wrap text-sm text-ink">
                   {proposal.extracted_notes}
                 </p>
               </div>

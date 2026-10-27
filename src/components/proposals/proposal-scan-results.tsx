@@ -132,7 +132,7 @@ export function ProposalScanResults({
 
       if (error) throw error
 
-      toast.success('Proposal saved successfully')
+      toast.success('Quote saved')
       onSaved()
     } catch (err) {
       console.error('Error saving proposal:', err)
@@ -145,13 +145,13 @@ export function ProposalScanResults({
   return (
     <div className="space-y-6">
       {/* AI confidence banner */}
-      <div className="flex items-center gap-3 rounded-lg border border-[#C9A96E]/30 bg-[#C9A96E]/5 px-4 py-3">
-        <AlertTriangle className="size-5 shrink-0 text-[#C9A96E]" />
+      <div className="flex items-center gap-3 rounded-lg border border-champagne/30 bg-champagne/5 px-4 py-3">
+        <AlertTriangle className="size-5 shrink-0 text-brass" />
         <div>
-          <p className="text-sm font-medium text-[#2D2D2D]">
+          <p className="text-sm font-medium text-ink">
             AI Extracted &mdash; Please verify
           </p>
-          <p className="text-xs text-[#7A7A7A]">
+          <p className="text-xs text-ink-muted">
             Review the extracted data below and make corrections before saving.
           </p>
         </div>
@@ -160,7 +160,7 @@ export function ProposalScanResults({
       {/* Link to vendor */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm text-[#2D2D2D]">Link to Vendor</CardTitle>
+          <CardTitle className="text-sm text-ink">Link to Vendor</CardTitle>
         </CardHeader>
         <CardContent>
           <Select value={selectedVendorId} onValueChange={(v) => setSelectedVendorId(v ?? '')}>
@@ -187,7 +187,7 @@ export function ProposalScanResults({
       {/* Extracted fields */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm text-[#2D2D2D]">Proposal Details</CardTitle>
+          <CardTitle className="text-sm text-ink">Quote details</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid gap-4 sm:grid-cols-2">
@@ -241,13 +241,13 @@ export function ProposalScanResults({
               {form.services.map((service) => (
                 <span
                   key={service}
-                  className="inline-flex items-center gap-1 rounded-full bg-[#8B9F82]/10 px-3 py-1 text-xs font-medium text-[#8B9F82]"
+                  className="inline-flex items-center gap-1 rounded-full bg-moss/10 px-3 py-1 text-xs font-medium text-moss"
                 >
                   {service}
                   <button
                     type="button"
                     onClick={() => removeService(service)}
-                    className="ml-0.5 rounded-full hover:bg-[#8B9F82]/20"
+                    className="ml-0.5 rounded-full hover:bg-moss/20"
                   >
                     <X className="size-3" />
                   </button>
@@ -318,7 +318,7 @@ export function ProposalScanResults({
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm text-[#2D2D2D]">
+            <CardTitle className="text-sm text-ink">
               Payment Schedule
             </CardTitle>
             <Button variant="outline" size="sm" onClick={addPaymentItem}>
@@ -380,7 +380,7 @@ export function ProposalScanResults({
                         variant="ghost"
                         size="icon-xs"
                         onClick={() => removePaymentItem(idx)}
-                        className="text-[#7A7A7A] hover:text-red-600"
+                        className="text-ink-muted hover:text-red-600"
                       >
                         <X className="size-3" />
                       </Button>
@@ -390,14 +390,14 @@ export function ProposalScanResults({
               </TableBody>
             </Table>
           ) : (
-            <p className="py-4 text-center text-sm text-[#7A7A7A]">
+            <p className="py-4 text-center text-sm text-ink-muted">
               No payment schedule extracted. Click &ldquo;Add Payment&rdquo; to add
               one manually.
             </p>
           )}
           {form.paymentSchedule.length > 0 && (
             <div className="mt-3 flex justify-end border-t pt-3">
-              <p className="text-sm font-semibold text-[#2D2D2D]">
+              <p className="text-sm font-semibold text-ink">
                 Total:{' '}
                 {formatCurrency(
                   form.paymentSchedule.reduce((sum, p) => sum + p.amount, 0)
@@ -413,7 +413,7 @@ export function ProposalScanResults({
         <Button
           onClick={handleSave}
           disabled={isSaving}
-          className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+          className="bg-moss text-white hover:bg-moss-light"
           size="lg"
         >
           {isSaving ? (

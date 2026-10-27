@@ -96,9 +96,9 @@ export function BookingPaymentDialog({
     <Dialog open={open} onOpenChange={handleCancel}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-[#2D2D2D]">Booking Payment</DialogTitle>
+          <DialogTitle className="text-ink">Booking Payment</DialogTitle>
           <DialogDescription>
-            You&apos;re booking <span className="font-medium text-[#2D2D2D]">{vendorName}</span>. How would you like to record the payment?
+            You&apos;re booking <span className="font-medium text-ink">{vendorName}</span>. How would you like to record the payment?
           </DialogDescription>
         </DialogHeader>
 
@@ -113,23 +113,23 @@ export function BookingPaymentDialog({
                 onClick={() => setSelected(opt.value)}
                 className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
                   isSelected
-                    ? 'border-[#8B9F82] bg-[#8B9F82]/5'
-                    : 'border-[#E5E7EB] hover:border-[#8B9F82]/50 hover:bg-[#FAF8F5]'
+                    ? 'border-moss bg-moss/5'
+                    : 'border-[#E5E7EB] hover:border-moss/50 hover:bg-paper'
                 }`}
               >
                 <div className={`flex size-9 items-center justify-center rounded-lg ${
-                  isSelected ? 'bg-[#8B9F82]/10' : 'bg-[#FAF8F5]'
+                  isSelected ? 'bg-moss/10' : 'bg-paper'
                 }`}>
-                  <Icon className={`size-4 ${isSelected ? 'text-[#8B9F82]' : 'text-[#7A7A7A]'}`} />
+                  <Icon className={`size-4 ${isSelected ? 'text-moss' : 'text-ink-muted'}`} />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[#2D2D2D]">
+                  <p className="text-sm font-medium text-ink">
                     {opt.label}
                   </p>
-                  <p className="text-xs text-[#7A7A7A]">{opt.description}</p>
+                  <p className="text-xs text-ink-muted">{opt.description}</p>
                 </div>
                 <div className={`flex size-5 items-center justify-center rounded-full border-2 transition-colors ${
-                  isSelected ? 'border-[#8B9F82] bg-[#8B9F82]' : 'border-[#D1D5DB]'
+                  isSelected ? 'border-moss bg-moss' : 'border-[#D1D5DB]'
                 }`}>
                   {isSelected && (
                     <div className="size-2 rounded-full bg-white" />
@@ -144,7 +144,7 @@ export function BookingPaymentDialog({
           <div className="space-y-1.5">
             <Label htmlFor="deposit-amount">Deposit Amount</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#7A7A7A]">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-ink-muted">$</span>
               <Input
                 id="deposit-amount"
                 type="number"
@@ -167,7 +167,7 @@ export function BookingPaymentDialog({
             type="button"
             disabled={!selected || (selected === 'deposit_paid' && !depositAmount)}
             onClick={handleConfirm}
-            className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+            className="bg-moss hover:bg-moss-light text-white"
           >
             Confirm Booking
           </Button>

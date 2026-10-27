@@ -286,11 +286,11 @@ export default function VendorDetailPage() {
     await supabase.storage.from('proposals').remove([fileUrl]);
     const { error } = await supabase.from('proposals').delete().eq('id', proposalId);
     if (error) {
-      toast.error('Failed to delete proposal');
+      toast.error('Failed to delete quote');
       return;
     }
     setProposals((prev) => prev.filter((p) => p.id !== proposalId));
-    toast.success('Proposal deleted');
+    toast.success('Quote deleted');
   }
 
   async function viewProposalPdf(fileUrl: string) {
@@ -315,8 +315,8 @@ export default function VendorDetailPage() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="flex flex-col items-center gap-3">
-          <Loader2 className="size-8 animate-spin text-[#8B9F82]" />
-          <p className="text-sm text-[#7A7A7A]">Loading vendor details...</p>
+          <Loader2 className="size-8 animate-spin text-moss" />
+          <p className="text-sm text-ink-muted">Loading vendor details...</p>
         </div>
       </div>
     );
@@ -325,9 +325,9 @@ export default function VendorDetailPage() {
   if (!vendor) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-center">
-        <AlertCircle className="size-10 text-[#DC2626] mb-3" />
-        <h3 className="text-lg font-medium text-[#2D2D2D] mb-1">Vendor not found</h3>
-        <p className="text-sm text-[#7A7A7A] mb-4">
+        <AlertCircle className="size-10 text-error mb-3" />
+        <h3 className="text-lg font-medium text-ink mb-1">Vendor not found</h3>
+        <p className="text-sm text-ink-muted mb-4">
           The vendor you are looking for does not exist or has been removed.
         </p>
         <Button variant="outline" onClick={() => router.push('/vendors')}>
@@ -355,7 +355,7 @@ export default function VendorDetailPage() {
             variant="outline"
             size="sm"
             onClick={() => setShowDeleteConfirm(true)}
-            className="text-[#DC2626] border-[#DC2626]/30 hover:bg-[#DC2626]/5 hover:text-[#DC2626]"
+            className="text-error border-error/30 hover:bg-error/5 hover:text-error"
           >
             <Trash2 className="size-4" />
             Delete
@@ -366,7 +366,7 @@ export default function VendorDetailPage() {
               size="lg"
               onClick={() => setBookingDialogOpen(true)}
               disabled={booking}
-              className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white shadow-md"
+              className="bg-moss hover:bg-moss-light text-white shadow-md"
             >
               {booking ? (
                 <>
@@ -401,15 +401,15 @@ export default function VendorDetailPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="mx-4 w-full max-w-sm rounded-xl bg-white p-6 shadow-xl">
             <div className="flex items-center gap-3 mb-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-[#DC2626]/10">
-                <Trash2 className="size-5 text-[#DC2626]" />
+              <div className="flex size-10 items-center justify-center rounded-full bg-error/10">
+                <Trash2 className="size-5 text-error" />
               </div>
-              <h3 className="text-lg font-semibold text-[#2D2D2D]">Delete Vendor</h3>
+              <h3 className="text-lg font-semibold text-ink">Delete Vendor</h3>
             </div>
-            <p className="text-sm text-[#7A7A7A] mb-1">
-              Are you sure you want to delete <span className="font-medium text-[#2D2D2D]">{vendor.name}</span>?
+            <p className="text-sm text-ink-muted mb-1">
+              Are you sure you want to delete <span className="font-medium text-ink">{vendor.name}</span>?
             </p>
-            <p className="text-xs text-[#7A7A7A] mb-5">
+            <p className="text-xs text-ink-muted mb-5">
               This action cannot be undone. All associated data including notes, pricing, payment history, and linked budget items will be permanently removed.
             </p>
             <div className="flex gap-2 justify-end">
@@ -425,7 +425,7 @@ export default function VendorDetailPage() {
                 size="sm"
                 onClick={deleteVendor}
                 disabled={deleting}
-                className="bg-[#DC2626] hover:bg-[#B91C1C] text-white"
+                className="bg-error hover:bg-[#B91C1C] text-white"
               >
                 {deleting ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -442,7 +442,7 @@ export default function VendorDetailPage() {
       {/* Status pipeline */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base text-[#2D2D2D]">Status Pipeline</CardTitle>
+          <CardTitle className="text-base text-ink">Status Pipeline</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex items-center gap-1 overflow-x-auto pb-2">
@@ -458,10 +458,10 @@ export default function VendorDetailPage() {
                     disabled={updatingStatus || isActive}
                     className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap ${
                       isActive
-                        ? 'bg-[#8B9F82] text-white shadow-sm'
+                        ? 'bg-moss text-white shadow-sm'
                         : isPast
-                        ? 'bg-[#8B9F82]/20 text-[#8B9F82] hover:bg-[#8B9F82]/30'
-                        : 'bg-[#F3F4F6] text-[#7A7A7A] hover:bg-[#E5E7EB]'
+                        ? 'bg-moss/20 text-moss hover:bg-moss/30'
+                        : 'bg-[#F3F4F6] text-ink-muted hover:bg-[#E5E7EB]'
                     }`}
                   >
                     {statusLabels[status]}
@@ -469,7 +469,7 @@ export default function VendorDetailPage() {
                   {index < STATUS_PIPELINE.length - 1 && (
                     <div
                       className={`h-0.5 w-4 shrink-0 ${
-                        isPast ? 'bg-[#8B9F82]' : 'bg-[#E5E7EB]'
+                        isPast ? 'bg-moss' : 'bg-[#E5E7EB]'
                       }`}
                     />
                   )}
@@ -485,8 +485,8 @@ export default function VendorDetailPage() {
               disabled={updatingStatus || vendor.status === 'declined'}
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap ${
                 vendor.status === 'declined'
-                  ? 'bg-[#FEE2E2] text-[#DC2626]'
-                  : 'bg-[#F3F4F6] text-[#7A7A7A] hover:bg-[#FEE2E2] hover:text-[#DC2626]'
+                  ? 'bg-[#FEE2E2] text-error'
+                  : 'bg-[#F3F4F6] text-ink-muted hover:bg-[#FEE2E2] hover:text-error'
               }`}
             >
               Declined
@@ -497,7 +497,7 @@ export default function VendorDetailPage() {
               className={`rounded-lg px-3 py-1.5 text-xs font-medium transition-all whitespace-nowrap ${
                 vendor.status === 'archived'
                   ? 'bg-[#F3F4F6] text-[#6B7280]'
-                  : 'bg-[#F3F4F6] text-[#7A7A7A] hover:bg-[#E5E7EB]'
+                  : 'bg-[#F3F4F6] text-ink-muted hover:bg-[#E5E7EB]'
               }`}
             >
               Archived
@@ -516,9 +516,9 @@ export default function VendorDetailPage() {
         {/* Proposals section */}
         <Card>
           <CardHeader className="flex-row items-center justify-between">
-            <CardTitle className="text-base text-[#2D2D2D] flex items-center gap-2">
+            <CardTitle className="text-base text-ink flex items-center gap-2">
               <FileText className="size-4" />
-              Proposals & Contracts
+              Quotes & Contracts
             </CardTitle>
             <Button
               variant="outline"
@@ -533,9 +533,9 @@ export default function VendorDetailPage() {
             {proposals.length === 0 ? (
               <div className="text-center py-6">
                 <FileText className="size-8 text-[#D1D5DB] mx-auto mb-2" />
-                <p className="text-sm text-[#7A7A7A]">No proposals or contracts yet</p>
-                <p className="text-xs text-[#7A7A7A] mt-1">
-                  Upload PDF proposals or contracts from this vendor
+                <p className="text-sm text-ink-muted">No quotes or contracts yet</p>
+                <p className="text-xs text-ink-muted mt-1">
+                  Upload PDF quotes or contracts from this vendor
                 </p>
               </div>
             ) : (
@@ -546,12 +546,12 @@ export default function VendorDetailPage() {
                     className="flex items-center justify-between rounded-lg border border-[#E5E7EB] p-3"
                   >
                     <div className="flex items-center gap-2">
-                      <FileText className="size-4 text-[#8B9F82]" />
+                      <FileText className="size-4 text-moss" />
                       <div>
-                        <p className="text-sm font-medium text-[#2D2D2D]">
+                        <p className="text-sm font-medium text-ink">
                           {proposal.file_name}
                         </p>
-                        <p className="text-xs text-[#7A7A7A]">
+                        <p className="text-xs text-ink-muted">
                           {new Date(proposal.created_at).toLocaleDateString()}
                           {proposal.file_size ? ` · ${formatFileSize(proposal.file_size)}` : ''}
                         </p>
@@ -569,7 +569,7 @@ export default function VendorDetailPage() {
                         variant="ghost"
                         size="icon-xs"
                         onClick={() => deleteProposal(proposal.id, proposal.file_url)}
-                        className="text-[#7A7A7A] hover:text-red-600"
+                        className="text-ink-muted hover:text-red-600"
                       >
                         <Trash2 className="size-3.5" />
                       </Button>
@@ -584,7 +584,7 @@ export default function VendorDetailPage() {
         {/* Messages section */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base text-[#2D2D2D] flex items-center gap-2">
+            <CardTitle className="text-base text-ink flex items-center gap-2">
               <MessageSquare className="size-4" />
               Recent Messages
             </CardTitle>
@@ -593,8 +593,8 @@ export default function VendorDetailPage() {
             {messages.length === 0 ? (
               <div className="text-center py-6">
                 <MessageSquare className="size-8 text-[#D1D5DB] mx-auto mb-2" />
-                <p className="text-sm text-[#7A7A7A]">No messages yet</p>
-                <p className="text-xs text-[#7A7A7A] mt-1">
+                <p className="text-sm text-ink-muted">No messages yet</p>
+                <p className="text-xs text-ink-muted mt-1">
                   Messages with this vendor will appear here
                 </p>
               </div>
@@ -606,12 +606,12 @@ export default function VendorDetailPage() {
                     className="rounded-lg border border-[#E5E7EB] p-3"
                   >
                     <div className="flex items-center justify-between mb-1">
-                      <p className="text-sm font-medium text-[#2D2D2D]">
+                      <p className="text-sm font-medium text-ink">
                         {message.subject}
                       </p>
-                      <span className="text-xs text-[#7A7A7A]">{message.date}</span>
+                      <span className="text-xs text-ink-muted">{message.date}</span>
                     </div>
-                    <p className="text-xs text-[#7A7A7A] line-clamp-2">
+                    <p className="text-xs text-ink-muted line-clamp-2">
                       {message.preview}
                     </p>
                   </div>
@@ -628,7 +628,7 @@ export default function VendorDetailPage() {
       {/* Timeline */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base text-[#2D2D2D] flex items-center gap-2">
+          <CardTitle className="text-base text-ink flex items-center gap-2">
             <Clock className="size-4" />
             Timeline
           </CardTitle>
@@ -637,14 +637,14 @@ export default function VendorDetailPage() {
           {timelineEvents.length === 0 ? (
             <div className="text-center py-6">
               <Clock className="size-8 text-[#D1D5DB] mx-auto mb-2" />
-              <p className="text-sm text-[#7A7A7A]">No timeline events yet</p>
+              <p className="text-sm text-ink-muted">No timeline events yet</p>
             </div>
           ) : (
             <div className="relative space-y-0">
               {timelineEvents.map((event, index) => {
                 const iconMap = {
                   status_change: <VendorStatusBadge status={vendor.status} />,
-                  note: <FileText className="size-3.5 text-[#8B9F82]" />,
+                  note: <FileText className="size-3.5 text-moss" />,
                   message: <MessageSquare className="size-3.5 text-[#1D4ED8]" />,
                   booking: <CheckCircle2 className="size-3.5 text-[#047857]" />,
                 };
@@ -655,7 +655,7 @@ export default function VendorDetailPage() {
                     <div className="flex flex-col items-center">
                       <div className="flex items-center justify-center size-7 rounded-full bg-[#F3F4F6] shrink-0">
                         {event.type === 'status_change' ? (
-                          <Clock className="size-3.5 text-[#8B9F82]" />
+                          <Clock className="size-3.5 text-moss" />
                         ) : (
                           iconMap[event.type]
                         )}
@@ -667,13 +667,13 @@ export default function VendorDetailPage() {
 
                     {/* Event content */}
                     <div className="pt-0.5 pb-2">
-                      <p className="text-sm font-medium text-[#2D2D2D]">
+                      <p className="text-sm font-medium text-ink">
                         {event.title}
                       </p>
-                      <p className="text-xs text-[#7A7A7A] mt-0.5">
+                      <p className="text-xs text-ink-muted mt-0.5">
                         {event.description}
                       </p>
-                      <p className="text-xs text-[#7A7A7A] mt-1">
+                      <p className="text-xs text-ink-muted mt-1">
                         {new Date(event.timestamp).toLocaleDateString('en-US', {
                           year: 'numeric',
                           month: 'short',

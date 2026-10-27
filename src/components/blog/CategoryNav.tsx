@@ -21,7 +21,7 @@ export function CategoryNav({
         href="/blog"
         className={pillClass(active === undefined)}
       >
-        All <span className="ml-1 text-[#7A7A7A]">({totalCount})</span>
+        All <span className="ml-1 text-ink-muted">({totalCount})</span>
       </Link>
       {categories.map(({ category, count }) => (
         <Link
@@ -30,7 +30,7 @@ export function CategoryNav({
           className={pillClass(active === category)}
         >
           {CATEGORY_LABELS[category]}{" "}
-          <span className="ml-1 text-[#7A7A7A]">({count})</span>
+          <span className="ml-1 text-ink-muted">({count})</span>
         </Link>
       ))}
     </nav>
@@ -41,7 +41,7 @@ function pillClass(isActive: boolean): string {
   const base =
     "inline-flex items-center rounded-full border px-3.5 py-1.5 text-sm font-medium transition-colors"
   if (isActive) {
-    return `${base} border-[#8B9F82] bg-[#8B9F82] text-white`
+    return `${base} border-moss bg-moss text-white`
   }
-  return `${base} border-[#E8E4DE] bg-white text-[#2D2D2D] hover:border-[#8B9F82] hover:text-[#6B8F71]`
+  return `${base} border-hairline bg-white text-ink hover:border-moss hover:text-[#6B8F71]`
 }

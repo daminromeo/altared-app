@@ -61,10 +61,10 @@ export function MessageThread({
     return (
       <div className="flex h-full items-center justify-center p-8 text-center">
         <div>
-          <p className="text-sm font-medium text-[#2D2D2D]">
+          <p className="text-sm font-medium text-ink">
             Select a conversation
           </p>
-          <p className="mt-1 text-xs text-[#7A7A7A]">
+          <p className="mt-1 text-xs text-ink-muted">
             Choose a vendor from the list to view the communication history
           </p>
         </div>
@@ -81,11 +81,11 @@ export function MessageThread({
     <div className="flex h-full flex-col">
       {/* Thread header */}
       <div className="shrink-0 border-b border-gray-100 px-6 py-4">
-        <h2 className="text-base font-semibold text-[#2D2D2D]">
+        <h2 className="text-base font-semibold text-ink">
           {vendorName}
         </h2>
         {sorted[0]?.subject && (
-          <p className="mt-0.5 text-sm text-[#7A7A7A]">{sorted[0].subject}</p>
+          <p className="mt-0.5 text-sm text-ink-muted">{sorted[0].subject}</p>
         )}
       </div>
 
@@ -108,20 +108,20 @@ export function MessageThread({
                 className={cn(
                   "max-w-[80%] rounded-2xl px-4 py-3",
                   isOutbound
-                    ? "rounded-br-md bg-[#8B9F82]/15 text-[#2D2D2D]"
-                    : "rounded-bl-md bg-white text-[#2D2D2D] ring-1 ring-gray-100"
+                    ? "rounded-br-md bg-moss/15 text-ink"
+                    : "rounded-bl-md bg-white text-ink ring-1 ring-gray-100"
                 )}
               >
                 <div className="mb-1 flex items-center gap-2">
-                  <span className="text-xs font-medium text-[#2D2D2D]">
+                  <span className="text-xs font-medium text-ink">
                     {isOutbound ? "You" : message.vendor_name}
                   </span>
                   <MessageSourceBadge source={message.source} />
                 </div>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed text-[#2D2D2D]">
+                <p className="whitespace-pre-wrap text-sm leading-relaxed text-ink">
                   {message.body}
                 </p>
-                <p className="mt-2 text-[11px] text-[#7A7A7A]">
+                <p className="mt-2 text-[11px] text-ink-muted">
                   {format(new Date(message.sent_at), "MMM d, yyyy 'at' h:mm a")}
                 </p>
               </div>
@@ -138,19 +138,19 @@ export function MessageThread({
             onChange={(e) => setReplyText(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Log a note or message... (Cmd+Enter to save)"
-            className="min-h-[60px] resize-none rounded-xl border-gray-200 bg-[#FAF8F5] text-sm focus-visible:ring-[#8B9F82]"
+            className="min-h-[60px] resize-none rounded-xl border-gray-200 bg-paper text-sm focus-visible:ring-moss"
             rows={2}
           />
           <Button
             onClick={handleSend}
             disabled={!replyText.trim() || isSending}
             size="icon"
-            className="shrink-0 rounded-xl bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+            className="shrink-0 rounded-xl bg-moss text-white hover:bg-moss-light"
           >
             <Send className="size-4" />
           </Button>
         </div>
-        <p className="mt-1.5 text-[11px] text-[#7A7A7A]">
+        <p className="mt-1.5 text-[11px] text-ink-muted">
           Add a note or log a conversation for your records
         </p>
       </div>

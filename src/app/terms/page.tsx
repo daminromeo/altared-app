@@ -7,20 +7,20 @@ export const metadata: Metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <div className="min-h-screen bg-[#FAF8F5]">
+    <div className="min-h-screen bg-paper">
       {/* Header */}
-      <header className="border-b border-[#E8E4DF]/60 bg-white">
+      <header className="border-b border-hairline/60 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="text-lg font-bold text-[#8B9F82]"
+            className="text-lg font-bold text-moss"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Altared
           </Link>
           <Link
             href="/"
-            className="text-sm text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
+            className="text-sm text-ink-muted transition-colors hover:text-ink"
           >
             &larr; Back to home
           </Link>
@@ -30,18 +30,18 @@ export default function TermsOfServicePage() {
       {/* Content */}
       <main className="mx-auto max-w-3xl px-6 py-12">
         <h1
-          className="text-3xl font-bold text-[#2D2D2D]"
+          className="text-3xl font-bold text-ink"
           style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Terms of Service
         </h1>
-        <p className="mt-2 text-sm text-[#7A7A7A]">
+        <p className="mt-2 text-sm text-ink-muted">
           Last updated: March 13, 2026
         </p>
 
         <div className="mt-8 space-y-8 text-sm leading-relaxed text-[#4A4A4A]">
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               1. Agreement to Terms
             </h2>
             <p>
@@ -52,7 +52,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               2. Description of Service
             </h2>
             <p>
@@ -64,7 +64,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               3. Account Registration
             </h2>
             <p>
@@ -76,7 +76,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               4. Subscription Plans & Billing
             </h2>
             <ul className="list-disc space-y-2 pl-5">
@@ -104,7 +104,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               5. Acceptable Use
             </h2>
             <p>You agree not to:</p>
@@ -132,7 +132,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               6. Your Content
             </h2>
             <p>
@@ -145,7 +145,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               7. Shared Links
             </h2>
             <p>
@@ -157,7 +157,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               8. AI Features
             </h2>
             <p>
@@ -170,7 +170,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               9. Limitation of Liability
             </h2>
             <p>
@@ -184,7 +184,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               10. Termination
             </h2>
             <p>
@@ -196,7 +196,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               11. Changes to Terms
             </h2>
             <p>
@@ -208,7 +208,7 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               12. Governing Law
             </h2>
             <p>
@@ -219,14 +219,14 @@ export default function TermsOfServicePage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               13. Contact Us
             </h2>
             <p>
               If you have any questions about these Terms, please contact us at{" "}
               <a
                 href="mailto:altaredapp@gmail.com"
-                className="text-[#8B9F82] underline underline-offset-4"
+                className="text-moss underline underline-offset-4"
               >
                 altaredapp@gmail.com
               </a>
@@ -237,8 +237,8 @@ export default function TermsOfServicePage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#E8E4DF]/60 bg-white">
-        <div className="mx-auto max-w-3xl px-6 py-6 text-center text-sm text-[#7A7A7A]">
+      <footer className="border-t border-hairline/60 bg-white">
+        <div className="mx-auto max-w-3xl px-6 py-6 text-center text-sm text-ink-muted">
           &copy; {new Date().getFullYear()} Altared. All rights reserved.
         </div>
       </footer>

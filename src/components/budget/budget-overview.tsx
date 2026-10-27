@@ -26,15 +26,15 @@ export function BudgetOverview({
       label: 'Total Budget',
       value: formatCurrency(totalBudget),
       icon: Wallet,
-      iconBg: 'bg-[#8B9F82]/10',
-      iconColor: 'text-[#8B9F82]',
+      iconBg: 'bg-moss/10',
+      iconColor: 'text-moss',
     },
     {
       label: 'Estimated Total',
       value: formatCurrency(committed),
       icon: TrendingUp,
-      iconBg: 'bg-[#C9A96E]/10',
-      iconColor: 'text-[#C9A96E]',
+      iconBg: 'bg-champagne/10',
+      iconColor: 'text-brass',
       tooltip: 'Sum of all estimated costs from your budget items',
     },
     {
@@ -56,9 +56,9 @@ export function BudgetOverview({
       label: 'Remaining Budget',
       value: formatCurrency(Math.abs(remainingBudget)),
       icon: DollarSign,
-      iconBg: isOverBudget ? 'bg-red-100' : 'bg-[#8B9F82]/10',
-      iconColor: isOverBudget ? 'text-red-600' : 'text-[#8B9F82]',
-      valueColor: isOverBudget ? 'text-red-600' : 'text-[#8B9F82]',
+      iconBg: isOverBudget ? 'bg-red-100' : 'bg-moss/10',
+      iconColor: isOverBudget ? 'text-red-600' : 'text-moss',
+      valueColor: isOverBudget ? 'text-red-600' : 'text-moss',
       prefix: isOverBudget ? '-' : '',
     },
   ]
@@ -81,12 +81,12 @@ export function BudgetOverview({
                     <Icon className={cn('size-5', stat.iconColor)} />
                   </div>
                   <div className="min-w-0">
-                    <p className="flex items-center gap-1 text-xs font-medium text-[#7A7A7A]">
+                    <p className="flex items-center gap-1 text-xs font-medium text-ink-muted">
                       {stat.label}
                       {'tooltip' in stat && stat.tooltip && (
                         <span className="group relative">
-                          <Info className="size-3 text-[#C9A96E]/60 cursor-help" />
-                          <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded bg-[#2D2D2D] px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
+                          <Info className="size-3 text-brass/60 cursor-help" />
+                          <span className="pointer-events-none absolute bottom-full left-1/2 z-10 mb-1 -translate-x-1/2 whitespace-nowrap rounded bg-ink px-2 py-1 text-[10px] text-white opacity-0 transition-opacity group-hover:opacity-100">
                             {stat.tooltip}
                           </span>
                         </span>
@@ -95,7 +95,7 @@ export function BudgetOverview({
                     <p
                       className={cn(
                         'text-lg font-bold tabular-nums',
-                        stat.valueColor ?? 'text-[#2D2D2D]'
+                        stat.valueColor ?? 'text-ink'
                       )}
                     >
                       {stat.prefix}
@@ -112,31 +112,31 @@ export function BudgetOverview({
       {/* Progress bar */}
       <div className="rounded-xl border bg-white p-4">
         <div className="flex items-center justify-between">
-          <p className="text-sm font-medium text-[#2D2D2D]">Budget Usage</p>
-          <p className="text-sm tabular-nums text-[#7A7A7A]">
+          <p className="text-sm font-medium text-ink">Budget Usage</p>
+          <p className="text-sm tabular-nums text-ink-muted">
             {formatCurrency(committed)} / {formatCurrency(totalBudget)}
           </p>
         </div>
-        <div className="mt-3 h-3 w-full overflow-hidden rounded-full bg-[#FAF8F5]">
+        <div className="mt-3 h-3 w-full overflow-hidden rounded-full bg-paper">
           <div
             className={cn(
               'h-full rounded-full transition-all duration-700 ease-out',
-              isOverBudget ? 'bg-red-500' : 'bg-[#8B9F82]'
+              isOverBudget ? 'bg-red-500' : 'bg-moss'
             )}
             style={{ width: `${progressPercent}%` }}
           />
         </div>
         <div className="mt-1.5 flex justify-between">
-          <p className="text-xs text-[#7A7A7A]">0%</p>
+          <p className="text-xs text-ink-muted">0%</p>
           <p
             className={cn(
               'text-xs font-medium',
-              isOverBudget ? 'text-red-600' : 'text-[#8B9F82]'
+              isOverBudget ? 'text-red-600' : 'text-moss'
             )}
           >
             {progressPercent.toFixed(1)}% used
           </p>
-          <p className="text-xs text-[#7A7A7A]">100%</p>
+          <p className="text-xs text-ink-muted">100%</p>
         </div>
       </div>
     </div>

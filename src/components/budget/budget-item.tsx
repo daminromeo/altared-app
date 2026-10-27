@@ -111,7 +111,7 @@ export function BudgetItem({ item, onUpdate, onDelete }: BudgetItemProps) {
 
   if (isEditing) {
     return (
-      <div className="flex flex-col gap-2 rounded-lg border border-[#8B9F82]/30 bg-[#FAF8F5] p-3">
+      <div className="flex flex-col gap-2 rounded-lg border border-moss/30 bg-paper p-3">
         <div className="grid gap-2 sm:grid-cols-4">
           <Input
             ref={descriptionRef}
@@ -167,7 +167,7 @@ export function BudgetItem({ item, onUpdate, onDelete }: BudgetItemProps) {
             <Button
               size="icon-xs"
               onClick={saveEdit}
-              className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+              className="bg-moss text-white hover:bg-moss-light"
             >
               <Check className="size-3" />
             </Button>
@@ -179,7 +179,7 @@ export function BudgetItem({ item, onUpdate, onDelete }: BudgetItemProps) {
 
   return (
     <div
-      className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-[#FAF8F5]"
+      className="group flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-paper"
       onDoubleClick={() => setIsEditing(true)}
     >
       {/* Checkbox */}
@@ -189,8 +189,8 @@ export function BudgetItem({ item, onUpdate, onDelete }: BudgetItemProps) {
         className={cn(
           'flex size-5 shrink-0 items-center justify-center rounded border transition-colors',
           item.is_paid
-            ? 'border-[#8B9F82] bg-[#8B9F82] text-white'
-            : 'border-[#7A7A7A]/30 hover:border-[#8B9F82]'
+            ? 'border-moss bg-moss text-white'
+            : 'border-ink-muted/30 hover:border-moss'
         )}
       >
         {item.is_paid && <Check className="size-3" />}
@@ -200,20 +200,20 @@ export function BudgetItem({ item, onUpdate, onDelete }: BudgetItemProps) {
       <div className="min-w-0 flex-1">
         <p
           className={cn(
-            'text-sm font-medium text-[#2D2D2D]',
+            'text-sm font-medium text-ink',
             item.is_paid && 'line-through opacity-60'
           )}
         >
           {item.description}
         </p>
         {item.vendor_name && (
-          <p className="text-xs text-[#7A7A7A]">{item.vendor_name}</p>
+          <p className="text-xs text-ink-muted">{item.vendor_name}</p>
         )}
       </div>
 
       {/* Amounts */}
       <div className="hidden shrink-0 text-right sm:block">
-        <p className="text-sm font-semibold tabular-nums text-[#2D2D2D]">
+        <p className="text-sm font-semibold tabular-nums text-ink">
           {formatCurrency(item.estimated_cost)}
         </p>
         {item.actual_cost !== null && item.actual_cost > 0 && (
@@ -222,7 +222,7 @@ export function BudgetItem({ item, onUpdate, onDelete }: BudgetItemProps) {
               'text-xs tabular-nums',
               item.actual_cost > item.estimated_cost
                 ? 'text-red-600'
-                : 'text-[#8B9F82]'
+                : 'text-moss'
             )}
           >
             Paid: {formatCurrency(item.actual_cost)}
@@ -232,14 +232,14 @@ export function BudgetItem({ item, onUpdate, onDelete }: BudgetItemProps) {
 
       {/* Due date */}
       {item.due_date && (
-        <span className="hidden shrink-0 text-xs text-[#7A7A7A] lg:inline">
+        <span className="hidden shrink-0 text-xs text-ink-muted lg:inline">
           Due {formatDate(item.due_date)}
         </span>
       )}
 
       {/* Paid badge */}
       {item.is_paid && (
-        <span className="shrink-0 rounded-full bg-[#8B9F82]/10 px-2 py-0.5 text-xs font-medium text-[#8B9F82]">
+        <span className="shrink-0 rounded-full bg-moss/10 px-2 py-0.5 text-xs font-medium text-moss">
           Paid
         </span>
       )}
@@ -267,7 +267,7 @@ export function BudgetItem({ item, onUpdate, onDelete }: BudgetItemProps) {
           variant="ghost"
           size="icon-xs"
           onClick={() => setConfirmDelete(true)}
-          className="text-[#7A7A7A] opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600"
+          className="text-ink-muted opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-600"
         >
           <Trash2 className="size-3.5" />
         </Button>

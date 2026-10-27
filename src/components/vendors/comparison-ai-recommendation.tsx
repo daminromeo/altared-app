@@ -70,25 +70,25 @@ export function AIRecommendationPanel({
   }
 
   return (
-    <div className="rounded-xl border border-[#8B9F82]/20 bg-[#8B9F82]/5 p-4">
+    <div className="rounded-xl border border-moss/20 bg-moss/5 p-4">
       {recommendation ? (
         <div className="space-y-3">
           <div className="flex items-center gap-2">
-            <Sparkles className="size-4 text-[#8B9F82]" />
-            <span className="text-sm font-semibold text-[#2D2D2D]">AI Recommendation</span>
+            <Sparkles className="size-4 text-moss" />
+            <span className="text-sm font-semibold text-ink">AI Recommendation</span>
             {recommendation.topPickId && vendorNames[recommendation.topPickId] && (
               <span className="inline-flex items-center rounded-full bg-[#047857]/10 px-2 py-0.5 text-xs font-medium text-[#047857]">
                 Top Pick: {vendorNames[recommendation.topPickId]}
               </span>
             )}
           </div>
-          <p className="text-sm text-[#2D2D2D] leading-relaxed">{recommendation.summary}</p>
+          <p className="text-sm text-ink leading-relaxed">{recommendation.summary}</p>
           <Button
             variant="ghost"
             size="sm"
             onClick={fetchRecommendation}
             disabled={loading}
-            className="text-[#7A7A7A]"
+            className="text-ink-muted"
           >
             {loading ? (
               <>
@@ -106,10 +106,10 @@ export function AIRecommendationPanel({
       ) : (
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Sparkles className="size-4 text-[#8B9F82]" />
+            <Sparkles className="size-4 text-moss" />
             <div>
-              <span className="text-sm font-medium text-[#2D2D2D]">AI Recommendation</span>
-              <p className="text-xs text-[#7A7A7A]">
+              <span className="text-sm font-medium text-ink">AI Recommendation</span>
+              <p className="text-xs text-ink-muted">
                 Get a personalized recommendation based on your priorities
               </p>
             </div>
@@ -117,7 +117,7 @@ export function AIRecommendationPanel({
           <Button
             onClick={fetchRecommendation}
             disabled={loading || vendorIds.length < 2}
-            className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+            className="bg-moss hover:bg-moss-light text-white"
           >
             {loading ? (
               <>

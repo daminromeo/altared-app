@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, useMemo } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { PLANS } from "@/lib/stripe/config";
 import { usePortalSession, useCheckout, useSubscription } from "@/lib/hooks/use-subscription";
@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ShareLinkManager } from "@/components/share/share-link-manager";
 import { toast } from "sonner";
+import { rescheduleStarterPlan } from "@/lib/starter-plan";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -48,6 +49,8 @@ export default function SettingsPage() {
   const supabase = useMemo(() => createClient(), []);
 
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  // The wedding date as last saved, to tell when the starter plan needs moving
+  const savedWeddingDate = useRef<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -95,6 +98,7 @@ export default function SettingsPage() {
 
       if (data) {
         setProfile(data as ProfileData);
+        savedWeddingDate.current = (data as ProfileData).wedding_date;
       } else {
         // Profile doesn't exist yet — wait for trigger, then retry
         await new Promise((r) => setTimeout(r, 500));
@@ -187,6 +191,16 @@ export default function SettingsPage() {
       setSaveMessage("Changes saved successfully!");
       setProfile((p) => (p ? { ...p, avatar_url: avatarUrl } : p));
       setAvatarFile(null);
+
+      if (profile.wedding_date !== savedWeddingDate.current) {
+        savedWeddingDate.current = profile.wedding_date;
+        try {
+          const moved = await rescheduleStarterPlan(supabase, profile.id);
+          if (moved > 0) toast.success(`Moved ${moved} plan ${moved === 1 ? "task" : "tasks"} to fit your new date.`);
+        } catch (err) {
+          console.error("Starter plan not rescheduled:", err);
+        }
+      }
     }
 
     setSaving(false);
@@ -256,8 +270,8 @@ export default function SettingsPage() {
   const formatDate = (iso: string) =>
     new Date(iso).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
 
-  let accessSummary = "The basics: up to 10 vendors, budget tracking and 2-vendor comparison.";
-  let accessBadge = "Free";
+  let accessSummary = "";
+  let accessBadge = "Locked";
   if (access?.source === "pass" && access.accessEndsAt) {
     accessSummary = `Paid once. Full access through ${formatDate(access.accessEndsAt)}, and longer if your wedding date moves later.`;
     accessBadge = "Active";
@@ -268,7 +282,7 @@ export default function SettingsPage() {
     accessSummary = `Free trial: everything is unlocked until ${formatDate(access.trialEndsAt)} (${trialDaysLeft} ${trialDaysLeft === 1 ? "day" : "days"} left).`;
     accessBadge = "Trial";
   } else if (trialEnded) {
-    accessSummary = "Your free trial has ended. Everything you added is still here.";
+    accessSummary = "Your free trial has ended. Everything you added is saved and comes back the moment you get the Wedding Pass.";
   }
   const initials = profile?.full_name
     ? profile.full_name
@@ -284,7 +298,7 @@ export default function SettingsPage() {
   if (loading) {
     return (
       <div className="flex h-96 items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#8B9F82] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-moss border-t-transparent" />
       </div>
     );
   }
@@ -295,12 +309,12 @@ export default function SettingsPage() {
     <div className="mx-auto max-w-4xl space-y-6 sm:space-y-8">
       <div>
         <h1
-          className="text-3xl font-bold tracking-tight text-[#2D2D2D]"
+          className="text-3xl font-bold tracking-tight text-ink"
           style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Settings
         </h1>
-        <p className="mt-1 text-[#7A7A7A]">
+        <p className="mt-1 text-ink-muted">
           Manage your account and preferences.
         </p>
       </div>
@@ -310,7 +324,7 @@ export default function SettingsPage() {
           className={`rounded-lg px-4 py-3 text-sm font-medium ${
             saveMessage.includes("Failed")
               ? "bg-red-50 text-red-700"
-              : "bg-[#8B9F82]/10 text-[#8B9F82]"
+              : "bg-moss/10 text-moss"
           }`}
         >
           {saveMessage}
@@ -318,7 +332,7 @@ export default function SettingsPage() {
       )}
 
       <Tabs defaultValue="profile">
-        <TabsList className="w-full justify-start gap-1 bg-[#FAF8F5]">
+        <TabsList className="w-full justify-start gap-1 bg-paper">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="sharing">Sharing</TabsTrigger>
@@ -327,10 +341,10 @@ export default function SettingsPage() {
 
         {/* ── Profile Tab ────────────────────────────────────────────────── */}
         <TabsContent value="profile">
-          <Card className="border-[#E8E4DF]">
+          <Card className="border-hairline">
             <CardHeader>
-              <CardTitle className="text-[#2D2D2D]">Wedding Details</CardTitle>
-              <CardDescription className="text-[#7A7A7A]">
+              <CardTitle className="text-ink">Wedding Details</CardTitle>
+              <CardDescription className="text-ink-muted">
                 Update your wedding information and profile.
               </CardDescription>
             </CardHeader>
@@ -338,7 +352,7 @@ export default function SettingsPage() {
               <div className="space-y-6">
                 {/* Avatar */}
                 <div className="flex items-center gap-6">
-                  <Avatar className="h-20 w-20 border-2 border-[#8B9F82]/30">
+                  <Avatar className="h-20 w-20 border-2 border-moss/30">
                     {profile?.avatar_url ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
@@ -347,7 +361,7 @@ export default function SettingsPage() {
                         className="h-full w-full object-cover"
                       />
                     ) : (
-                      <AvatarFallback className="bg-[#8B9F82]/10 text-xl font-semibold text-[#8B9F82]">
+                      <AvatarFallback className="bg-moss/10 text-xl font-semibold text-moss">
                         {initials}
                       </AvatarFallback>
                     )}
@@ -355,7 +369,7 @@ export default function SettingsPage() {
                   <div>
                     <Label
                       htmlFor="avatar-upload"
-                      className="cursor-pointer text-sm font-medium text-[#8B9F82] hover:underline"
+                      className="cursor-pointer text-sm font-medium text-moss hover:underline"
                     >
                       Upload new photo
                     </Label>
@@ -369,14 +383,14 @@ export default function SettingsPage() {
                       }
                     />
                     {avatarFile && (
-                      <p className="mt-1 text-xs text-[#7A7A7A]">
+                      <p className="mt-1 text-xs text-ink-muted">
                         Selected: {avatarFile.name}
                       </p>
                     )}
                   </div>
                 </div>
 
-                <Separator className="bg-[#E8E4DF]" />
+                <Separator className="bg-hairline" />
 
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div className="space-y-2">
@@ -413,7 +427,7 @@ export default function SettingsPage() {
                       }
                       placeholder="e.g. The Romeo Wedding"
                     />
-                    <p className="text-xs text-[#7A7A7A]">
+                    <p className="text-xs text-ink-muted">
                       Displayed in your dashboard header
                     </p>
                   </div>
@@ -465,7 +479,7 @@ export default function SettingsPage() {
                   <Button
                     onClick={handleSaveProfile}
                     disabled={saving}
-                    className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+                    className="bg-moss text-white hover:bg-moss-light"
                   >
                     {saving ? "Saving..." : "Save Changes"}
                   </Button>
@@ -477,12 +491,12 @@ export default function SettingsPage() {
 
         {/* ── Billing Tab ────────────────────────────────────────────────── */}
         <TabsContent value="billing">
-          <Card className="border-[#E8E4DF]">
+          <Card className="border-hairline">
             <CardHeader>
-              <CardTitle className="text-[#2D2D2D]">
+              <CardTitle className="text-ink">
                 Subscription & Billing
               </CardTitle>
-              <CardDescription className="text-[#7A7A7A]">
+              <CardDescription className="text-ink-muted">
                 Manage your plan and payment information.
               </CardDescription>
             </CardHeader>
@@ -581,12 +595,12 @@ export default function SettingsPage() {
 
         {/* ── Notifications Tab ──────────────────────────────────────────── */}
         <TabsContent value="notifications">
-          <Card className="border-[#E8E4DF]">
+          <Card className="border-hairline">
             <CardHeader>
-              <CardTitle className="text-[#2D2D2D]">
+              <CardTitle className="text-ink">
                 Email Notifications
               </CardTitle>
-              <CardDescription className="text-[#7A7A7A]">
+              <CardDescription className="text-ink-muted">
                 Choose which emails you&apos;d like to receive.
               </CardDescription>
             </CardHeader>
@@ -594,8 +608,8 @@ export default function SettingsPage() {
               {/* Weekly Summary */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-[#2D2D2D]">Weekly Summary</p>
-                  <p className="text-sm text-[#7A7A7A]">
+                  <p className="font-medium text-ink">Weekly Summary</p>
+                  <p className="text-sm text-ink-muted">
                     A weekly digest of your vendor activity, budget changes, and upcoming deadlines.
                   </p>
                 </div>
@@ -606,8 +620,8 @@ export default function SettingsPage() {
                   onClick={() => toggleNotif("weekly_summary")}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                     notificationPrefs.weekly_summary
-                      ? "bg-[#8B9F82]"
-                      : "bg-[#E8E4DF]"
+                      ? "bg-moss"
+                      : "bg-hairline"
                   }`}
                 >
                   <span
@@ -620,13 +634,13 @@ export default function SettingsPage() {
                 </button>
               </div>
 
-              <Separator className="bg-[#E8E4DF]" />
+              <Separator className="bg-hairline" />
 
               {/* Task Reminders */}
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium text-[#2D2D2D]">Task Reminders</p>
-                  <p className="text-sm text-[#7A7A7A]">
+                  <p className="font-medium text-ink">Task Reminders</p>
+                  <p className="text-sm text-ink-muted">
                     Get notified about upcoming deposit due dates and payment deadlines.
                   </p>
                 </div>
@@ -637,8 +651,8 @@ export default function SettingsPage() {
                   onClick={() => toggleNotif("task_reminders")}
                   className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
                     notificationPrefs.task_reminders
-                      ? "bg-[#8B9F82]"
-                      : "bg-[#E8E4DF]"
+                      ? "bg-moss"
+                      : "bg-hairline"
                   }`}
                 >
                   <span
@@ -655,7 +669,7 @@ export default function SettingsPage() {
                 <Button
                   onClick={handleSaveNotifications}
                   disabled={saving}
-                  className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+                  className="bg-moss text-white hover:bg-moss-light"
                 >
                   {saving ? "Saving..." : "Save Preferences"}
                 </Button>
@@ -666,17 +680,17 @@ export default function SettingsPage() {
       </Tabs>
 
       {/* Support */}
-      <Card className="border-[#E8E4DF]">
+      <Card className="border-hairline">
         <CardContent className="flex flex-col gap-2 py-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="font-medium text-[#2D2D2D]">Need help?</p>
-            <p className="text-sm text-[#7A7A7A]">
+            <p className="font-medium text-ink">Need help?</p>
+            <p className="text-sm text-ink-muted">
               Reach out to us anytime and we&apos;ll get back to you as soon as possible.
             </p>
           </div>
           <a
             href="mailto:altaredapp@gmail.com"
-            className="text-sm font-medium text-[#8B9F82] hover:underline"
+            className="text-sm font-medium text-moss hover:underline"
           >
             altaredapp@gmail.com
           </a>

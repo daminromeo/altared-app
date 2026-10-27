@@ -7,20 +7,20 @@ export const metadata: Metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="min-h-screen bg-[#FAF8F5]">
+    <div className="min-h-screen bg-paper">
       {/* Header */}
-      <header className="border-b border-[#E8E4DF]/60 bg-white">
+      <header className="border-b border-hairline/60 bg-white">
         <div className="mx-auto flex max-w-3xl items-center justify-between px-6 py-4">
           <Link
             href="/"
-            className="text-lg font-bold text-[#8B9F82]"
+            className="text-lg font-bold text-moss"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Altared
           </Link>
           <Link
             href="/"
-            className="text-sm text-[#7A7A7A] transition-colors hover:text-[#2D2D2D]"
+            className="text-sm text-ink-muted transition-colors hover:text-ink"
           >
             &larr; Back to home
           </Link>
@@ -30,18 +30,18 @@ export default function PrivacyPolicyPage() {
       {/* Content */}
       <main className="mx-auto max-w-3xl px-6 py-12">
         <h1
-          className="text-3xl font-bold text-[#2D2D2D]"
+          className="text-3xl font-bold text-ink"
           style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Privacy Policy
         </h1>
-        <p className="mt-2 text-sm text-[#7A7A7A]">
+        <p className="mt-2 text-sm text-ink-muted">
           Last updated: March 13, 2026
         </p>
 
         <div className="mt-8 space-y-8 text-sm leading-relaxed text-[#4A4A4A]">
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               1. Introduction
             </h2>
             <p>
@@ -53,10 +53,10 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               2. Information We Collect
             </h2>
-            <h3 className="mb-2 font-semibold text-[#2D2D2D]">
+            <h3 className="mb-2 font-semibold text-ink">
               Account Information
             </h3>
             <p>
@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
               and any profile information you choose to provide (such as wedding
               date, partner name, and venue location).
             </p>
-            <h3 className="mb-2 mt-4 font-semibold text-[#2D2D2D]">
+            <h3 className="mb-2 mt-4 font-semibold text-ink">
               Wedding Planning Data
             </h3>
             <p>
@@ -73,7 +73,7 @@ export default function PrivacyPolicyPage() {
               is associated with your account and used solely to provide you with
               the service.
             </p>
-            <h3 className="mb-2 mt-4 font-semibold text-[#2D2D2D]">
+            <h3 className="mb-2 mt-4 font-semibold text-ink">
               Payment Information
             </h3>
             <p>
@@ -81,7 +81,7 @@ export default function PrivacyPolicyPage() {
               number or full payment details on our servers. We retain your
               Stripe customer ID and subscription status to manage your plan.
             </p>
-            <h3 className="mb-2 mt-4 font-semibold text-[#2D2D2D]">
+            <h3 className="mb-2 mt-4 font-semibold text-ink">
               Usage Data
             </h3>
             <p>
@@ -92,7 +92,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               3. How We Use Your Information
             </h2>
             <ul className="list-disc space-y-2 pl-5">
@@ -111,7 +111,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               4. Sharing of Information
             </h2>
             <p>We do not sell your personal information. We may share your information with:</p>
@@ -135,7 +135,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               5. Data Security
             </h2>
             <p>
@@ -148,7 +148,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               6. Data Retention
             </h2>
             <p>
@@ -160,7 +160,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               7. Your Rights
             </h2>
             <p>You have the right to:</p>
@@ -179,7 +179,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               8. Cookies
             </h2>
             <p>
@@ -189,7 +189,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               9. Changes to This Policy
             </h2>
             <p>
@@ -200,7 +200,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           <section>
-            <h2 className="mb-3 text-lg font-semibold text-[#2D2D2D]">
+            <h2 className="mb-3 text-lg font-semibold text-ink">
               10. Contact Us
             </h2>
             <p>
@@ -208,7 +208,7 @@ export default function PrivacyPolicyPage() {
               us at{" "}
               <a
                 href="mailto:altaredapp@gmail.com"
-                className="text-[#8B9F82] underline underline-offset-4"
+                className="text-moss underline underline-offset-4"
               >
                 altaredapp@gmail.com
               </a>
@@ -219,8 +219,8 @@ export default function PrivacyPolicyPage() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-[#E8E4DF]/60 bg-white">
-        <div className="mx-auto max-w-3xl px-6 py-6 text-center text-sm text-[#7A7A7A]">
+      <footer className="border-t border-hairline/60 bg-white">
+        <div className="mx-auto max-w-3xl px-6 py-6 text-center text-sm text-ink-muted">
           &copy; {new Date().getFullYear()} Altared. All rights reserved.
         </div>
       </footer>

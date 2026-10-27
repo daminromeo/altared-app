@@ -126,10 +126,10 @@ export function ShareLinkManager() {
 
   if (!canShare) {
     return (
-      <Card className="border-[#E8E4DF]">
+      <Card className="border-hairline">
         <CardHeader>
-          <CardTitle className="text-[#2D2D2D]">Sharing</CardTitle>
-          <CardDescription className="text-[#7A7A7A]">
+          <CardTitle className="text-ink">Sharing</CardTitle>
+          <CardDescription className="text-ink-muted">
             Share a read-only view of your wedding plans with your partner, family, or wedding planner.
           </CardDescription>
         </CardHeader>
@@ -148,9 +148,9 @@ export function ShareLinkManager() {
 
   if (loading) {
     return (
-      <Card className="border-[#E8E4DF]">
+      <Card className="border-hairline">
         <CardContent className="flex items-center justify-center py-12">
-          <Loader2 className="h-6 w-6 animate-spin text-[#8B9F82]" />
+          <Loader2 className="h-6 w-6 animate-spin text-moss" />
         </CardContent>
       </Card>
     );
@@ -159,12 +159,12 @@ export function ShareLinkManager() {
   // ── Render ─────────────────────────────────────────────────────────────────
 
   return (
-    <Card className="border-[#E8E4DF]">
+    <Card className="border-hairline">
       <CardHeader>
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-[#2D2D2D]">Sharing</CardTitle>
-            <CardDescription className="text-[#7A7A7A]">
+            <CardTitle className="text-ink">Sharing</CardTitle>
+            <CardDescription className="text-ink-muted">
               Generate a magic link to share a read-only view with your
               partner, family, or wedding planner. They can browse vendors,
               view your budget, and leave reactions.
@@ -175,25 +175,25 @@ export function ShareLinkManager() {
       <CardContent className="space-y-6">
         {/* Active Link */}
         {activeLink ? (
-          <div className="space-y-3 rounded-lg border border-[#8B9F82]/30 bg-[#8B9F82]/5 p-4">
+          <div className="space-y-3 rounded-lg border border-moss/30 bg-moss/5 p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Link2 className="h-4 w-4 text-[#8B9F82]" />
-                <span className="text-sm font-medium text-[#2D2D2D]">
+                <Link2 className="h-4 w-4 text-moss" />
+                <span className="text-sm font-medium text-ink">
                   Active Share Link
                 </span>
-                <Badge className="bg-[#8B9F82] text-white">Active</Badge>
+                <Badge className="bg-moss text-white">Active</Badge>
               </div>
               <div className="flex items-center gap-2">
                 <Button
                   variant="ghost"
-                  className="h-8 px-2 text-[#7A7A7A] hover:text-[#2D2D2D]"
+                  className="h-8 px-2 text-ink-muted hover:text-ink"
                   onClick={() =>
                     copyToClipboard(activeLink.shareUrl, activeLink.id)
                   }
                 >
                   {copied === activeLink.id ? (
-                    <Check className="h-4 w-4 text-[#8B9F82]" />
+                    <Check className="h-4 w-4 text-moss" />
                   ) : (
                     <Copy className="h-4 w-4" />
                   )}
@@ -209,12 +209,12 @@ export function ShareLinkManager() {
             </div>
 
             <div className="rounded-md bg-white px-3 py-2">
-              <code className="break-all text-xs text-[#7A7A7A]">
+              <code className="break-all text-xs text-ink-muted">
                 {activeLink.shareUrl}
               </code>
             </div>
 
-            <div className="flex flex-wrap gap-4 text-xs text-[#7A7A7A]">
+            <div className="flex flex-wrap gap-4 text-xs text-ink-muted">
               {activeLink.partner_name && (
                 <span className="flex items-center gap-1">
                   <Eye className="h-3 w-3" />
@@ -238,15 +238,15 @@ export function ShareLinkManager() {
             </div>
           </div>
         ) : (
-          <div className="rounded-lg border border-dashed border-[#E8E4DF] p-8 text-center">
-            <Link2 className="mx-auto h-8 w-8 text-[#7A7A7A]/50" />
-            <p className="mt-3 text-sm text-[#7A7A7A]">
+          <div className="rounded-lg border border-dashed border-hairline p-8 text-center">
+            <Link2 className="mx-auto h-8 w-8 text-ink-muted/50" />
+            <p className="mt-3 text-sm text-ink-muted">
               No active share link. Generate one to share with others.
             </p>
             <Button
               onClick={handleCreate}
               disabled={creating}
-              className="mt-4 bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+              className="mt-4 bg-moss text-white hover:bg-moss-light"
             >
               {creating ? (
                 <>
@@ -288,19 +288,19 @@ export function ShareLinkManager() {
         {/* Previous links */}
         {inactiveLinks.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-medium text-[#7A7A7A]">
+            <p className="mb-2 text-xs font-medium text-ink-muted">
               Previous Links
             </p>
             <div className="space-y-2">
               {inactiveLinks.slice(0, 5).map((link) => (
                 <div
                   key={link.id}
-                  className="flex items-center justify-between rounded-md border border-[#E8E4DF] px-3 py-2 text-xs text-[#7A7A7A]"
+                  className="flex items-center justify-between rounded-md border border-hairline px-3 py-2 text-xs text-ink-muted"
                 >
                   <div className="flex items-center gap-2">
                     <Badge
                       variant="outline"
-                      className="border-[#E8E4DF] text-[#7A7A7A]"
+                      className="border-hairline text-ink-muted"
                     >
                       Revoked
                     </Badge>

@@ -18,7 +18,7 @@ const components: MDXRemoteProps["components"] = {
         <TrackedCTA
           href={href}
           location="blog_body_link"
-          className="text-[#8B9F82] underline underline-offset-2 hover:text-[#6B8F71]"
+          className="text-moss underline underline-offset-2 hover:text-[#6B8F71]"
           {...rest}
         >
           {children}
@@ -29,7 +29,7 @@ const components: MDXRemoteProps["components"] = {
       return (
         <Link
           href={href}
-          className="text-[#8B9F82] underline underline-offset-2 hover:text-[#6B8F71]"
+          className="text-moss underline underline-offset-2 hover:text-[#6B8F71]"
           {...rest}
         >
           {children}
@@ -41,7 +41,7 @@ const components: MDXRemoteProps["components"] = {
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-[#8B9F82] underline underline-offset-2 hover:text-[#6B8F71]"
+        className="text-moss underline underline-offset-2 hover:text-[#6B8F71]"
         {...rest}
       >
         {children}
@@ -56,7 +56,7 @@ const components: MDXRemoteProps["components"] = {
         alt={alt ?? ""}
         width={1200}
         height={675}
-        className="rounded-xl border border-[#E8E4DE]"
+        className="rounded-xl border border-hairline"
         {...rest}
       />
     )

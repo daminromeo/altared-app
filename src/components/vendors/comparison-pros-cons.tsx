@@ -9,7 +9,7 @@ interface ProConsProps {
 
 export function ProsCons({ data }: ProConsProps) {
   if (data.pros.length === 0 && data.cons.length === 0) {
-    return <span className="text-xs text-[#7A7A7A]">Add more data for insights</span>;
+    return <span className="text-xs text-ink-muted">Add more data for insights</span>;
   }
 
   return (
@@ -22,8 +22,8 @@ export function ProsCons({ data }: ProConsProps) {
       ))}
       {data.cons.map((con, i) => (
         <div key={`con-${i}`} className="flex items-start gap-1.5">
-          <X className="size-3.5 text-[#DC2626] shrink-0 mt-0.5" />
-          <span className="text-xs text-[#DC2626]">{con}</span>
+          <X className="size-3.5 text-error shrink-0 mt-0.5" />
+          <span className="text-xs text-error">{con}</span>
         </div>
       ))}
     </div>

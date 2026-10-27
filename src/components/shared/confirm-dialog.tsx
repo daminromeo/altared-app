@@ -73,7 +73,7 @@ export function ConfirmDialog({
             className={cn(
               variant === 'destructive'
                 ? 'bg-red-600 text-white hover:bg-red-700'
-                : 'bg-[#8B9F82] text-white hover:bg-[#7A8E71]'
+                : 'bg-moss text-white hover:bg-moss-light'
             )}
           >
             {loading ? 'Please wait...' : confirmLabel}

@@ -52,27 +52,27 @@ export function ProposalUpload({
 
   if (selectedFile) {
     return (
-      <div className="rounded-xl border border-[#8B9F82]/30 bg-[#8B9F82]/5 p-6">
+      <div className="rounded-xl border border-moss/30 bg-moss/5 p-6">
         <div className="flex items-center gap-4">
-          <div className="flex size-12 items-center justify-center rounded-lg bg-[#8B9F82]/10">
-            <FileText className="size-6 text-[#8B9F82]" />
+          <div className="flex size-12 items-center justify-center rounded-lg bg-moss/10">
+            <FileText className="size-6 text-moss" />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-[#2D2D2D]">
+            <p className="truncate text-sm font-semibold text-ink">
               {selectedFile.name}
             </p>
-            <p className="mt-0.5 text-xs text-[#7A7A7A]">
+            <p className="mt-0.5 text-xs text-ink-muted">
               {formatFileSize(selectedFile.size)} &middot; PDF
             </p>
           </div>
           {isUploading ? (
-            <Loader2 className="size-5 animate-spin text-[#8B9F82]" />
+            <Loader2 className="size-5 animate-spin text-moss" />
           ) : (
             <Button
               variant="ghost"
               size="icon-sm"
               onClick={() => onFileSelect(null)}
-              className="text-[#7A7A7A] hover:text-red-600"
+              className="text-ink-muted hover:text-red-600"
             >
               <X className="size-4" />
             </Button>
@@ -80,10 +80,10 @@ export function ProposalUpload({
         </div>
         {isUploading && (
           <div className="mt-4">
-            <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#8B9F82]/20">
-              <div className="h-full animate-pulse rounded-full bg-[#8B9F82] transition-all" style={{ width: '60%' }} />
+            <div className="h-1.5 w-full overflow-hidden rounded-full bg-moss/20">
+              <div className="h-full animate-pulse rounded-full bg-moss transition-all" style={{ width: '60%' }} />
             </div>
-            <p className="mt-2 text-center text-xs text-[#7A7A7A]">
+            <p className="mt-2 text-center text-xs text-ink-muted">
               Uploading proposal...
             </p>
           </div>
@@ -99,8 +99,8 @@ export function ProposalUpload({
         className={cn(
           'group cursor-pointer rounded-xl border-2 border-dashed p-12 text-center transition-all',
           isDragActive
-            ? 'border-[#8B9F82] bg-[#8B9F82]/5'
-            : 'border-[#C9A96E]/40 bg-[#FAF8F5] hover:border-[#8B9F82]/50 hover:bg-[#8B9F82]/5',
+            ? 'border-moss bg-moss/5'
+            : 'border-champagne/40 bg-paper hover:border-moss/50 hover:bg-moss/5',
           isUploading && 'pointer-events-none opacity-50'
         )}
       >
@@ -109,21 +109,21 @@ export function ProposalUpload({
           <div
             className={cn(
               'flex size-14 items-center justify-center rounded-full transition-colors',
-              isDragActive ? 'bg-[#8B9F82]/20' : 'bg-[#C9A96E]/10'
+              isDragActive ? 'bg-moss/20' : 'bg-champagne/10'
             )}
           >
             <Upload
               className={cn(
                 'size-6 transition-colors',
-                isDragActive ? 'text-[#8B9F82]' : 'text-[#C9A96E]'
+                isDragActive ? 'text-moss' : 'text-brass'
               )}
             />
           </div>
           <div>
-            <p className="text-sm font-semibold text-[#2D2D2D]">
+            <p className="text-sm font-semibold text-ink">
               {isDragActive ? 'Drop your PDF here' : 'Drop PDF here or click to browse'}
             </p>
-            <p className="mt-1 text-xs text-[#7A7A7A]">
+            <p className="mt-1 text-xs text-ink-muted">
               PDF only, up to 10MB
             </p>
           </div>

@@ -45,19 +45,19 @@ export default function BlogIndexPage() {
         ]}
       />
 
-      <section className="border-b border-[#E8E4DF]/60 bg-gradient-to-b from-white to-[#FAF8F5]">
+      <section className="border-b border-hairline/60 bg-gradient-to-b from-white to-paper">
         <div className="mx-auto max-w-6xl px-6 py-16 md:py-20">
           <nav
             aria-label="Breadcrumb"
-            className="mb-4 text-sm text-[#7A7A7A]"
+            className="mb-4 text-sm text-ink-muted"
           >
-            <Link href="/" className="hover:text-[#2D2D2D]">
+            <Link href="/" className="hover:text-ink">
               Home
             </Link>{" "}
-            / <span className="text-[#2D2D2D]">Blog</span>
+            / <span className="text-ink">Blog</span>
           </nav>
           <h1
-            className="text-4xl font-bold tracking-tight text-[#2D2D2D] md:text-5xl"
+            className="text-4xl font-bold tracking-tight text-ink md:text-5xl"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             Wedding planning, decoded.
@@ -71,14 +71,14 @@ export default function BlogIndexPage() {
 
       <section className="mx-auto max-w-6xl px-6 py-12">
         {posts.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-[#E8E4DE] bg-white p-16 text-center">
+          <div className="rounded-2xl border border-dashed border-hairline bg-white p-16 text-center">
             <h2
-              className="text-xl font-semibold text-[#2D2D2D]"
+              className="text-xl font-semibold text-ink"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               New posts coming soon
             </h2>
-            <p className="mt-2 text-sm text-[#7A7A7A]">
+            <p className="mt-2 text-sm text-ink-muted">
               We&apos;re cooking up our first batch of wedding-planning guides.
               Check back shortly.
             </p>

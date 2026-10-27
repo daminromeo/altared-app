@@ -48,9 +48,9 @@ function StatCard({
 }) {
   return (
     <div className="rounded-xl border border-border bg-white p-5">
-      <p className="text-sm text-[#7A7A7A]">{label}</p>
-      <p className="mt-1 text-2xl font-semibold text-[#2D2D2D]">{value}</p>
-      {sub && <p className="mt-1 text-xs text-[#7A7A7A]">{sub}</p>}
+      <p className="text-sm text-ink-muted">{label}</p>
+      <p className="mt-1 text-2xl font-semibold text-ink">{value}</p>
+      {sub && <p className="mt-1 text-xs text-ink-muted">{sub}</p>}
     </div>
   );
 }
@@ -58,8 +58,8 @@ function StatCard({
 function PlanBadge({ plan }: { plan: string }) {
   const colors: Record<string, string> = {
     free: "bg-gray-100 text-gray-600",
-    pro: "bg-[#C9A96E]/15 text-[#C9A96E]",
-    premium: "bg-[#8B9F82]/15 text-[#8B9F82]",
+    pro: "bg-champagne/15 text-brass",
+    premium: "bg-moss/15 text-moss",
     pass: "bg-moss/15 text-moss",
   };
   return (
@@ -90,14 +90,14 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#8B9F82] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-moss border-t-transparent" />
       </div>
     );
   }
 
   if (!data) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center text-[#7A7A7A]">
+      <div className="flex min-h-[60vh] items-center justify-center text-ink-muted">
         Failed to load metrics.
       </div>
     );
@@ -126,12 +126,12 @@ export default function AdminDashboard() {
       {/* Page header */}
       <div>
         <h1
-          className="text-2xl font-bold text-[#2D2D2D]"
+          className="text-2xl font-bold text-ink"
           style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           Admin Dashboard
         </h1>
-        <p className="mt-1 text-sm text-[#7A7A7A]">
+        <p className="mt-1 text-sm text-ink-muted">
           Overview of all users and platform activity
         </p>
       </div>
@@ -144,8 +144,8 @@ export default function AdminDashboard() {
             onClick={() => setTab(t)}
             className={`rounded-md px-4 py-2 text-sm font-medium transition-colors ${
               tab === t
-                ? "bg-[#8B9F82]/10 text-[#8B9F82]"
-                : "text-[#7A7A7A] hover:text-[#2D2D2D]"
+                ? "bg-moss/10 text-moss"
+                : "text-ink-muted hover:text-ink"
             }`}
           >
             {t === "overview" ? "Overview" : "Users"}
@@ -180,7 +180,7 @@ export default function AdminDashboard() {
 
           {/* Signup chart */}
           <div className="rounded-xl border border-border bg-white p-6">
-            <h2 className="text-sm font-medium text-[#2D2D2D]">
+            <h2 className="text-sm font-medium text-ink">
               Signups (Last 14 Days)
             </h2>
             <div className="mt-4 flex items-end gap-1.5" style={{ height: 120 }}>
@@ -190,20 +190,20 @@ export default function AdminDashboard() {
                   className="group relative flex flex-1 flex-col items-center"
                 >
                   <div
-                    className="w-full rounded-t bg-[#8B9F82] transition-all hover:bg-[#8B9F82]/80"
+                    className="w-full rounded-t bg-moss transition-all hover:bg-moss/80"
                     style={{
                       height: `${Math.max((count / maxSignups) * 100, 4)}%`,
                       minHeight: count > 0 ? 8 : 2,
                     }}
                   />
-                  <span className="mt-1 text-[9px] text-[#7A7A7A]">
+                  <span className="mt-1 text-[9px] text-ink-muted">
                     {new Date(day + "T12:00:00").toLocaleDateString("en-US", {
                       month: "short",
                       day: "numeric",
                     })}
                   </span>
                   {/* Tooltip */}
-                  <div className="pointer-events-none absolute -top-8 rounded bg-[#2D2D2D] px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                  <div className="pointer-events-none absolute -top-8 rounded bg-ink px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                     {count} signup{count !== 1 ? "s" : ""}
                   </div>
                 </div>
@@ -213,7 +213,7 @@ export default function AdminDashboard() {
 
           {/* Subscription breakdown */}
           <div className="rounded-xl border border-border bg-white p-6">
-            <h2 className="text-sm font-medium text-[#2D2D2D]">
+            <h2 className="text-sm font-medium text-ink">
               Subscription Breakdown
             </h2>
             <div className="mt-4 space-y-3">
@@ -221,16 +221,16 @@ export default function AdminDashboard() {
                 [
                   ["Free", overview.subscriptionBreakdown.free, "bg-gray-300"],
                   ["Wedding Pass", overview.subscriptionBreakdown.pass, "bg-moss"],
-                  ["Pro", overview.subscriptionBreakdown.pro, "bg-[#C9A96E]"],
+                  ["Pro", overview.subscriptionBreakdown.pro, "bg-champagne"],
                   [
                     "Premium",
                     overview.subscriptionBreakdown.premium,
-                    "bg-[#8B9F82]",
+                    "bg-moss",
                   ],
                 ] as const
               ).map(([label, count, color]) => (
                 <div key={label} className="flex items-center gap-3">
-                  <span className="w-16 text-sm text-[#7A7A7A]">{label}</span>
+                  <span className="w-16 text-sm text-ink-muted">{label}</span>
                   <div className="flex-1 rounded-full bg-gray-100 h-3">
                     <div
                       className={`h-3 rounded-full ${color} transition-all`}
@@ -240,7 +240,7 @@ export default function AdminDashboard() {
                       }}
                     />
                   </div>
-                  <span className="w-8 text-right text-sm font-medium text-[#2D2D2D]">
+                  <span className="w-8 text-right text-sm font-medium text-ink">
                     {count}
                   </span>
                 </div>
@@ -282,11 +282,11 @@ export default function AdminDashboard() {
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full max-w-sm rounded-lg border border-border bg-white px-4 py-2 text-sm text-[#2D2D2D] placeholder:text-[#7A7A7A] focus:outline-none focus:ring-2 focus:ring-[#8B9F82]/30"
+            className="w-full max-w-sm rounded-lg border border-border bg-white px-4 py-2 text-sm text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-moss/30"
           />
 
           {/* User count */}
-          <p className="text-xs text-[#7A7A7A]">
+          <p className="text-xs text-ink-muted">
             {filteredUsers.length} user{filteredUsers.length !== 1 ? "s" : ""}
           </p>
 
@@ -294,29 +294,29 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto rounded-xl border border-border bg-white">
             <table className="w-full text-left text-sm">
               <thead>
-                <tr className="border-b border-border bg-[#FAF8F5]">
-                  <th className="px-4 py-3 font-medium text-[#7A7A7A]">
+                <tr className="border-b border-border bg-paper">
+                  <th className="px-4 py-3 font-medium text-ink-muted">
                     User
                   </th>
-                  <th className="px-4 py-3 font-medium text-[#7A7A7A]">
+                  <th className="px-4 py-3 font-medium text-ink-muted">
                     Plan
                   </th>
-                  <th className="px-4 py-3 font-medium text-[#7A7A7A]">
+                  <th className="px-4 py-3 font-medium text-ink-muted">
                     Onboarded
                   </th>
-                  <th className="px-4 py-3 font-medium text-[#7A7A7A]">
+                  <th className="px-4 py-3 font-medium text-ink-muted">
                     Vendors
                   </th>
-                  <th className="px-4 py-3 font-medium text-[#7A7A7A]">
+                  <th className="px-4 py-3 font-medium text-ink-muted">
                     Proposals
                   </th>
-                  <th className="px-4 py-3 font-medium text-[#7A7A7A]">
+                  <th className="px-4 py-3 font-medium text-ink-muted">
                     Tasks
                   </th>
-                  <th className="px-4 py-3 font-medium text-[#7A7A7A]">
+                  <th className="px-4 py-3 font-medium text-ink-muted">
                     Wedding Date
                   </th>
-                  <th className="px-4 py-3 font-medium text-[#7A7A7A]">
+                  <th className="px-4 py-3 font-medium text-ink-muted">
                     Signed Up
                   </th>
                 </tr>
@@ -325,14 +325,14 @@ export default function AdminDashboard() {
                 {filteredUsers.map((u) => (
                   <tr
                     key={u.id}
-                    className="border-b border-border last:border-0 hover:bg-[#FAF8F5]/50"
+                    className="border-b border-border last:border-0 hover:bg-paper/50"
                   >
                     <td className="px-4 py-3">
                       <div>
-                        <p className="font-medium text-[#2D2D2D]">
+                        <p className="font-medium text-ink">
                           {u.full_name || "—"}
                         </p>
-                        <p className="text-xs text-[#7A7A7A]">{u.email}</p>
+                        <p className="text-xs text-ink-muted">{u.email}</p>
                       </div>
                     </td>
                     <td className="px-4 py-3">
@@ -340,21 +340,21 @@ export default function AdminDashboard() {
                     </td>
                     <td className="px-4 py-3">
                       {u.onboarding_completed ? (
-                        <span className="text-[#8B9F82]">Yes</span>
+                        <span className="text-moss">Yes</span>
                       ) : (
                         <span className="text-[#C4A0A0]">No</span>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-[#2D2D2D]">
+                    <td className="px-4 py-3 text-ink">
                       {u.vendor_count}
                     </td>
-                    <td className="px-4 py-3 text-[#2D2D2D]">
+                    <td className="px-4 py-3 text-ink">
                       {u.proposal_count}
                     </td>
-                    <td className="px-4 py-3 text-[#2D2D2D]">
+                    <td className="px-4 py-3 text-ink">
                       {u.task_count}
                     </td>
-                    <td className="px-4 py-3 text-[#2D2D2D]">
+                    <td className="px-4 py-3 text-ink">
                       {u.wedding_date
                         ? new Date(u.wedding_date + "T12:00:00").toLocaleDateString(
                             "en-US",
@@ -362,7 +362,7 @@ export default function AdminDashboard() {
                           )
                         : "—"}
                     </td>
-                    <td className="px-4 py-3 text-[#7A7A7A]">
+                    <td className="px-4 py-3 text-ink-muted">
                       {new Date(u.created_at).toLocaleDateString("en-US", {
                         month: "short",
                         day: "numeric",
@@ -375,7 +375,7 @@ export default function AdminDashboard() {
                   <tr>
                     <td
                       colSpan={8}
-                      className="px-4 py-8 text-center text-[#7A7A7A]"
+                      className="px-4 py-8 text-center text-ink-muted"
                     >
                       No users found.
                     </td>

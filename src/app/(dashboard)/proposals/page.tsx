@@ -87,11 +87,11 @@ export default function ProposalsPage() {
 
     const { error } = await supabase.from('proposals').delete().eq('id', proposalId)
     if (error) {
-      toast.error('Failed to delete proposal')
+      toast.error('Failed to delete quote')
       return
     }
     setProposals((prev) => prev.filter((p) => p.id !== proposalId))
-    toast.success('Proposal deleted')
+    toast.success('Quote deleted')
   }
 
   const filtered = useMemo(() => {
@@ -113,17 +113,17 @@ export default function ProposalsPage() {
       {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#2D2D2D]">
-            Proposals
+          <h1 className="text-2xl font-bold tracking-tight text-ink">
+            Quotes
           </h1>
-          <p className="mt-1 text-sm text-[#7A7A7A]">
-            Upload and manage vendor proposals with AI-powered scanning.
+          <p className="mt-1 text-sm text-ink-muted">
+            Upload vendor quotes and contracts. AI pulls out the price, fees and payment dates.
           </p>
         </div>
         <Link href="/proposals/upload">
-          <Button className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]">
+          <Button className="bg-moss text-white hover:bg-moss-light">
             <Plus className="size-4" />
-            Upload Proposal
+            Upload a quote
           </Button>
         </Link>
       </div>
@@ -131,7 +131,7 @@ export default function ProposalsPage() {
       {/* Filters */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
         <div className="relative flex-1 sm:max-w-xs">
-          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-[#7A7A7A]" />
+          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
           <Input
             placeholder="Search proposals..."
             value={searchQuery}
@@ -175,7 +175,7 @@ export default function ProposalsPage() {
       {isFreePlan && proposals.length > 0 && (
         <UpgradePrompt
           title="AI quote scanning"
-          description="Automatically pull costs, terms, and schedules out of your proposals."
+          description="Automatically pull costs, terms, and schedules out of your quotes."
           compact
         />
       )}
@@ -186,7 +186,7 @@ export default function ProposalsPage() {
           {Array.from({ length: 6 }).map((_, i) => (
             <div
               key={i}
-              className="h-[160px] animate-pulse rounded-xl bg-[#FAF8F5]"
+              className="h-[160px] animate-pulse rounded-xl bg-paper"
             />
           ))}
         </div>
@@ -206,23 +206,23 @@ export default function ProposalsPage() {
           ))}
         </div>
       ) : (
-        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#C9A96E]/30 bg-[#FAF8F5] py-16">
-          <div className="flex size-16 items-center justify-center rounded-full bg-[#C9A96E]/10">
-            <FileText className="size-7 text-[#C9A96E]" />
+        <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-champagne/30 bg-paper py-16">
+          <div className="flex size-16 items-center justify-center rounded-full bg-champagne/10">
+            <FileText className="size-7 text-brass" />
           </div>
-          <h3 className="mt-4 text-base font-semibold text-[#2D2D2D]">
-            No proposals found
+          <h3 className="mt-4 text-base font-semibold text-ink">
+            No quotes yet
           </h3>
-          <p className="mt-1 max-w-sm text-center text-sm text-[#7A7A7A]">
+          <p className="mt-1 max-w-sm text-center text-sm text-ink-muted">
             {proposals.length === 0
-              ? 'Upload your first vendor proposal to get started. Our AI will extract key details automatically.'
-              : 'No proposals match your current filters. Try adjusting your search criteria.'}
+              ? 'Upload your first vendor quote. AI pulls out the price, fees and payment dates.'
+              : 'No quotes match these filters.'}
           </p>
           {proposals.length === 0 && (
             <Link href="/proposals/upload" className="mt-4">
-              <Button className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]">
+              <Button className="bg-moss text-white hover:bg-moss-light">
                 <Plus className="size-4" />
-                Upload Proposal
+                Upload a quote
               </Button>
             </Link>
           )}

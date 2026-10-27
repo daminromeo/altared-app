@@ -279,16 +279,16 @@ export default function MessagesPage() {
       <div className="shrink-0 border-b border-gray-100 bg-white px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <BookOpen className="size-5 text-[#8B9F82]" />
+            <BookOpen className="size-5 text-moss" />
             <div>
-              <h1 className="text-xl font-semibold text-[#2D2D2D]">Communication Log</h1>
-              <p className="text-xs text-[#7A7A7A]">Track conversations with your vendors across all channels</p>
+              <h1 className="text-xl font-semibold text-ink">Communication Log</h1>
+              <p className="text-xs text-ink-muted">Track conversations with your vendors across all channels</p>
             </div>
           </div>
           <Dialog open={logDialogOpen} onOpenChange={setLogDialogOpen}>
             <DialogTrigger
               render={
-                <Button className="gap-2 rounded-lg bg-[#8B9F82] text-white hover:bg-[#7A8E71]" />
+                <Button className="gap-2 rounded-lg bg-moss text-white hover:bg-moss-light" />
               }
             >
               <Plus className="size-4" />
@@ -389,7 +389,7 @@ export default function MessagesPage() {
                 <Button
                   onClick={handleLogMessage}
                   disabled={!logVendorId || !logBody.trim() || isSubmittingLog}
-                  className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+                  className="bg-moss text-white hover:bg-moss-light"
                 >
                   {isSubmittingLog ? "Saving..." : "Save Message"}
                 </Button>
@@ -401,12 +401,12 @@ export default function MessagesPage() {
         {/* Filters row */}
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <div className="relative flex-1 min-w-[200px]">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#7A7A7A]" />
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search messages..."
-              className="pl-9 bg-[#FAF8F5] border-gray-200 rounded-lg"
+              className="pl-9 bg-paper border-gray-200 rounded-lg"
             />
           </div>
 
@@ -416,7 +416,7 @@ export default function MessagesPage() {
             onClick={() => setShowFilters(!showFilters)}
             className={cn(
               "gap-1.5 rounded-lg",
-              showFilters && "bg-[#8B9F82]/10 border-[#8B9F82]"
+              showFilters && "bg-moss/10 border-moss"
             )}
           >
             <Filter className="size-3.5" />
@@ -488,7 +488,7 @@ export default function MessagesPage() {
       {/* Main content area */}
       {loading ? (
         <div className="flex flex-1 items-center justify-center">
-          <div className="size-6 animate-spin rounded-full border-2 border-[#8B9F82] border-t-transparent" />
+          <div className="size-6 animate-spin rounded-full border-2 border-moss border-t-transparent" />
         </div>
       ) : (
         <div className="flex flex-1 overflow-hidden">
@@ -510,7 +510,7 @@ export default function MessagesPage() {
           {/* Right panel: thread view */}
           <div
             className={cn(
-              "flex-1 bg-[#FAF8F5] md:block",
+              "flex-1 bg-paper md:block",
               mobileShowThread ? "block" : "hidden"
             )}
           >
@@ -524,7 +524,7 @@ export default function MessagesPage() {
                     setMobileShowThread(false);
                     setSelectedId(null);
                   }}
-                  className="gap-1.5 text-[#7A7A7A]"
+                  className="gap-1.5 text-ink-muted"
                 >
                   <ArrowLeft className="size-4" />
                   Back

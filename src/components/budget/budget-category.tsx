@@ -148,32 +148,32 @@ export function BudgetCategory({
         tabIndex={0}
         onClick={() => setIsExpanded(!isExpanded)}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsExpanded(!isExpanded) }}
-        className="flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-[#FAF8F5]"
+        className="flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-paper"
       >
-        <div className="flex size-9 items-center justify-center rounded-lg bg-[#8B9F82]/10">
-          <Icon className="size-4.5 text-[#8B9F82]" />
+        <div className="flex size-9 items-center justify-center rounded-lg bg-moss/10">
+          <Icon className="size-4.5 text-moss" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2">
-            <p className="text-sm font-semibold text-[#2D2D2D]">
+            <p className="text-sm font-semibold text-ink">
               {categoryName}
             </p>
-            <span className="rounded-full bg-[#FAF8F5] px-2 py-0.5 text-xs text-[#7A7A7A]">
+            <span className="rounded-full bg-paper px-2 py-0.5 text-xs text-ink-muted">
               {items.length} {items.length === 1 ? 'item' : 'items'}
             </span>
           </div>
           {/* Mini progress bar */}
           <div className="mt-1.5 flex items-center gap-2">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-[#FAF8F5]">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-paper">
               <div
                 className={cn(
                   'h-full rounded-full transition-all',
-                  isOverAllocated ? 'bg-red-400' : 'bg-[#8B9F82]'
+                  isOverAllocated ? 'bg-red-400' : 'bg-moss'
                 )}
                 style={{ width: `${spentPercent}%` }}
               />
             </div>
-            <span className="shrink-0 text-xs tabular-nums text-[#7A7A7A]">
+            <span className="shrink-0 text-xs tabular-nums text-ink-muted">
               {formatCurrency(totalEstimated)}
               {allocatedAmount > 0 && (
                 <>
@@ -183,7 +183,7 @@ export function BudgetCategory({
                       'ml-1.5 inline-flex items-center rounded-full px-1.5 py-0.5 text-[10px] font-semibold',
                       isOverAllocated
                         ? 'bg-red-100 text-red-600'
-                        : 'bg-[#8B9F82]/10 text-[#8B9F82]'
+                        : 'bg-moss/10 text-moss'
                     )}
                   >
                     {spentPercent.toFixed(0)}% of budget
@@ -198,27 +198,27 @@ export function BudgetCategory({
           <button
             type="button"
             onClick={startEditBudget}
-            className="flex size-7 shrink-0 items-center justify-center rounded-md text-[#7A7A7A] opacity-0 transition-opacity hover:bg-[#FAF8F5] hover:text-[#2D2D2D] group-hover/cat:opacity-100"
+            className="flex size-7 shrink-0 items-center justify-center rounded-md text-ink-muted opacity-0 transition-opacity hover:bg-paper hover:text-ink group-hover/cat:opacity-100"
             title="Edit budget allocation"
           >
             <Pencil className="size-3.5" />
           </button>
         )}
         {isExpanded ? (
-          <ChevronDown className="size-4 shrink-0 text-[#7A7A7A]" />
+          <ChevronDown className="size-4 shrink-0 text-ink-muted" />
         ) : (
-          <ChevronRight className="size-4 shrink-0 text-[#7A7A7A]" />
+          <ChevronRight className="size-4 shrink-0 text-ink-muted" />
         )}
       </div>
 
       {/* Inline budget edit */}
       {isEditingBudget && (
         <div
-          className="flex items-center gap-2 border-t bg-[#FAF8F5] px-4 py-2.5"
+          className="flex items-center gap-2 border-t bg-paper px-4 py-2.5"
           onClick={(e) => e.stopPropagation()}
         >
-          <span className="text-xs font-medium text-[#7A7A7A]">Category Budget:</span>
-          <span className="text-xs text-[#7A7A7A]">$</span>
+          <span className="text-xs font-medium text-ink-muted">Category Budget:</span>
+          <span className="text-xs text-ink-muted">$</span>
           <Input
             ref={budgetInputRef}
             type="number"
@@ -240,7 +240,7 @@ export function BudgetCategory({
           <Button
             size="icon-xs"
             onClick={saveBudget}
-            className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+            className="bg-moss text-white hover:bg-moss-light"
           >
             <Check className="size-3" />
           </Button>
@@ -263,7 +263,7 @@ export function BudgetCategory({
             </div>
           ) : (
             <div className="px-4 py-6 text-center">
-              <p className="text-sm text-[#7A7A7A]">
+              <p className="text-sm text-ink-muted">
                 No items in this category yet.
               </p>
             </div>
@@ -273,7 +273,7 @@ export function BudgetCategory({
               variant="ghost"
               size="sm"
               onClick={() => onAddItem(categoryId)}
-              className="w-full text-[#8B9F82] hover:bg-[#8B9F82]/5 hover:text-[#7A8E71]"
+              className="w-full text-moss hover:bg-moss/5 hover:text-moss-light"
             >
               <Plus className="size-3.5" />
               Add Item

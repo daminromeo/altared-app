@@ -121,19 +121,19 @@ export function FileUpload({
         className={cn(
           'flex flex-col items-center justify-center rounded-xl border-2 border-dashed px-6 py-8 text-center transition-colors cursor-pointer',
           isDragActive
-            ? 'border-[#8B9F82] bg-[#8B9F82]/5'
-            : 'border-[#7A7A7A]/20 bg-[#FAF8F5] hover:border-[#8B9F82]/40',
+            ? 'border-moss bg-moss/5'
+            : 'border-ink-muted/20 bg-paper hover:border-moss/40',
           (disabled || uploading) && 'pointer-events-none opacity-50'
         )}
       >
         <input {...getInputProps()} />
         <div className="flex size-10 items-center justify-center rounded-lg bg-white ring-1 ring-black/5">
-          <Upload className="size-5 text-[#7A7A7A]" />
+          <Upload className="size-5 text-ink-muted" />
         </div>
-        <p className="mt-3 text-sm font-medium text-[#2D2D2D]">
+        <p className="mt-3 text-sm font-medium text-ink">
           {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
         </p>
-        <p className="mt-1 text-xs text-[#7A7A7A]">
+        <p className="mt-1 text-xs text-ink-muted">
           or click to browse (max {formatFileSize(maxSize)})
         </p>
       </div>
@@ -165,17 +165,17 @@ export function FileUpload({
                   className="size-10 rounded-lg object-cover"
                 />
               ) : (
-                <div className="flex size-10 items-center justify-center rounded-lg bg-[#FAF8F5]">
-                  <FileIcon className="size-5 text-[#7A7A7A]" />
+                <div className="flex size-10 items-center justify-center rounded-lg bg-paper">
+                  <FileIcon className="size-5 text-ink-muted" />
                 </div>
               )}
 
               {/* File info */}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[#2D2D2D] truncate">
+                <p className="text-sm font-medium text-ink truncate">
                   {uploadFile.file.name}
                 </p>
-                <p className="text-xs text-[#7A7A7A]">
+                <p className="text-xs text-ink-muted">
                   {formatFileSize(uploadFile.file.size)}
                 </p>
 
@@ -190,14 +190,14 @@ export function FileUpload({
 
               {/* Status / actions */}
               {uploadFile.status === 'complete' ? (
-                <CheckCircle2 className="size-5 shrink-0 text-[#8B9F82]" />
+                <CheckCircle2 className="size-5 shrink-0 text-moss" />
               ) : (
                 <Button
                   variant="ghost"
                   size="icon-sm"
                   onClick={() => removeFile(index)}
                   disabled={uploading}
-                  className="shrink-0 text-[#7A7A7A] hover:text-red-600"
+                  className="shrink-0 text-ink-muted hover:text-red-600"
                 >
                   <X className="size-4" />
                 </Button>
@@ -210,7 +210,7 @@ export function FileUpload({
             <Button
               onClick={handleUpload}
               disabled={uploading}
-              className="w-full bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+              className="w-full bg-moss text-white hover:bg-moss-light"
             >
               {uploading ? 'Uploading...' : `Upload ${files.filter((f) => f.status === 'pending').length} file(s)`}
             </Button>

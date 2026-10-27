@@ -102,19 +102,19 @@ export default async function BlogPostPage({
       <article className="mx-auto max-w-3xl px-6 py-12 md:py-16">
         <nav
           aria-label="Breadcrumb"
-          className="mb-6 text-sm text-[#7A7A7A]"
+          className="mb-6 text-sm text-ink-muted"
         >
-          <Link href="/" className="hover:text-[#2D2D2D]">
+          <Link href="/" className="hover:text-ink">
             Home
           </Link>{" "}
           /{" "}
-          <Link href="/blog" className="hover:text-[#2D2D2D]">
+          <Link href="/blog" className="hover:text-ink">
             Blog
           </Link>{" "}
           /{" "}
           <Link
             href={`/blog/category/${post.category}`}
-            className="hover:text-[#2D2D2D]"
+            className="hover:text-ink"
           >
             {categoryLabel}
           </Link>
@@ -122,13 +122,13 @@ export default async function BlogPostPage({
 
         <Link
           href={`/blog/category/${post.category}`}
-          className="inline-flex items-center rounded-full bg-[#F0EDE8] px-3 py-1 text-xs font-medium text-[#6B8F71] hover:bg-[#E8E4DE]"
+          className="inline-flex items-center rounded-full bg-[#F0EDE8] px-3 py-1 text-xs font-medium text-[#6B8F71] hover:bg-hairline"
         >
           {categoryLabel}
         </Link>
 
         <h1
-          className="mt-4 text-3xl font-bold leading-tight tracking-tight text-[#2D2D2D] md:text-4xl lg:text-5xl"
+          className="mt-4 text-3xl font-bold leading-tight tracking-tight text-ink md:text-4xl lg:text-5xl"
           style={{ fontFamily: "var(--font-manrope), sans-serif" }}
         >
           {post.title}
@@ -145,7 +145,7 @@ export default async function BlogPostPage({
         />
 
         {post.featuredImage && (
-          <div className="relative mx-auto mt-8 aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border border-[#E8E4DE] bg-[#F0EDE8] sm:max-w-lg">
+          <div className="relative mx-auto mt-8 aspect-[4/5] w-full max-w-md overflow-hidden rounded-2xl border border-hairline bg-[#F0EDE8] sm:max-w-lg">
             <Image
               src={post.featuredImage}
               alt={post.featuredImageAlt ?? post.title}
@@ -157,14 +157,14 @@ export default async function BlogPostPage({
           </div>
         )}
 
-        <div className="prose prose-neutral mt-10 max-w-none prose-headings:font-display prose-headings:font-bold prose-headings:tracking-[-0.03em] prose-headings:tracking-tight prose-headings:text-[#2D2D2D] prose-p:text-[#3D3D3D] prose-p:leading-relaxed prose-a:text-[#6B8F71] prose-a:underline-offset-2 prose-strong:text-[#2D2D2D] prose-blockquote:border-l-[#8B9F82] prose-blockquote:bg-[#FAF8F5] prose-blockquote:py-2 prose-blockquote:not-italic prose-blockquote:text-[#3D3D3D] prose-li:text-[#3D3D3D] prose-img:rounded-xl">
+        <div className="prose prose-neutral mt-10 max-w-none prose-headings:font-display prose-headings:font-bold prose-headings:tracking-[-0.03em] prose-headings:tracking-tight prose-headings:text-ink prose-p:text-[#3D3D3D] prose-p:leading-relaxed prose-a:text-[#6B8F71] prose-a:underline-offset-2 prose-strong:text-ink prose-blockquote:border-l-moss prose-blockquote:bg-paper prose-blockquote:py-2 prose-blockquote:not-italic prose-blockquote:text-[#3D3D3D] prose-li:text-[#3D3D3D] prose-img:rounded-xl">
           <MDXContent source={post.content} category={post.category} />
         </div>
 
         {post.faq && post.faq.length > 0 && (
-          <section className="not-prose mt-12 border-t border-[#E8E4DE] pt-10">
+          <section className="not-prose mt-12 border-t border-hairline pt-10">
             <h2
-              className="mb-6 text-2xl font-semibold text-[#2D2D2D]"
+              className="mb-6 text-2xl font-semibold text-ink"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               Frequently asked questions
@@ -172,7 +172,7 @@ export default async function BlogPostPage({
             <dl className="space-y-6">
               {post.faq.map((q) => (
                 <div key={q.question}>
-                  <dt className="text-base font-semibold text-[#2D2D2D]">
+                  <dt className="text-base font-semibold text-ink">
                     {q.question}
                   </dt>
                   <dd className="mt-2 text-sm leading-relaxed text-[#3D3D3D]">
@@ -188,7 +188,7 @@ export default async function BlogPostPage({
 
         <RelatedPosts posts={related} />
 
-        <footer className="mt-12 border-t border-[#E8E4DE] pt-6 text-sm text-[#7A7A7A]">
+        <footer className="mt-12 border-t border-hairline pt-6 text-sm text-ink-muted">
           Published{" "}
           {format(new Date(post.publishedAt), "MMMM d, yyyy")}
           {post.updatedAt && (

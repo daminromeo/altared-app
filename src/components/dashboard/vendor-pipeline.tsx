@@ -47,14 +47,17 @@ interface VendorPipelineProps {
   onStageChange?: (vendorId: string, newStage: PipelineStage, paymentInfo?: BookingPaymentInfo) => void
 }
 
+// One calm neutral for every open stage; only Booked gets colour, so the eye
+// goes to what's decided.
+const OPEN = { color: 'bg-ink/[0.05] text-ink', dropColor: 'bg-ink/[0.08]', badgeClass: 'bg-ink/[0.05] text-ink-muted' }
 const stages: { key: PipelineStage; label: string; color: string; dropColor: string; badgeClass: string }[] = [
-  { key: 'researching', label: 'Researching', color: 'bg-gray-100 text-gray-700', dropColor: 'bg-gray-200/60', badgeClass: 'bg-gray-100 text-gray-600' },
-  { key: 'contacted', label: 'Contacted', color: 'bg-blue-50 text-blue-700', dropColor: 'bg-blue-100/60', badgeClass: 'bg-blue-50 text-blue-600' },
-  { key: 'quoted', label: 'Quoted', color: 'bg-amber-50 text-amber-700', dropColor: 'bg-amber-100/60', badgeClass: 'bg-amber-50 text-amber-600' },
-  { key: 'meeting', label: 'Meeting', color: 'bg-purple-50 text-purple-700', dropColor: 'bg-purple-100/60', badgeClass: 'bg-purple-50 text-purple-600' },
-  { key: 'negotiating', label: 'Negotiating', color: 'bg-orange-50 text-orange-700', dropColor: 'bg-orange-100/60', badgeClass: 'bg-orange-50 text-orange-600' },
-  { key: 'booked', label: 'Booked', color: 'bg-[#8B9F82]/10 text-[#8B9F82]', dropColor: 'bg-[#8B9F82]/20', badgeClass: 'bg-[#8B9F82]/10 text-[#8B9F82]' },
-  { key: 'declined', label: 'Declined', color: 'bg-red-50 text-red-700', dropColor: 'bg-red-100/60', badgeClass: 'bg-red-50 text-red-600' },
+  { key: 'researching', label: 'Researching', ...OPEN },
+  { key: 'contacted', label: 'Contacted', ...OPEN },
+  { key: 'quoted', label: 'Quoted', ...OPEN },
+  { key: 'meeting', label: 'Meeting', ...OPEN },
+  { key: 'negotiating', label: 'Negotiating', ...OPEN },
+  { key: 'booked', label: 'Booked', color: 'bg-sage-soft text-moss', dropColor: 'bg-sage-soft', badgeClass: 'bg-sage-soft text-moss' },
+  { key: 'declined', label: 'Declined', color: 'bg-ink/[0.03] text-ink-muted', dropColor: 'bg-ink/[0.06]', badgeClass: 'bg-ink/[0.03] text-ink-muted' },
 ]
 
 function getStage(key: PipelineStage) {
@@ -134,9 +137,9 @@ function BookingPaymentDialog({
     <Dialog open={open} onOpenChange={handleCancel}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-[#2D2D2D]">Booking Payment</DialogTitle>
+          <DialogTitle className="text-ink">Booking Payment</DialogTitle>
           <DialogDescription>
-            You&apos;re booking <span className="font-medium text-[#2D2D2D]">{vendorName}</span>. How would you like to record the payment?
+            You&apos;re booking <span className="font-medium text-ink">{vendorName}</span>. How would you like to record the payment?
           </DialogDescription>
         </DialogHeader>
 
@@ -151,23 +154,23 @@ function BookingPaymentDialog({
                 onClick={() => setSelected(opt.value)}
                 className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
                   isSelected
-                    ? 'border-[#8B9F82] bg-[#8B9F82]/5'
-                    : 'border-[#E5E7EB] hover:border-[#8B9F82]/50 hover:bg-[#FAF8F5]'
+                    ? 'border-moss bg-moss/5'
+                    : 'border-[#E5E7EB] hover:border-moss/50 hover:bg-paper'
                 }`}
               >
                 <div className={`flex size-9 items-center justify-center rounded-lg ${
-                  isSelected ? 'bg-[#8B9F82]/10' : 'bg-[#FAF8F5]'
+                  isSelected ? 'bg-moss/10' : 'bg-paper'
                 }`}>
-                  <Icon className={`size-4 ${isSelected ? 'text-[#8B9F82]' : 'text-[#7A7A7A]'}`} />
+                  <Icon className={`size-4 ${isSelected ? 'text-moss' : 'text-ink-muted'}`} />
                 </div>
                 <div className="flex-1">
-                  <p className={`text-sm font-medium ${isSelected ? 'text-[#2D2D2D]' : 'text-[#2D2D2D]'}`}>
+                  <p className={`text-sm font-medium ${isSelected ? 'text-ink' : 'text-ink'}`}>
                     {opt.label}
                   </p>
-                  <p className="text-xs text-[#7A7A7A]">{opt.description}</p>
+                  <p className="text-xs text-ink-muted">{opt.description}</p>
                 </div>
                 <div className={`flex size-5 items-center justify-center rounded-full border-2 transition-colors ${
-                  isSelected ? 'border-[#8B9F82] bg-[#8B9F82]' : 'border-[#D1D5DB]'
+                  isSelected ? 'border-moss bg-moss' : 'border-[#D1D5DB]'
                 }`}>
                   {isSelected && (
                     <div className="size-2 rounded-full bg-white" />
@@ -182,7 +185,7 @@ function BookingPaymentDialog({
           <div className="space-y-1.5">
             <Label htmlFor="deposit-amount">Deposit Amount</Label>
             <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#7A7A7A]">$</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-ink-muted">$</span>
               <Input
                 id="deposit-amount"
                 type="number"
@@ -205,7 +208,7 @@ function BookingPaymentDialog({
             type="button"
             disabled={!selected || (selected === 'deposit_paid' && !depositAmount)}
             onClick={handleConfirm}
-            className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+            className="bg-moss hover:bg-moss-light text-white"
           >
             Confirm Booking
           </Button>
@@ -246,7 +249,7 @@ function MobilePipeline({
             <span className={`rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${stage.badgeClass}`}>
               {stage.label}
             </span>
-            <span className="text-[11px] text-[#7A7A7A]">
+            <span className="text-[11px] text-ink-muted">
               {stage.vendors.length}
             </span>
           </div>
@@ -263,12 +266,12 @@ function MobilePipeline({
                   onClick={() => router.push(`/vendors/${vendor.id}`)}
                   className="flex-1 min-w-0 text-left"
                 >
-                  <p className="text-sm font-medium text-[#2D2D2D] truncate">
+                  <p className="text-sm font-medium text-ink truncate">
                     {vendor.name}
                   </p>
                   <div className="mt-0.5 flex items-center gap-2">
-                    <span className="text-xs text-[#7A7A7A] truncate">{vendor.category}</span>
-                    <span className="text-xs font-semibold text-[#C9A96E]">{formatPrice(vendor.price)}</span>
+                    <span className="text-xs text-ink-muted truncate">{vendor.category}</span>
+                    <span className="text-xs font-semibold text-brass">{formatPrice(vendor.price)}</span>
                   </div>
                 </button>
 
@@ -277,14 +280,14 @@ function MobilePipeline({
                   <select
                     value={vendor.stage}
                     onChange={(e) => handleStageSelect(vendor.id, e.target.value as PipelineStage)}
-                    className="shrink-0 rounded-md border border-[#E8E4DF] bg-[#FAF8F5] px-2 py-1.5 text-xs font-medium text-[#2D2D2D] focus:outline-none focus:ring-2 focus:ring-[#8B9F82]/30"
+                    className="shrink-0 rounded-md border border-hairline bg-paper px-2 py-1.5 text-xs font-medium text-ink focus:outline-none focus:ring-2 focus:ring-moss/30"
                   >
                     {stages.map((s) => (
                       <option key={s.key} value={s.key}>{s.label}</option>
                     ))}
                   </select>
                 ) : (
-                  <ChevronRight className="size-4 shrink-0 text-[#7A7A7A]" />
+                  <ChevronRight className="size-4 shrink-0 text-ink-muted" />
                 )}
               </div>
             ))}
@@ -294,7 +297,7 @@ function MobilePipeline({
 
       {/* Show empty stages summary */}
       {vendorsByStage.filter((s) => s.vendors.length === 0).length > 0 && (
-        <p className="text-center text-[11px] text-[#7A7A7A] pt-1">
+        <p className="text-center text-[11px] text-ink-muted pt-1">
           {vendorsByStage
             .filter((s) => s.vendors.length === 0)
             .map((s) => s.label)
@@ -380,8 +383,8 @@ function DesktopPipeline({
             key={stage.key}
             className={`w-[160px] lg:w-[180px] shrink-0 rounded-lg p-2 transition-colors duration-150 ${
               isDropTarget
-                ? `${stage.dropColor} ring-2 ring-inset ring-[#8B9F82]/30`
-                : 'bg-[#FAF8F5]'
+                ? `${stage.dropColor} ring-2 ring-inset ring-moss/30`
+                : 'bg-paper'
             }`}
             onDragOver={(e) => handleDragOver(e, stage.key)}
             onDragLeave={handleDragLeave}
@@ -389,10 +392,10 @@ function DesktopPipeline({
           >
             {/* Column header */}
             <div className="mb-2 flex items-center justify-between px-1">
-              <span className="text-xs font-semibold text-[#2D2D2D]">
+              <span className="text-xs font-semibold text-ink">
                 {stage.label}
               </span>
-              <span className="flex size-5 items-center justify-center rounded-full bg-white text-[10px] font-medium text-[#7A7A7A]">
+              <span className="flex size-5 items-center justify-center rounded-full bg-white text-[10px] font-medium text-ink-muted">
                 {stage.vendors.length}
               </span>
             </div>
@@ -411,19 +414,19 @@ function DesktopPipeline({
                 >
                   <div className="flex items-start gap-1.5">
                     {onStageChange && (
-                      <GripVertical className="mt-0.5 size-3.5 shrink-0 text-[#7A7A7A]/40 group-hover:text-[#7A7A7A]/70 transition-colors" />
+                      <GripVertical className="mt-0.5 size-3.5 shrink-0 text-ink-muted/40 group-hover:text-ink-muted/70 transition-colors" />
                     )}
                     <button
                       onClick={() => router.push(`/vendors/${vendor.id}`)}
                       className="flex-1 min-w-0 text-left"
                     >
-                      <p className="text-sm font-medium text-[#2D2D2D] truncate">
+                      <p className="text-sm font-medium text-ink truncate">
                         {vendor.name}
                       </p>
-                      <p className="mt-0.5 text-xs text-[#7A7A7A] truncate">
+                      <p className="mt-0.5 text-xs text-ink-muted truncate">
                         {vendor.category}
                       </p>
-                      <p className="mt-1.5 text-xs font-semibold text-[#C9A96E]">
+                      <p className="mt-1.5 text-xs font-semibold text-brass">
                         {formatPrice(vendor.price)}
                       </p>
                     </button>
@@ -434,10 +437,10 @@ function DesktopPipeline({
               {stage.vendors.length === 0 && (
                 <div className={`rounded-lg border border-dashed p-3 text-center transition-colors ${
                   isDropTarget
-                    ? 'border-[#8B9F82]/40 bg-[#8B9F82]/5'
-                    : 'border-[#7A7A7A]/20'
+                    ? 'border-moss/40 bg-moss/5'
+                    : 'border-ink-muted/20'
                 }`}>
-                  <p className="text-[11px] text-[#7A7A7A]">
+                  <p className="text-[11px] text-ink-muted">
                     {isDropTarget ? 'Drop here' : 'No vendors'}
                   </p>
                 </div>
@@ -472,13 +475,13 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
 
   if (loading) {
     return (
-      <Card className="bg-white p-4">
+      <Card className="rounded-3xl border border-hairline bg-white p-4 shadow-none ring-0 sm:p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-5 w-36 rounded bg-[#FAF8F5]" />
+          <div className="h-5 w-36 rounded bg-paper" />
           {/* Mobile skeleton */}
           <div className="sm:hidden space-y-2">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-16 rounded-lg bg-[#FAF8F5]" />
+              <div key={i} className="h-16 rounded-lg bg-paper" />
             ))}
           </div>
           {/* Desktop skeleton */}
@@ -486,7 +489,7 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
             {stages.map((stage) => (
               <div
                 key={stage.key}
-                className="w-[160px] lg:w-[200px] shrink-0 space-y-2 rounded-lg bg-[#FAF8F5] p-3"
+                className="w-[160px] lg:w-[200px] shrink-0 space-y-2 rounded-lg bg-paper p-3"
               >
                 <div className="h-4 w-20 rounded bg-white" />
                 <div className="h-16 rounded bg-white" />
@@ -501,7 +504,7 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
 
   if (vendors.length === 0) {
     return (
-      <Card className="bg-white">
+      <Card className="rounded-3xl border border-hairline bg-white shadow-none ring-0">
         <EmptyState
           icon={Users}
           title="No vendors yet"
@@ -520,16 +523,13 @@ export function VendorPipeline({ vendors, loading, onStageChange }: VendorPipeli
 
   return (
     <>
-      <Card className="bg-white p-3 sm:p-4">
+      <Card className="rounded-3xl border border-hairline bg-white p-4 shadow-none ring-0 sm:p-6">
         <div className="mb-3 sm:mb-4 flex items-center justify-between">
-          <h2
-            className="text-base font-semibold text-[#2D2D2D]"
-            style={{ fontFamily: "var(--font-manrope), sans-serif" }}
-          >
-            Vendor Pipeline
+          <h2 className="text-[11px] font-bold uppercase tracking-[0.1em] text-ink-muted">
+            Vendors
           </h2>
           {onStageChange && (
-            <span className="hidden sm:inline text-[11px] text-[#7A7A7A]">
+            <span className="hidden sm:inline text-[11px] text-ink-muted">
               Drag vendors to move between stages
             </span>
           )}

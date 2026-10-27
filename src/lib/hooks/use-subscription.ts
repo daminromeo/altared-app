@@ -87,8 +87,9 @@ export function useSubscription() {
     /** Paid through a pass or a legacy subscription (not the trial) */
     hasPaidAccess: access?.source === "pass" || access?.source === "subscription",
     trialDaysLeft: access ? trialDaysLeft(access) : 0,
-    /** True once a trial existed and has run out */
-    trialEnded: access?.source === "free" && !!access.trialEndsAt,
+    /** The trial ran out without a purchase, so the app is locked */
+    trialEnded: access?.source === "expired",
+    isLocked: access?.locked ?? false,
   };
 }
 

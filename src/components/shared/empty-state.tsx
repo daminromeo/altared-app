@@ -29,16 +29,16 @@ export function EmptyState({
         className
       )}
     >
-      <div className="flex size-12 items-center justify-center rounded-xl bg-[#FAF8F5]">
-        <Icon className="size-6 text-[#7A7A7A]" />
+      <div className="flex size-12 items-center justify-center rounded-xl bg-paper">
+        <Icon className="size-6 text-ink-muted" />
       </div>
       <h3
-        className="mt-4 text-base font-semibold text-[#2D2D2D]"
+        className="mt-4 text-base font-semibold text-ink"
         style={{ fontFamily: "var(--font-manrope), sans-serif" }}
       >
         {title}
       </h3>
-      <p className="mt-1.5 max-w-sm text-sm text-[#7A7A7A]">{description}</p>
+      <p className="mt-1.5 max-w-sm text-sm text-ink-muted">{description}</p>
 
       {actionLabel && (actionHref || onAction) && (
         <div className="mt-5">
@@ -46,7 +46,7 @@ export function EmptyState({
             <Link href={actionHref}>
               <Button
                 variant="default"
-                className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+                className="bg-moss text-white hover:bg-moss-light"
               >
                 {actionLabel}
               </Button>
@@ -55,7 +55,7 @@ export function EmptyState({
             <Button
               variant="default"
               onClick={onAction}
-              className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+              className="bg-moss text-white hover:bg-moss-light"
             >
               {actionLabel}
             </Button>

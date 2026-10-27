@@ -34,23 +34,23 @@ export function ComparisonWeightSliders({ weights, onChange }: ComparisonWeightS
   }
 
   return (
-    <div className="rounded-xl border border-[#E8E4DF] bg-white">
+    <div className="rounded-xl border border-hairline bg-white">
       <button
         onClick={() => setOpen(!open)}
         className="flex w-full items-center justify-between px-4 py-3 text-left"
       >
         <div className="flex items-center gap-2">
-          <SlidersHorizontal className="size-4 text-[#8B9F82]" />
-          <span className="text-sm font-medium text-[#2D2D2D]">Priority Weights</span>
-          <span className="text-xs text-[#7A7A7A]">Adjust what matters most to you</span>
+          <SlidersHorizontal className="size-4 text-moss" />
+          <span className="text-sm font-medium text-ink">Priority Weights</span>
+          <span className="text-xs text-ink-muted">Adjust what matters most to you</span>
         </div>
         <ChevronDown
-          className={`size-4 text-[#7A7A7A] transition-transform ${open ? 'rotate-180' : ''}`}
+          className={`size-4 text-ink-muted transition-transform ${open ? 'rotate-180' : ''}`}
         />
       </button>
 
       {open && (
-        <div className="border-t border-[#E8E4DF] px-4 py-4 space-y-4">
+        <div className="border-t border-hairline px-4 py-4 space-y-4">
           {(Object.keys(WEIGHT_LABELS) as (keyof ComparisonWeights)[]).map((key) => {
             const { label, description } = WEIGHT_LABELS[key];
             const percent = total > 0 ? Math.round((weights[key] / total) * 100) : 0;
@@ -59,10 +59,10 @@ export function ComparisonWeightSliders({ weights, onChange }: ComparisonWeightS
               <div key={key} className="space-y-1.5">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-sm font-medium text-[#2D2D2D]">{label}</span>
-                    <span className="ml-2 text-xs text-[#7A7A7A]">{description}</span>
+                    <span className="text-sm font-medium text-ink">{label}</span>
+                    <span className="ml-2 text-xs text-ink-muted">{description}</span>
                   </div>
-                  <span className="text-sm font-semibold text-[#8B9F82] tabular-nums w-10 text-right">
+                  <span className="text-sm font-semibold text-moss tabular-nums w-10 text-right">
                     {percent}%
                   </span>
                 </div>
@@ -78,7 +78,7 @@ export function ComparisonWeightSliders({ weights, onChange }: ComparisonWeightS
           })}
 
           <div className="flex justify-end pt-2">
-            <Button variant="ghost" size="sm" onClick={resetWeights} className="text-[#7A7A7A]">
+            <Button variant="ghost" size="sm" onClick={resetWeights} className="text-ink-muted">
               <RotateCcw className="size-3.5" />
               Reset
             </Button>

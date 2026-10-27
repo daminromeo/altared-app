@@ -98,7 +98,7 @@ export function PartnerReaction({
           className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
             reaction === "thumbs_up"
               ? "bg-green-100 text-green-700 ring-1 ring-green-300"
-              : "bg-[#FAF8F5] text-[#7A7A7A] hover:bg-green-50 hover:text-green-600"
+              : "bg-paper text-ink-muted hover:bg-green-50 hover:text-green-600"
           }`}
         >
           <ThumbsUp className="h-3.5 w-3.5" />
@@ -110,7 +110,7 @@ export function PartnerReaction({
           className={`flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
             reaction === "thumbs_down"
               ? "bg-red-100 text-red-700 ring-1 ring-red-300"
-              : "bg-[#FAF8F5] text-[#7A7A7A] hover:bg-red-50 hover:text-red-600"
+              : "bg-paper text-ink-muted hover:bg-red-50 hover:text-red-600"
           }`}
         >
           <ThumbsDown className="h-3.5 w-3.5" />
@@ -119,7 +119,7 @@ export function PartnerReaction({
         {reaction && !showComment && (
           <button
             onClick={() => setShowComment(true)}
-            className="flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-[#7A7A7A] hover:bg-[#FAF8F5]"
+            className="flex items-center gap-1 rounded-full px-3 py-1.5 text-sm text-ink-muted hover:bg-paper"
           >
             <MessageCircle className="h-3.5 w-3.5" />
             {existingReaction?.comment ? "Edit note" : "Add note"}
@@ -135,19 +135,19 @@ export function PartnerReaction({
             placeholder="Share your thoughts... (optional)"
             maxLength={280}
             rows={2}
-            className="flex-1 rounded-lg border border-[#E8E4DF] bg-white px-3 py-2 text-sm text-[#2D2D2D] placeholder:text-[#7A7A7A]/60 focus:border-[#8B9F82] focus:outline-none focus:ring-1 focus:ring-[#8B9F82]"
+            className="flex-1 rounded-lg border border-hairline bg-white px-3 py-2 text-sm text-ink placeholder:text-ink-muted/60 focus:border-moss focus:outline-none focus:ring-1 focus:ring-moss"
           />
           <div className="flex flex-col gap-1">
             <Button
               onClick={submitComment}
               disabled={saving}
-              className="h-8 bg-[#8B9F82] px-3 text-xs text-white hover:bg-[#7A8E71]"
+              className="h-8 bg-moss px-3 text-xs text-white hover:bg-moss-light"
             >
               Save
             </Button>
             <button
               onClick={() => setShowComment(false)}
-              className="flex h-8 items-center justify-center text-[#7A7A7A] hover:text-[#2D2D2D]"
+              className="flex h-8 items-center justify-center text-ink-muted hover:text-ink"
             >
               <X className="h-4 w-4" />
             </button>
@@ -156,7 +156,7 @@ export function PartnerReaction({
       )}
 
       {!showComment && existingReaction?.comment && (
-        <p className="text-xs italic text-[#7A7A7A]">
+        <p className="text-xs italic text-ink-muted">
           &ldquo;{existingReaction.comment}&rdquo;
         </p>
       )}

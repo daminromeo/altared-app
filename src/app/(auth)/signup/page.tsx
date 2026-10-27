@@ -96,12 +96,12 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4" style={{ backgroundColor: '#FAF8F5' }}>
+    <div className="flex min-h-screen items-center justify-center px-4" style={{ backgroundColor: '#F6F3EE' }}>
       {/* Decorative background elements */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
           className="absolute -top-24 -right-24 h-96 w-96 rounded-full opacity-20 blur-3xl"
-          style={{ backgroundColor: '#C9A96E' }}
+          style={{ backgroundColor: '#E2C994' }}
         />
         <div
           className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full opacity-20 blur-3xl"
@@ -116,7 +116,7 @@ export default function SignupPage() {
             className="text-4xl tracking-tight"
             style={{
               fontFamily: "var(--font-manrope), sans-serif",
-              color: '#2D2D2D',
+              color: '#1C221E',
             }}
           >
             Altared
@@ -125,7 +125,7 @@ export default function SignupPage() {
             className="mt-2 text-sm"
             style={{
               fontFamily: "'DM Sans', sans-serif",
-              color: '#7A7A7A',
+              color: '#5D665F',
             }}
           >
             Begin your wedding planning journey
@@ -138,7 +138,7 @@ export default function SignupPage() {
               className="text-xl"
               style={{
                 fontFamily: "var(--font-manrope), sans-serif",
-                color: '#2D2D2D',
+                color: '#1C221E',
               }}
             >
               Create your account
@@ -146,7 +146,7 @@ export default function SignupPage() {
             <CardDescription
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                color: '#7A7A7A',
+                color: '#5D665F',
               }}
             >
               Start planning the wedding of your dreams
@@ -198,7 +198,7 @@ export default function SignupPage() {
                 className="px-4 text-xs uppercase"
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
-                  color: '#7A7A7A',
+                  color: '#5D665F',
                 }}
               >
                 or
@@ -213,7 +213,7 @@ export default function SignupPage() {
                   htmlFor="fullName"
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
-                    color: '#2D2D2D',
+                    color: '#1C221E',
                   }}
                 >
                   Full name
@@ -243,7 +243,7 @@ export default function SignupPage() {
                   htmlFor="email"
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
-                    color: '#2D2D2D',
+                    color: '#1C221E',
                   }}
                 >
                   Email
@@ -273,7 +273,7 @@ export default function SignupPage() {
                   htmlFor="password"
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
-                    color: '#2D2D2D',
+                    color: '#1C221E',
                   }}
                 >
                   Password
@@ -300,7 +300,7 @@ export default function SignupPage() {
                   className="text-xs"
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
-                    color: '#7A7A7A',
+                    color: '#5D665F',
                   }}
                 >
                   Must be 8+ characters with uppercase, lowercase, and a number
@@ -314,7 +314,7 @@ export default function SignupPage() {
                     fontFamily: "'DM Sans', sans-serif",
                     backgroundColor: '#FEF2F2',
                     borderColor: '#FECACA',
-                    color: '#DC2626',
+                    color: '#A33A2E',
                   }}
                 >
                   {error}
@@ -327,7 +327,7 @@ export default function SignupPage() {
                 className="w-full"
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
-                  backgroundColor: '#8B9F82',
+                  backgroundColor: '#2F4A3B',
                   color: '#FFFFFF',
                 }}
                 disabled={isLoading}
@@ -341,12 +341,12 @@ export default function SignupPage() {
               className="text-center text-xs leading-relaxed"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                color: '#7A7A7A',
+                color: '#5D665F',
               }}
             >
               By creating an account, you agree to our{' '}
-              <a href="/terms" className="underline underline-offset-4 hover:text-[#2D2D2D]">Terms of Service</a> and{' '}
-              <a href="/privacy" className="underline underline-offset-4 hover:text-[#2D2D2D]">Privacy Policy</a>.
+              <a href="/terms" className="underline underline-offset-4 hover:text-ink">Terms of Service</a> and{' '}
+              <a href="/privacy" className="underline underline-offset-4 hover:text-ink">Privacy Policy</a>.
             </p>
 
             {/* Link to login */}
@@ -354,14 +354,14 @@ export default function SignupPage() {
               className="text-center text-sm"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                color: '#7A7A7A',
+                color: '#5D665F',
               }}
             >
               Already have an account?{' '}
               <Link
                 href="/login"
                 className="font-medium underline underline-offset-4 transition-colors hover:opacity-80"
-                style={{ color: '#8B9F82' }}
+                style={{ color: '#2F4A3B' }}
               >
                 Sign in
               </Link>

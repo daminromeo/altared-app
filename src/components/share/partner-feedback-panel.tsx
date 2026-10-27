@@ -46,10 +46,10 @@ export function PartnerFeedbackPanel({ vendorId }: PartnerFeedbackPanelProps) {
   if (loading || reactions.length === 0) return null;
 
   return (
-    <Card className="border-[#E8E4DF]">
+    <Card className="border-hairline">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-base text-[#2D2D2D]">
-          <Users className="h-4 w-4 text-[#8B9F82]" />
+        <CardTitle className="flex items-center gap-2 text-base text-ink">
+          <Users className="h-4 w-4 text-moss" />
           Partner Feedback
         </CardTitle>
       </CardHeader>
@@ -58,7 +58,7 @@ export function PartnerFeedbackPanel({ vendorId }: PartnerFeedbackPanelProps) {
           {reactions.map((r) => (
             <div
               key={r.id}
-              className="flex items-start gap-3 rounded-lg border border-[#E8E4DF] p-3"
+              className="flex items-start gap-3 rounded-lg border border-hairline p-3"
             >
               <div
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
@@ -75,7 +75,7 @@ export function PartnerFeedbackPanel({ vendorId }: PartnerFeedbackPanelProps) {
               </div>
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-[#2D2D2D]">
+                  <span className="text-sm font-medium text-ink">
                     {r.partner_name}
                   </span>
                   <span
@@ -88,15 +88,15 @@ export function PartnerFeedbackPanel({ vendorId }: PartnerFeedbackPanelProps) {
                     {r.reaction === "thumbs_up" ? "Loves it" : "Not sure"}
                   </span>
                   {!vendorId && r.vendors && (
-                    <span className="text-xs text-[#7A7A7A]">
+                    <span className="text-xs text-ink-muted">
                       on {(r.vendors as { name: string }).name}
                     </span>
                   )}
                 </div>
                 {r.comment && (
                   <div className="mt-1 flex items-start gap-1">
-                    <MessageCircle className="mt-0.5 h-3 w-3 shrink-0 text-[#7A7A7A]" />
-                    <p className="text-sm text-[#7A7A7A]">
+                    <MessageCircle className="mt-0.5 h-3 w-3 shrink-0 text-ink-muted" />
+                    <p className="text-sm text-ink-muted">
                       &ldquo;{r.comment}&rdquo;
                     </p>
                   </div>

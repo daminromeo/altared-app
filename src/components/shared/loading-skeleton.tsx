@@ -8,7 +8,7 @@ function Shimmer({ className }: SkeletonProps) {
   return (
     <div
       className={cn(
-        'animate-pulse rounded bg-[#FAF8F5]',
+        'animate-pulse rounded bg-paper',
         className
       )}
     />
@@ -95,7 +95,7 @@ export function DashboardSkeleton() {
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <div
               key={i}
-              className="w-[180px] shrink-0 space-y-2 rounded-lg bg-[#FAF8F5] p-2"
+              className="w-[180px] shrink-0 space-y-2 rounded-lg bg-paper p-2"
             >
               <Shimmer className="h-4 w-20 bg-white" />
               <Shimmer className="h-20 bg-white" />

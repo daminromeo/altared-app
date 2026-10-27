@@ -49,7 +49,7 @@ const statusConfig: Record<
   declined: {
     label: 'Declined',
     bg: 'bg-[#FEE2E2]',
-    text: 'text-[#DC2626]',
+    text: 'text-error',
   },
   archived: {
     label: 'Archived',

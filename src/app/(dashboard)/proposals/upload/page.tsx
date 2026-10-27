@@ -168,7 +168,7 @@ export default function UploadProposalPage() {
       setScanResults(mapped)
       setStage('results')
 
-      toast.success('Proposal scanned successfully')
+      toast.success('Quote scanned')
     } catch (err) {
       console.error('Upload/scan error:', err)
       setStage('error')
@@ -179,7 +179,7 @@ export default function UploadProposalPage() {
   }
 
   function handleSaved() {
-    toast.success('Proposal confirmed and saved')
+    toast.success('Quote saved')
     router.push('/proposals')
   }
 
@@ -189,19 +189,19 @@ export default function UploadProposalPage() {
       <div className="mx-auto max-w-2xl space-y-6">
         <div className="flex items-center gap-3">
           <Link href="/proposals">
-            <Button variant="ghost" size="icon-sm" className="text-[#7A7A7A]">
+            <Button variant="ghost" size="icon-sm" className="text-ink-muted">
               <ArrowLeft className="size-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-[#2D2D2D]">
-              Upload Proposal
+            <h1 className="text-2xl font-bold tracking-tight text-ink">
+              Upload a quote
             </h1>
           </div>
         </div>
         <UpgradePrompt
           title="AI quote scanning"
-          description="Upload vendor proposals and let AI automatically extract pricing, services, payment schedules, and contract terms."
+          description="Upload vendor quotes and let AI automatically extract pricing, services, payment schedules, and contract terms."
         />
       </div>
     )
@@ -212,16 +212,16 @@ export default function UploadProposalPage() {
       {/* Header */}
       <div className="flex items-center gap-3">
         <Link href="/proposals">
-          <Button variant="ghost" size="icon-sm" className="text-[#7A7A7A]">
+          <Button variant="ghost" size="icon-sm" className="text-ink-muted">
             <ArrowLeft className="size-4" />
           </Button>
         </Link>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#2D2D2D]">
-            Upload Proposal
+          <h1 className="text-2xl font-bold tracking-tight text-ink">
+            Upload a quote
           </h1>
-          <p className="mt-0.5 text-sm text-[#7A7A7A]">
-            Upload a vendor proposal PDF for AI-powered data extraction.
+          <p className="mt-0.5 text-sm text-ink-muted">
+            Upload a vendor quote or contract as a PDF. AI pulls out the price, fees and payment dates.
           </p>
         </div>
       </div>
@@ -231,7 +231,7 @@ export default function UploadProposalPage() {
         <div className="space-y-6 rounded-xl border bg-white p-6">
           {/* File drop zone */}
           <div className="space-y-1.5">
-            <Label className="text-[#2D2D2D]">Proposal PDF</Label>
+            <Label className="text-ink">Quote PDF</Label>
             <ProposalUpload
               onFileSelect={handleFileSelect}
               selectedFile={file}
@@ -241,7 +241,7 @@ export default function UploadProposalPage() {
 
           {/* Vendor selection */}
           <div className="space-y-1.5">
-            <Label className="text-[#2D2D2D]">Vendor</Label>
+            <Label className="text-ink">Vendor</Label>
             <Select
               value={selectedVendorId}
               onValueChange={(v) => setSelectedVendorId(v ?? '')}
@@ -263,8 +263,8 @@ export default function UploadProposalPage() {
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-xs text-[#7A7A7A]">
-              Associate this proposal with an existing vendor, or leave blank to
+            <p className="text-xs text-ink-muted">
+              Link this quote to an existing vendor, or leave blank to
               assign later.
             </p>
           </div>
@@ -274,41 +274,41 @@ export default function UploadProposalPage() {
             <Button
               onClick={handleUpload}
               disabled={!file}
-              className="w-full bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+              className="w-full bg-moss text-white hover:bg-moss-light"
               size="lg"
             >
               <Sparkles className="size-4" />
-              Upload &amp; Scan Proposal
+              Upload and scan
             </Button>
           )}
 
           {/* Scanning animation */}
           {stage === 'scanning' && (
-            <div className="space-y-4 rounded-lg bg-[#FAF8F5] p-6">
+            <div className="space-y-4 rounded-lg bg-paper p-6">
               <div className="flex flex-col items-center gap-3">
                 <div className="relative">
-                  <div className="flex size-16 items-center justify-center rounded-full bg-[#8B9F82]/10">
-                    <Sparkles className="size-7 text-[#8B9F82]" />
+                  <div className="flex size-16 items-center justify-center rounded-full bg-moss/10">
+                    <Sparkles className="size-7 text-moss" />
                   </div>
-                  <Loader2 className="absolute -right-1 -top-1 size-6 animate-spin text-[#C9A96E]" />
+                  <Loader2 className="absolute -right-1 -top-1 size-6 animate-spin text-brass" />
                 </div>
                 <div className="text-center">
-                  <p className="text-sm font-semibold text-[#2D2D2D]">
-                    Scanning proposal with AI...
+                  <p className="text-sm font-semibold text-ink">
+                    Scanning your quote…
                   </p>
-                  <p className="mt-1 text-xs text-[#7A7A7A]">
+                  <p className="mt-1 text-xs text-ink-muted">
                     Extracting vendor details, pricing, services, and payment terms.
                   </p>
                 </div>
               </div>
               <div className="space-y-1.5">
-                <div className="h-2 w-full overflow-hidden rounded-full bg-[#8B9F82]/20">
+                <div className="h-2 w-full overflow-hidden rounded-full bg-moss/20">
                   <div
-                    className="h-full rounded-full bg-[#8B9F82] transition-all duration-500 ease-out"
+                    className="h-full rounded-full bg-moss transition-all duration-500 ease-out"
                     style={{ width: `${Math.min(scanProgress, 100)}%` }}
                   />
                 </div>
-                <p className="text-center text-xs text-[#7A7A7A]">
+                <p className="text-center text-xs text-ink-muted">
                   {Math.round(Math.min(scanProgress, 100))}% complete
                 </p>
               </div>

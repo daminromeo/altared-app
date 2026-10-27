@@ -58,6 +58,8 @@
   --color-sage-soft: #E4EADF;
   --color-champagne: #E2C994;
   --color-champagne-soft: #F3E8CF;
+  /* Champagne is too light for text on white; brass is its readable partner */
+  --color-brass: #8C6B2F;
   --color-hairline: #1C221E1A;
   --color-flag: #A3541F;
   --color-flag-soft: #F7E6DA;
@@ -73,38 +75,39 @@
 }
 
 :root {
-  --background: #FAF8F5;
-  --foreground: #2D2D2D;
+  /* shadcn tokens, mapped onto the Oct 2026 palette (paper, ink, moss) */
+  --background: #F6F3EE;
+  --foreground: #1C221E;
   --card: #FFFFFF;
-  --card-foreground: #2D2D2D;
+  --card-foreground: #1C221E;
   --popover: #FFFFFF;
-  --popover-foreground: #2D2D2D;
-  --primary: #8B9F82;
+  --popover-foreground: #1C221E;
+  --primary: #2F4A3B;
   --primary-foreground: #FFFFFF;
-  --secondary: #C9A96E;
-  --secondary-foreground: #FFFFFF;
-  --muted: #F0EDE8;
-  --muted-foreground: #7A7A7A;
-  --accent: #C4A0A0;
-  --accent-foreground: #FFFFFF;
-  --destructive: #C75050;
-  --border: #E8E4DE;
-  --input: #E8E4DE;
-  --ring: #8B9F82;
-  --chart-1: #8B9F82;
-  --chart-2: #C9A96E;
-  --chart-3: #C4A0A0;
-  --chart-4: #7BAACC;
-  --chart-5: #B8A0CC;
+  --secondary: #E2C994;
+  --secondary-foreground: #1C221E;
+  --muted: #EEEAE3;
+  --muted-foreground: #5D665F;
+  --accent: #E4EADF;
+  --accent-foreground: #1C221E;
+  --destructive: #A33A2E;
+  --border: #E4DFD6;
+  --input: #E4DFD6;
+  --ring: #2F4A3B;
+  --chart-1: #2F4A3B;
+  --chart-2: #E2C994;
+  --chart-3: #8B9F82;
+  --chart-4: #A3541F;
+  --chart-5: #5D665F;
   --radius: 0.625rem;
-  --sidebar: #FFFFFF;
-  --sidebar-foreground: #2D2D2D;
-  --sidebar-primary: #8B9F82;
+  --sidebar: #F6F3EE;
+  --sidebar-foreground: #1C221E;
+  --sidebar-primary: #2F4A3B;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F0EDE8;
-  --sidebar-accent-foreground: #2D2D2D;
-  --sidebar-border: #E8E4DE;
-  --sidebar-ring: #8B9F82;
+  --sidebar-accent: #EEEAE3;
+  --sidebar-accent-foreground: #1C221E;
+  --sidebar-border: #E4DFD6;
+  --sidebar-ring: #2F4A3B;
 }
 
 .dark {

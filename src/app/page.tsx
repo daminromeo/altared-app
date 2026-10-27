@@ -110,7 +110,7 @@ const FAQS = [
   },
   {
     q: `What happens after the ${TRIAL_DAYS}-day trial?`,
-    a: "Nothing is deleted. Every vendor, quote and budget line you added stays in your account. Comparing 4 vendors, AI scanning, sharing and reminders pause until you get the Wedding Pass.",
+    a: "To keep using Altared, get the Wedding Pass. Nothing is deleted: every vendor, quote and budget line you added stays saved, and it's all there the moment you get the pass.",
   },
   {
     q: "How long does the Wedding Pass last?",

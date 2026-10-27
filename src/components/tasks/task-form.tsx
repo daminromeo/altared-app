@@ -100,13 +100,13 @@ function VendorPicker({
         onClick={() => setOpen(!open)}
         className="flex h-9 w-full items-center justify-between rounded-lg border border-input bg-transparent px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
       >
-        <span className={selected ? 'text-[#2D2D2D]' : 'text-[#7A7A7A]'}>
+        <span className={selected ? 'text-ink' : 'text-ink-muted'}>
           {selected ? (
             <span className="flex items-center gap-1.5">
               <Link2 className="size-3.5" />
               {selected.name}
               {selected.company_name && (
-                <span className="text-[#7A7A7A]">({selected.company_name})</span>
+                <span className="text-ink-muted">({selected.company_name})</span>
               )}
             </span>
           ) : (
@@ -122,12 +122,12 @@ function VendorPicker({
                 onChange('')
                 setOpen(false)
               }}
-              className="rounded p-0.5 hover:bg-[#FAF8F5]"
+              className="rounded p-0.5 hover:bg-paper"
             >
-              <X className="size-3.5 text-[#7A7A7A]" />
+              <X className="size-3.5 text-ink-muted" />
             </button>
           )}
-          <ChevronDown className={`size-4 text-[#7A7A7A] transition-transform ${open ? 'rotate-180' : ''}`} />
+          <ChevronDown className={`size-4 text-ink-muted transition-transform ${open ? 'rotate-180' : ''}`} />
         </div>
       </button>
 
@@ -149,10 +149,10 @@ function VendorPicker({
                 onChange('')
                 setOpen(false)
               }}
-              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#7A7A7A] hover:bg-[#FAF8F5]"
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-ink-muted hover:bg-paper"
             >
               No vendor (general task)
-              {!value && <Check className="ml-auto size-4 text-[#8B9F82]" />}
+              {!value && <Check className="ml-auto size-4 text-moss" />}
             </button>
             {filtered.map((vendor) => (
               <button
@@ -163,21 +163,21 @@ function VendorPicker({
                   setOpen(false)
                   setSearch('')
                 }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-[#2D2D2D] hover:bg-[#FAF8F5]"
+                className="flex w-full items-center gap-2 px-3 py-2 text-sm text-ink hover:bg-paper"
               >
                 <div className="flex-1 text-left">
                   <span className="font-medium">{vendor.name}</span>
                   {vendor.vendor_categories && (
-                    <span className="ml-1.5 text-xs text-[#7A7A7A]">
+                    <span className="ml-1.5 text-xs text-ink-muted">
                       {getVendorEmoji(vendor.vendor_categories.icon)} {vendor.vendor_categories.name}
                     </span>
                   )}
                 </div>
-                {value === vendor.id && <Check className="size-4 text-[#8B9F82]" />}
+                {value === vendor.id && <Check className="size-4 text-moss" />}
               </button>
             ))}
             {filtered.length === 0 && (
-              <p className="px-3 py-2 text-xs text-[#7A7A7A]">No vendors found</p>
+              <p className="px-3 py-2 text-xs text-ink-muted">No vendors found</p>
             )}
           </div>
         </div>
@@ -306,7 +306,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess, defaultVendorId 
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-[#2D2D2D]">
+          <DialogTitle className="text-ink">
             {isEditing ? 'Edit Task' : 'New Task'}
           </DialogTitle>
           <DialogDescription>
@@ -320,7 +320,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess, defaultVendorId 
           {/* Title */}
           <div className="space-y-1.5">
             <Label htmlFor="task-title">
-              Title <span className="text-[#DC2626]">*</span>
+              Title <span className="text-error">*</span>
             </Label>
             <Input
               id="task-title"
@@ -329,7 +329,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess, defaultVendorId 
               aria-invalid={!!errors.title}
             />
             {errors.title && (
-              <p className="text-xs text-[#DC2626]">{errors.title.message}</p>
+              <p className="text-xs text-error">{errors.title.message}</p>
             )}
           </div>
 
@@ -337,7 +337,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess, defaultVendorId 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <Label htmlFor="task-date">
-                Due Date <span className="text-[#DC2626]">*</span>
+                Due Date <span className="text-error">*</span>
               </Label>
               <Input
                 id="task-date"
@@ -346,7 +346,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess, defaultVendorId 
                 aria-invalid={!!errors.due_date}
               />
               {errors.due_date && (
-                <p className="text-xs text-[#DC2626]">{errors.due_date.message}</p>
+                <p className="text-xs text-error">{errors.due_date.message}</p>
               )}
             </div>
             <div className="space-y-1.5">
@@ -372,7 +372,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess, defaultVendorId 
               onChange={setSelectedVendor}
               vendors={vendors}
             />
-            <p className="text-[11px] text-[#7A7A7A]">
+            <p className="text-[11px] text-ink-muted">
               Optionally link this task to a specific vendor
             </p>
           </div>
@@ -399,7 +399,7 @@ export function TaskForm({ open, onOpenChange, task, onSuccess, defaultVendorId 
             <Button
               type="submit"
               disabled={saving}
-              className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+              className="bg-moss hover:bg-moss-light text-white"
             >
               {saving ? (
                 <>

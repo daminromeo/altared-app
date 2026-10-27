@@ -3,54 +3,64 @@
 import { useCheckout, useSubscription } from '@/lib/hooks/use-subscription'
 import { PLANS } from '@/lib/stripe/config'
 
+/** The pass card takes over the top of the dashboard for the trial's last days. */
+export const TRIAL_CARD_DAYS = 4
+
 /**
- * Dashboard card for couples without paid access. During the free trial it
- * counts down; after the trial it reassures them their data is safe; for
- * accounts that never had a trial it names the most common reason to upgrade.
+ * Shown on days 11–14 of the trial. Lists what the couple would lose, from
+ * their own counts. Earlier in the trial the header chip is enough.
  */
-export function DashboardUpgradeCard() {
+export function DashboardUpgradeCard({ vendors, quotes }: { vendors: number; quotes: number }) {
   const checkout = useCheckout()
-  const { access, isTrial, trialDaysLeft, trialEnded, hasPaidAccess, isLoading } = useSubscription()
+  const { access, isTrial, trialDaysLeft, isLoading } = useSubscription()
   const price = `$${PLANS.pass.price}`
 
-  if (isLoading || hasPaidAccess) return null
+  if (isLoading || !isTrial || trialDaysLeft > TRIAL_CARD_DAYS) return null
 
-  let title: string
-  let body: string
-  if (isTrial) {
-    const endDate = access?.trialEndsAt
-      ? new Date(access.trialEndsAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })
-      : null
-    title =
-      trialDaysLeft === 1 ? 'Last day of your free trial' : `${trialDaysLeft} days left in your free trial`
-    body = `Everything is unlocked${endDate ? ` until ${endDate}` : ''}. To keep comparing 4 vendors, AI scanning and partner sharing after that, get the Wedding Pass for ${price}, once.`
-  } else if (trialEnded) {
-    title = 'Your free trial has ended'
-    body = `Your vendors, quotes and budget are all still here. Get the Wedding Pass to unlock comparing 4 vendors, AI scanning and partner sharing again. ${price}, once.`
-  } else {
-    title = 'Comparing 3 or 4 vendors?'
-    body = `The Wedding Pass compares up to 4 side by side, scans quotes with AI and lets your partner react. ${price}, once, through your wedding.`
-  }
+  const endDay = access?.trialEndsAt
+    ? new Date(access.trialEndsAt).toLocaleDateString('en-US', { weekday: 'long' })
+    : null
+  const keep = [
+    vendors > 0 ? `Your ${vendors} ${vendors === 1 ? 'vendor' : 'vendors'}${quotes > 0 ? ` and ${quotes} ${quotes === 1 ? 'quote' : 'quotes'}` : ''}` : 'Every vendor and quote you add',
+    'Your plan, budget and deposit reminders',
+    'Sharing with your partner',
+  ]
 
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-moss p-5 text-[#F1EFE8] sm:flex-row sm:items-center sm:gap-6">
+    <section className="flex flex-col gap-4 rounded-3xl bg-moss p-5 text-[#F1EFE8] sm:flex-row sm:items-center sm:gap-8 sm:p-7">
       <div className="min-w-0 flex-1">
-        <p className="font-display text-lg font-bold tracking-[-0.02em]">{title}</p>
-        <p className="mt-1 text-sm text-[#C9D3C6]">{body}</p>
+        <p className="font-display text-xl font-bold leading-tight tracking-[-0.03em]">
+          Keep everything <span className="text-champagne">through your wedding.</span>
+        </p>
+        <p className="mt-1 text-sm text-[#C9D3C6]">
+          {trialDaysLeft === 1 ? 'Your trial ends today' : `Your trial ends ${endDay ?? `in ${trialDaysLeft} days`}`}. After that
+          Altared is locked until you get the pass. Nothing you added is deleted.
+        </p>
+        <ul className="mt-3 grid gap-1 text-sm">
+          {keep.map((line) => (
+            <li key={line} className="flex gap-2">
+              <span className="text-champagne" aria-hidden>✓</span>
+              {line}
+            </li>
+          ))}
+        </ul>
         {checkout.isError && (
           <p role="alert" className="mt-2 text-sm text-champagne">
             Checkout didn&apos;t open: {checkout.error.message}. Try again in a moment.
           </p>
         )}
       </div>
-      <button
-        type="button"
-        onClick={() => checkout.mutate({ location: isTrial ? 'dashboard_trial' : 'dashboard_card' })}
-        disabled={checkout.isPending}
-        className="shrink-0 rounded-full bg-champagne px-5 py-2.5 font-display text-sm font-bold text-ink transition-opacity hover:opacity-90 disabled:opacity-60"
-      >
-        {checkout.isPending ? 'Opening checkout…' : `Get the Wedding Pass · ${price}`}
-      </button>
-    </div>
+      <div className="flex shrink-0 flex-col items-stretch gap-2 sm:w-60">
+        <button
+          type="button"
+          onClick={() => checkout.mutate({ location: 'dashboard_trial' })}
+          disabled={checkout.isPending}
+          className="rounded-full bg-champagne px-5 py-3 font-display text-sm font-bold text-ink transition-opacity hover:opacity-90 disabled:opacity-60"
+        >
+          {checkout.isPending ? 'Opening checkout…' : `Get the Wedding Pass · ${price}`}
+        </button>
+        <p className="text-center text-[11px] text-[#C9D3C6]">One payment. No subscription.</p>
+      </div>
+    </section>
   )
 }

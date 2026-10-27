@@ -109,8 +109,8 @@ function getPaymentStatus(vendor: Vendor): PaymentStatus {
 
 const PAYMENT_STATUS_LABELS: Record<PaymentStatus, { label: string; color: string; bg: string }> = {
   paid_in_full: { label: 'Paid in Full', color: 'text-[#047857]', bg: 'bg-[#047857]/10' },
-  deposit_paid: { label: 'Deposit Paid', color: 'text-[#C9A96E]', bg: 'bg-[#C9A96E]/10' },
-  unpaid: { label: 'No Payment', color: 'text-[#DC2626]', bg: 'bg-[#DC2626]/10' },
+  deposit_paid: { label: 'Deposit Paid', color: 'text-brass', bg: 'bg-champagne/10' },
+  unpaid: { label: 'No Payment', color: 'text-error', bg: 'bg-error/10' },
 };
 
 function PaymentStatusCard({ vendor, onUpdate }: { vendor: Vendor; onUpdate?: (v: Vendor) => void }) {
@@ -158,7 +158,7 @@ function PaymentStatusCard({ vendor, onUpdate }: { vendor: Vendor; onUpdate?: (v
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="text-base text-[#2D2D2D]">Payment</CardTitle>
+        <CardTitle className="text-base text-ink">Payment</CardTitle>
         {!editingPayment && (
           <Button
             variant="ghost"
@@ -168,7 +168,7 @@ function PaymentStatusCard({ vendor, onUpdate }: { vendor: Vendor; onUpdate?: (v
               setDepositAmount(vendor.deposit_amount?.toString() ?? '');
               setEditingPayment(true);
             }}
-            className="text-xs text-[#7A7A7A] hover:text-[#2D2D2D]"
+            className="text-xs text-ink-muted hover:text-ink"
           >
             <Edit3 className="size-3.5 mr-1" />
             Update
@@ -188,18 +188,18 @@ function PaymentStatusCard({ vendor, onUpdate }: { vendor: Vendor; onUpdate?: (v
                   onClick={() => setPaymentStatus(status)}
                   className={`flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-colors ${
                     isSelected
-                      ? 'border-[#8B9F82] bg-[#8B9F82]/5'
-                      : 'border-[#E5E7EB] hover:border-[#8B9F82]/50'
+                      ? 'border-moss bg-moss/5'
+                      : 'border-[#E5E7EB] hover:border-moss/50'
                   }`}
                 >
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-[#2D2D2D]">{info.label}</p>
+                    <p className="text-sm font-medium text-ink">{info.label}</p>
                     {status === 'paid_in_full' && totalPrice && (
-                      <p className="text-xs text-[#7A7A7A]">Full amount: {formatPrice(totalPrice)}</p>
+                      <p className="text-xs text-ink-muted">Full amount: {formatPrice(totalPrice)}</p>
                     )}
                   </div>
                   <div className={`flex size-5 items-center justify-center rounded-full border-2 ${
-                    isSelected ? 'border-[#8B9F82] bg-[#8B9F82]' : 'border-[#D1D5DB]'
+                    isSelected ? 'border-moss bg-moss' : 'border-[#D1D5DB]'
                   }`}>
                     {isSelected && <div className="size-2 rounded-full bg-white" />}
                   </div>
@@ -211,7 +211,7 @@ function PaymentStatusCard({ vendor, onUpdate }: { vendor: Vendor; onUpdate?: (v
               <div className="space-y-1.5">
                 <Label htmlFor="payment-deposit">Deposit Amount</Label>
                 <div className="relative">
-                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-[#7A7A7A]">$</span>
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-sm text-ink-muted">$</span>
                   <Input
                     id="payment-deposit"
                     type="number"
@@ -236,7 +236,7 @@ function PaymentStatusCard({ vendor, onUpdate }: { vendor: Vendor; onUpdate?: (v
                 size="sm"
                 disabled={saving || (paymentStatus === 'deposit_paid' && !depositAmount)}
                 onClick={savePayment}
-                className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+                className="bg-moss hover:bg-moss-light text-white"
               >
                 {saving ? <Loader2 className="size-4 animate-spin" /> : 'Save Payment'}
               </Button>
@@ -254,13 +254,13 @@ function PaymentStatusCard({ vendor, onUpdate }: { vendor: Vendor; onUpdate?: (v
             {/* Amount paid */}
             {currentStatus !== 'unpaid' && (
               <div className="flex items-center gap-3">
-                <DollarSign className="size-4 text-[#7A7A7A] shrink-0" />
+                <DollarSign className="size-4 text-ink-muted shrink-0" />
                 <div>
-                  <p className="text-xs text-[#7A7A7A] mb-0.5">Amount Paid</p>
-                  <p className="text-sm font-medium text-[#2D2D2D]">
+                  <p className="text-xs text-ink-muted mb-0.5">Amount Paid</p>
+                  <p className="text-sm font-medium text-ink">
                     {formatPrice(vendor.deposit_amount)}
                     {totalPrice && currentStatus === 'deposit_paid' && (
-                      <span className="text-xs text-[#7A7A7A] ml-1">
+                      <span className="text-xs text-ink-muted ml-1">
                         of {formatPrice(totalPrice)}
                       </span>
                     )}
@@ -272,10 +272,10 @@ function PaymentStatusCard({ vendor, onUpdate }: { vendor: Vendor; onUpdate?: (v
             {/* Remaining balance */}
             {currentStatus === 'deposit_paid' && totalPrice && vendor.deposit_amount != null && (
               <div className="flex items-center gap-3">
-                <Calendar className="size-4 text-[#7A7A7A] shrink-0" />
+                <Calendar className="size-4 text-ink-muted shrink-0" />
                 <div>
-                  <p className="text-xs text-[#7A7A7A] mb-0.5">Remaining Balance</p>
-                  <p className="text-sm font-medium text-[#DC2626]">
+                  <p className="text-xs text-ink-muted mb-0.5">Remaining Balance</p>
+                  <p className="text-sm font-medium text-error">
                     {formatPrice(totalPrice - vendor.deposit_amount)}
                   </p>
                 </div>
@@ -326,9 +326,9 @@ function InfoRow({
 }) {
   return (
     <div className="flex items-start gap-3 py-2">
-      <Icon className="size-4 text-[#7A7A7A] mt-0.5 shrink-0" />
+      <Icon className="size-4 text-ink-muted mt-0.5 shrink-0" />
       <div className="flex-1 min-w-0">
-        <p className="text-xs text-[#7A7A7A] mb-0.5">{label}</p>
+        <p className="text-xs text-ink-muted mb-0.5">{label}</p>
         {isEditing && editField ? (
           <Input
             type={type}
@@ -350,10 +350,10 @@ function InfoRow({
               <ExternalLink className="size-3" />
             </a>
           ) : (
-            <p className="text-sm text-[#2D2D2D]">{value}</p>
+            <p className="text-sm text-ink">{value}</p>
           )
         ) : (
-          <p className="text-sm text-[#7A7A7A] italic">Not provided</p>
+          <p className="text-sm text-ink-muted italic">Not provided</p>
         )}
       </div>
     </div>
@@ -470,7 +470,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
                 placeholder="Vendor name"
               />
             ) : (
-              <h2 className="text-xl font-semibold text-[#2D2D2D]">{vendor.name}</h2>
+              <h2 className="text-xl font-semibold text-ink">{vendor.name}</h2>
             )}
             <VendorStatusBadge status={vendor.status} />
           </div>
@@ -484,7 +484,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
               placeholder="Company name (optional)"
             />
           ) : vendor.company_name ? (
-            <p className="text-sm text-[#7A7A7A]">{vendor.company_name}</p>
+            <p className="text-sm text-ink-muted">{vendor.company_name}</p>
           ) : null}
           {isEditing ? (
             <Select
@@ -510,7 +510,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
           ) : vendor.vendor_categories ? (
             <Badge
               variant="secondary"
-              className="mt-2 bg-[#8B9F82]/10 text-[#8B9F82] border-transparent"
+              className="mt-2 bg-moss/10 text-moss border-transparent"
             >
               {vendor.vendor_categories.icon && (
                 <span className="mr-1">{getVendorEmoji(vendor.vendor_categories.icon)}</span>
@@ -518,7 +518,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
               {vendor.vendor_categories.name}
             </Badge>
           ) : (
-            <p className="mt-2 text-sm text-[#7A7A7A] italic">No category</p>
+            <p className="mt-2 text-sm text-ink-muted italic">No category</p>
           )}
         </div>
         <div className="flex gap-2">
@@ -532,7 +532,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
                 size="sm"
                 onClick={saveChanges}
                 disabled={saving}
-                className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+                className="bg-moss hover:bg-moss-light text-white"
               >
                 {saving ? (
                   <Loader2 className="size-4 animate-spin" />
@@ -555,7 +555,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
         {/* Contact Information */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base text-[#2D2D2D]">Contact Information</CardTitle>
+            <CardTitle className="text-base text-ink">Contact Information</CardTitle>
           </CardHeader>
           <CardContent className="space-y-1">
             <InfoRow
@@ -611,7 +611,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
         {/* Pricing */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base text-[#2D2D2D]">Pricing Details</CardTitle>
+            <CardTitle className="text-base text-ink">Pricing Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-1">
             <InfoRow
@@ -657,11 +657,11 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
         {/* Rating & Source */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base text-[#2D2D2D]">Rating & Source</CardTitle>
+            <CardTitle className="text-base text-ink">Rating & Source</CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <div>
-              <p className="text-xs text-[#7A7A7A] mb-1">Rating</p>
+              <p className="text-xs text-ink-muted mb-1">Rating</p>
               {vendor.rating !== null && vendor.rating !== undefined ? (
                 <div className="flex items-center gap-1">
                   {Array.from({ length: 5 }).map((_, i) => (
@@ -669,25 +669,25 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
                       key={i}
                       className={`size-5 ${
                         i < vendor.rating!
-                          ? 'fill-[#C9A96E] text-[#C9A96E]'
+                          ? 'fill-champagne text-brass'
                           : 'fill-transparent text-[#D1D5DB]'
                       }`}
                     />
                   ))}
-                  <span className="ml-2 text-sm text-[#2D2D2D] font-medium">
+                  <span className="ml-2 text-sm text-ink font-medium">
                     {vendor.rating}/5
                   </span>
                 </div>
               ) : (
-                <p className="text-sm text-[#7A7A7A] italic">No rating</p>
+                <p className="text-sm text-ink-muted italic">No rating</p>
               )}
             </div>
 
             <Separator />
 
             <div>
-              <p className="text-xs text-[#7A7A7A] mb-1">Source</p>
-              <p className="text-sm text-[#2D2D2D]">
+              <p className="text-xs text-ink-muted mb-1">Source</p>
+              <p className="text-sm text-ink">
                 {vendor.source ? sourceLabels[vendor.source] : 'Not specified'}
               </p>
               {vendor.source_url && (
@@ -705,8 +705,8 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
             <Separator />
 
             <div>
-              <p className="text-xs text-[#7A7A7A] mb-1">Added</p>
-              <p className="text-sm text-[#2D2D2D]">
+              <p className="text-xs text-ink-muted mb-1">Added</p>
+              <p className="text-sm text-ink">
                 {new Date(vendor.created_at).toLocaleDateString('en-US', {
                   year: 'numeric',
                   month: 'long',
@@ -720,7 +720,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
         {/* Tags */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-base text-[#2D2D2D] flex items-center gap-2">
+            <CardTitle className="text-base text-ink flex items-center gap-2">
               <Tag className="size-4" />
               Tags
             </CardTitle>
@@ -739,7 +739,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
                 ))}
               </div>
             ) : (
-              <p className="text-sm text-[#7A7A7A] italic">No tags</p>
+              <p className="text-sm text-ink-muted italic">No tags</p>
             )}
           </CardContent>
         </Card>
@@ -748,7 +748,7 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
       {/* Notes */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-base text-[#2D2D2D]">Notes</CardTitle>
+          <CardTitle className="text-base text-ink">Notes</CardTitle>
         </CardHeader>
         <CardContent>
           {isEditing ? (
@@ -761,9 +761,9 @@ export function VendorDetail({ vendor, onUpdate }: VendorDetailProps) {
               placeholder="Add notes about this vendor..."
             />
           ) : vendor.notes ? (
-            <p className="text-sm text-[#2D2D2D] whitespace-pre-wrap">{vendor.notes}</p>
+            <p className="text-sm text-ink whitespace-pre-wrap">{vendor.notes}</p>
           ) : (
-            <p className="text-sm text-[#7A7A7A] italic">No notes</p>
+            <p className="text-sm text-ink-muted italic">No notes</p>
           )}
         </CardContent>
       </Card>

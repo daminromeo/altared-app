@@ -13,8 +13,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { formatCurrency } from '@/lib/utils/format'
 
 const CHART_COLORS = [
-  '#8B9F82', // sage green
-  '#C9A96E', // gold
+  '#2F4A3B', // sage green
+  '#E2C994', // gold
   '#C4A0A0', // dusty rose
   '#A0B4C4', // dusty blue
   '#B8A9C9', // lavender
@@ -51,11 +51,11 @@ function CustomTooltip({
   const data = payload[0]
   return (
     <div className="rounded-lg border bg-white px-3 py-2 shadow-md">
-      <p className="text-sm font-semibold text-[#2D2D2D]">{data.name}</p>
-      <p className="text-sm tabular-nums text-[#7A7A7A]">
+      <p className="text-sm font-semibold text-ink">{data.name}</p>
+      <p className="text-sm tabular-nums text-ink-muted">
         {formatCurrency(data.value)}
       </p>
-      <p className="text-xs text-[#7A7A7A]">
+      <p className="text-xs text-ink-muted">
         {((data.payload.percent ?? 0) * 100).toFixed(1)}% of total
       </p>
     </div>
@@ -76,10 +76,10 @@ function CustomLegend({
             className="size-2.5 shrink-0 rounded-full"
             style={{ backgroundColor: entry.color }}
           />
-          <span className="truncate text-xs text-[#2D2D2D]">
+          <span className="truncate text-xs text-ink">
             {entry.value}
           </span>
-          <span className="ml-auto shrink-0 text-xs tabular-nums text-[#7A7A7A]">
+          <span className="ml-auto shrink-0 text-xs tabular-nums text-ink-muted">
             {formatCurrency(entry.payload?.value ?? 0)}
           </span>
         </div>
@@ -103,13 +103,13 @@ export function BudgetChart({ categories }: BudgetChartProps) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm text-[#2D2D2D]">
+          <CardTitle className="text-sm text-ink">
             Budget by Category
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="flex h-[200px] items-center justify-center">
-            <p className="text-sm text-[#7A7A7A]">
+            <p className="text-sm text-ink-muted">
               Add budget items to see the breakdown chart.
             </p>
           </div>
@@ -121,7 +121,7 @@ export function BudgetChart({ categories }: BudgetChartProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-sm text-[#2D2D2D]">
+        <CardTitle className="text-sm text-ink">
           Budget by Category
         </CardTitle>
       </CardHeader>

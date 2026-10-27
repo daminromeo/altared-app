@@ -80,7 +80,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-4" style={{ backgroundColor: '#FAF8F5' }}>
+    <div className="flex min-h-screen items-center justify-center px-4" style={{ backgroundColor: '#F6F3EE' }}>
       {/* Decorative background elements */}
       <div className="pointer-events-none fixed inset-0 overflow-hidden">
         <div
@@ -89,7 +89,7 @@ export default function LoginPage() {
         />
         <div
           className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full opacity-20 blur-3xl"
-          style={{ backgroundColor: '#8B9F82' }}
+          style={{ backgroundColor: '#2F4A3B' }}
         />
       </div>
 
@@ -100,7 +100,7 @@ export default function LoginPage() {
             className="text-4xl tracking-tight"
             style={{
               fontFamily: "var(--font-manrope), sans-serif",
-              color: '#2D2D2D',
+              color: '#1C221E',
             }}
           >
             Altared
@@ -109,7 +109,7 @@ export default function LoginPage() {
             className="mt-2 text-sm"
             style={{
               fontFamily: "'DM Sans', sans-serif",
-              color: '#7A7A7A',
+              color: '#5D665F',
             }}
           >
             Your wedding, beautifully managed
@@ -122,7 +122,7 @@ export default function LoginPage() {
               className="text-xl"
               style={{
                 fontFamily: "var(--font-manrope), sans-serif",
-                color: '#2D2D2D',
+                color: '#1C221E',
               }}
             >
               Welcome back
@@ -130,7 +130,7 @@ export default function LoginPage() {
             <CardDescription
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                color: '#7A7A7A',
+                color: '#5D665F',
               }}
             >
               Sign in to continue planning your special day
@@ -182,7 +182,7 @@ export default function LoginPage() {
                 className="px-4 text-xs uppercase"
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
-                  color: '#7A7A7A',
+                  color: '#5D665F',
                 }}
               >
                 or
@@ -197,7 +197,7 @@ export default function LoginPage() {
                   htmlFor="email"
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
-                    color: '#2D2D2D',
+                    color: '#1C221E',
                   }}
                 >
                   Email
@@ -227,7 +227,7 @@ export default function LoginPage() {
                   htmlFor="password"
                   style={{
                     fontFamily: "'DM Sans', sans-serif",
-                    color: '#2D2D2D',
+                    color: '#1C221E',
                   }}
                 >
                   Password
@@ -259,7 +259,7 @@ export default function LoginPage() {
                     fontFamily: "'DM Sans', sans-serif",
                     backgroundColor: '#FEF2F2',
                     borderColor: '#FECACA',
-                    color: '#DC2626',
+                    color: '#A33A2E',
                   }}
                 >
                   {error}
@@ -272,7 +272,7 @@ export default function LoginPage() {
                 className="w-full"
                 style={{
                   fontFamily: "'DM Sans', sans-serif",
-                  backgroundColor: '#8B9F82',
+                  backgroundColor: '#2F4A3B',
                   color: '#FFFFFF',
                 }}
                 disabled={isLoading}
@@ -286,14 +286,14 @@ export default function LoginPage() {
               className="text-center text-sm"
               style={{
                 fontFamily: "'DM Sans', sans-serif",
-                color: '#7A7A7A',
+                color: '#5D665F',
               }}
             >
               Don&apos;t have an account?{' '}
               <Link
                 href="/signup"
                 className="font-medium underline underline-offset-4 transition-colors hover:opacity-80"
-                style={{ color: '#8B9F82' }}
+                style={{ color: '#2F4A3B' }}
               >
                 Create one
               </Link>

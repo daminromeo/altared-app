@@ -313,13 +313,13 @@ export default function BudgetPage() {
 
   if (authLoading) return (
     <div className="space-y-6">
-      <div className="h-8 w-48 animate-pulse rounded-lg bg-[#FAF8F5]" />
+      <div className="h-8 w-48 animate-pulse rounded-lg bg-paper" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-24 animate-pulse rounded-xl bg-[#FAF8F5]" />
+          <div key={i} className="h-24 animate-pulse rounded-xl bg-paper" />
         ))}
       </div>
-      <div className="h-64 animate-pulse rounded-xl bg-[#FAF8F5]" />
+      <div className="h-64 animate-pulse rounded-xl bg-paper" />
     </div>
   )
 
@@ -328,13 +328,13 @@ export default function BudgetPage() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <div className="h-8 w-48 animate-pulse rounded-lg bg-[#FAF8F5]" />
+        <div className="h-8 w-48 animate-pulse rounded-lg bg-paper" />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="h-24 animate-pulse rounded-xl bg-[#FAF8F5]" />
+            <div key={i} className="h-24 animate-pulse rounded-xl bg-paper" />
           ))}
         </div>
-        <div className="h-64 animate-pulse rounded-xl bg-[#FAF8F5]" />
+        <div className="h-64 animate-pulse rounded-xl bg-paper" />
       </div>
     )
   }
@@ -344,17 +344,17 @@ export default function BudgetPage() {
       {/* Page header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-[#2D2D2D]">
+          <h1 className="text-2xl font-bold tracking-tight text-ink">
             Budget
           </h1>
-          <p className="mt-1 text-sm text-[#7A7A7A]">
+          <p className="mt-1 text-sm text-ink-muted">
             Track your wedding expenses and stay on budget.
           </p>
         </div>
         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <DialogTrigger
             render={
-              <Button className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]">
+              <Button className="bg-moss text-white hover:bg-moss-light">
                 <Plus className="size-4" />
                 Add Budget Item
               </Button>
@@ -482,7 +482,7 @@ export default function BudgetPage() {
               <Button
                 onClick={saveNewItem}
                 disabled={isSaving || !newItem.description.trim()}
-                className="bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+                className="bg-moss text-white hover:bg-moss-light"
               >
                 {isSaving ? 'Adding...' : 'Add Item'}
               </Button>
@@ -502,7 +502,7 @@ export default function BudgetPage() {
       <div className="grid gap-6 lg:grid-cols-[1fr_380px]">
         {/* Category sections */}
         <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-[#2D2D2D]">
+          <h2 className="text-lg font-semibold text-ink">
             Budget Categories
           </h2>
           {categoryGroups.length > 0 ? (
@@ -523,19 +523,19 @@ export default function BudgetPage() {
               />
             ))
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[#C9A96E]/30 bg-[#FAF8F5] py-16">
-              <div className="flex size-16 items-center justify-center rounded-full bg-[#C9A96E]/10">
-                <DollarSign className="size-7 text-[#C9A96E]" />
+            <div className="flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-champagne/30 bg-paper py-16">
+              <div className="flex size-16 items-center justify-center rounded-full bg-champagne/10">
+                <DollarSign className="size-7 text-brass" />
               </div>
-              <h3 className="mt-4 text-base font-semibold text-[#2D2D2D]">
+              <h3 className="mt-4 text-base font-semibold text-ink">
                 No budget items yet
               </h3>
-              <p className="mt-1 max-w-sm text-center text-sm text-[#7A7A7A]">
+              <p className="mt-1 max-w-sm text-center text-sm text-ink-muted">
                 Start adding budget items to track your wedding expenses. Create
                 categories to organize them.
               </p>
               <Button
-                className="mt-4 bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+                className="mt-4 bg-moss text-white hover:bg-moss-light"
                 onClick={() => {
                   setNewItem(emptyForm)
                   setDialogOpen(true)

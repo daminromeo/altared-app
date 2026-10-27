@@ -25,8 +25,8 @@ import { getVendorEmoji } from '@/lib/vendor-icons'
 type ReminderType = 'payment' | 'deposit' | 'meeting' | 'follow_up' | 'deadline' | 'custom'
 
 const typeBadgeStyles: Record<string, string> = {
-  payment: 'bg-[#C9A96E]/10 text-[#C9A96E]',
-  deposit: 'bg-[#C9A96E]/10 text-[#C9A96E]',
+  payment: 'bg-champagne/10 text-brass',
+  deposit: 'bg-champagne/10 text-brass',
   meeting: 'bg-purple-50 text-purple-700',
   deadline: 'bg-red-50 text-red-700',
   follow_up: 'bg-blue-50 text-blue-700',
@@ -234,14 +234,14 @@ export default function TasksPage() {
       {/* Page header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-semibold text-[#2D2D2D]">Tasks</h1>
-          <p className="text-sm text-[#7A7A7A] mt-1">
+          <h1 className="text-2xl font-semibold text-ink">Tasks</h1>
+          <p className="text-sm text-ink-muted mt-1">
             Manage your wedding planning tasks and reminders
           </p>
         </div>
         <Button
           onClick={openCreate}
-          className="bg-[#8B9F82] hover:bg-[#7A8E71] text-white text-sm w-fit"
+          className="bg-moss hover:bg-moss-light text-white text-sm w-fit"
         >
           <Plus className="size-4" />
           New Task
@@ -258,8 +258,8 @@ export default function TasksPage() {
             className={cn(
               'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-all',
               filterView === tab.key
-                ? 'bg-[#8B9F82] text-white shadow-sm'
-                : 'bg-[#FAF8F5] text-[#2D2D2D] hover:bg-[#8B9F82]/10'
+                ? 'bg-moss text-white shadow-sm'
+                : 'bg-paper text-ink hover:bg-moss/10'
             )}
           >
             {tab.label}
@@ -268,7 +268,7 @@ export default function TasksPage() {
                 'ml-0.5 inline-flex size-5 items-center justify-center rounded-full text-[11px]',
                 filterView === tab.key
                   ? 'bg-white/20 text-white'
-                  : 'bg-white text-[#7A7A7A]'
+                  : 'bg-white text-ink-muted'
               )}
             >
               {tab.count}
@@ -278,7 +278,7 @@ export default function TasksPage() {
 
         {/* Type filter */}
         <div className="ml-auto flex items-center gap-2">
-          <Filter className="size-4 text-[#7A7A7A]" />
+          <Filter className="size-4 text-ink-muted" />
           <select
             value={filterType}
             onChange={(e) => setFilterType(e.target.value)}
@@ -298,10 +298,10 @@ export default function TasksPage() {
           <div className="animate-pulse space-y-4">
             {[1, 2, 3, 4, 5].map((i) => (
               <div key={i} className="flex items-center gap-3 py-2">
-                <div className="size-5 rounded-full bg-[#FAF8F5]" />
+                <div className="size-5 rounded-full bg-paper" />
                 <div className="flex-1 space-y-1.5">
-                  <div className="h-4 w-48 rounded bg-[#FAF8F5]" />
-                  <div className="h-3 w-24 rounded bg-[#FAF8F5]" />
+                  <div className="h-4 w-48 rounded bg-paper" />
+                  <div className="h-3 w-24 rounded bg-paper" />
                 </div>
               </div>
             ))}
@@ -310,11 +310,11 @@ export default function TasksPage() {
       ) : filteredTasks.length === 0 ? (
         <Card className="bg-white">
           <div className="flex flex-col items-center justify-center px-6 py-16 text-center">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-[#FAF8F5]">
-              <CalendarDays className="size-6 text-[#7A7A7A]" />
+            <div className="flex size-12 items-center justify-center rounded-xl bg-paper">
+              <CalendarDays className="size-6 text-ink-muted" />
             </div>
             <h3
-              className="mt-4 text-base font-semibold text-[#2D2D2D]"
+              className="mt-4 text-base font-semibold text-ink"
               style={{ fontFamily: "var(--font-manrope), sans-serif" }}
             >
               {filterView === 'completed'
@@ -323,7 +323,7 @@ export default function TasksPage() {
                   ? 'No overdue tasks'
                   : 'No tasks yet'}
             </h3>
-            <p className="mt-1.5 max-w-sm text-sm text-[#7A7A7A]">
+            <p className="mt-1.5 max-w-sm text-sm text-ink-muted">
               {filterView === 'all' && !filterType
                 ? 'Create your first task to start tracking your wedding planning to-dos.'
                 : 'No tasks match the current filters.'}
@@ -331,7 +331,7 @@ export default function TasksPage() {
             {filterView === 'all' && filterType === 'all' && (
               <Button
                 onClick={openCreate}
-                className="mt-5 bg-[#8B9F82] hover:bg-[#7A8E71] text-white"
+                className="mt-5 bg-moss hover:bg-moss-light text-white"
               >
                 <Plus className="size-4" />
                 New Task
@@ -351,7 +351,7 @@ export default function TasksPage() {
               <div
                 key={task.id}
                 className={cn(
-                  'flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-[#FAF8F5]/50',
+                  'flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-paper/50',
                   task.is_completed && 'opacity-60'
                 )}
               >
@@ -359,10 +359,10 @@ export default function TasksPage() {
                 <button
                   onClick={() => handleToggle(task)}
                   disabled={completing}
-                  className="mt-0.5 shrink-0 text-[#7A7A7A] hover:text-[#8B9F82] transition-colors disabled:opacity-50"
+                  className="mt-0.5 shrink-0 text-ink-muted hover:text-moss transition-colors disabled:opacity-50"
                 >
                   {task.is_completed ? (
-                    <CheckCircle2 className="size-5 text-[#8B9F82]" />
+                    <CheckCircle2 className="size-5 text-moss" />
                   ) : (
                     <Circle className="size-5" />
                   )}
@@ -373,7 +373,7 @@ export default function TasksPage() {
                   <div className="flex flex-wrap items-center gap-2">
                     <p
                       className={cn(
-                        'text-sm font-medium text-[#2D2D2D]',
+                        'text-sm font-medium text-ink',
                         task.is_completed && 'line-through'
                       )}
                     >
@@ -396,7 +396,7 @@ export default function TasksPage() {
                     <span
                       className={cn(
                         'text-xs',
-                        overdue ? 'font-medium text-red-600' : 'text-[#7A7A7A]'
+                        overdue ? 'font-medium text-red-600' : 'text-ink-muted'
                       )}
                       title={formatFullDate(task.due_date)}
                     >
@@ -405,7 +405,7 @@ export default function TasksPage() {
                     </span>
 
                     {vendor && (
-                      <span className="text-xs text-[#7A7A7A]">
+                      <span className="text-xs text-ink-muted">
                         <Link2 className="mr-1 inline size-3" />
                         {vendor.vendor_categories?.icon && (
                           <span className="mr-0.5">{getVendorEmoji(vendor.vendor_categories.icon)}</span>
@@ -415,7 +415,7 @@ export default function TasksPage() {
                     )}
 
                     {task.description && (
-                      <span className="text-xs text-[#7A7A7A] truncate max-w-[200px]">
+                      <span className="text-xs text-ink-muted truncate max-w-[200px]">
                         {task.description}
                       </span>
                     )}
@@ -426,7 +426,7 @@ export default function TasksPage() {
                 <div className="flex shrink-0 items-center gap-1">
                   <button
                     onClick={() => openEdit(task)}
-                    className="rounded p-1.5 text-[#7A7A7A] hover:bg-[#FAF8F5] hover:text-[#2D2D2D] transition-colors"
+                    className="rounded p-1.5 text-ink-muted hover:bg-paper hover:text-ink transition-colors"
                     title="Edit task"
                   >
                     <Pencil className="size-3.5" />
@@ -434,7 +434,7 @@ export default function TasksPage() {
                   <button
                     onClick={() => handleDelete(task.id)}
                     disabled={deleting}
-                    className="rounded p-1.5 text-[#7A7A7A] hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
+                    className="rounded p-1.5 text-ink-muted hover:bg-red-50 hover:text-red-600 transition-colors disabled:opacity-50"
                     title="Delete task"
                   >
                     <Trash2 className="size-3.5" />

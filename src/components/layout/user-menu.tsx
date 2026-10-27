@@ -55,16 +55,16 @@ export function UserMenu({ userProfile }: UserMenuProps) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg p-1.5 outline-none hover:bg-[#FAF8F5] focus-visible:ring-2 focus-visible:ring-ring">
+      <DropdownMenuTrigger className="flex items-center gap-2 rounded-lg p-1.5 outline-none hover:bg-paper focus-visible:ring-2 focus-visible:ring-ring">
         <Avatar size="default">
           {userProfile?.avatar_url && (
             <AvatarImage src={userProfile.avatar_url} alt={displayName} />
           )}
-          <AvatarFallback className="bg-[#8B9F82]/20 text-[#8B9F82] text-xs font-medium">
+          <AvatarFallback className="bg-moss/20 text-moss text-xs font-medium">
             {initials}
           </AvatarFallback>
         </Avatar>
-        <span className="hidden text-sm font-medium text-[#2D2D2D] md:inline-block">
+        <span className="hidden text-sm font-medium text-ink md:inline-block">
           {displayName}
         </span>
       </DropdownMenuTrigger>
@@ -73,11 +73,11 @@ export function UserMenu({ userProfile }: UserMenuProps) {
         <DropdownMenuGroup>
           <DropdownMenuLabel>
             <div className="flex flex-col">
-              <span className="text-sm font-medium text-[#2D2D2D]">
+              <span className="text-sm font-medium text-ink">
                 {displayName}
               </span>
               {userProfile?.email && (
-                <span className="text-xs text-[#7A7A7A]">
+                <span className="text-xs text-ink-muted">
                   {userProfile.email}
                 </span>
               )}

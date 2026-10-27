@@ -26,32 +26,32 @@ export function PartnerNameGate({
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#FAF8F5] p-4">
+    <div className="flex min-h-screen items-center justify-center bg-paper p-4">
       <div className="w-full max-w-md space-y-8 text-center">
         {/* Logo */}
         <div>
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-[#8B9F82]/10">
-            <Heart className="h-8 w-8 text-[#8B9F82]" />
+          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-moss/10">
+            <Heart className="h-8 w-8 text-moss" />
           </div>
           <h1
-            className="mt-4 text-3xl font-bold text-[#2D2D2D]"
+            className="mt-4 text-3xl font-bold text-ink"
             style={{ fontFamily: "var(--font-manrope), sans-serif" }}
           >
             {weddingName ?? "Wedding Planning"}
           </h1>
           {sharedBy && (
-            <p className="mt-2 text-[#7A7A7A]">
+            <p className="mt-2 text-ink-muted">
               Shared by {sharedBy}
             </p>
           )}
         </div>
 
         {/* Name form */}
-        <div className="rounded-xl border border-[#E8E4DF] bg-white p-8 shadow-sm">
-          <h2 className="text-lg font-semibold text-[#2D2D2D]">
+        <div className="rounded-xl border border-hairline bg-white p-8 shadow-sm">
+          <h2 className="text-lg font-semibold text-ink">
             Welcome! What&apos;s your name?
           </h2>
-          <p className="mt-1 text-sm text-[#7A7A7A]">
+          <p className="mt-1 text-sm text-ink-muted">
             This helps the couple know who left feedback.
           </p>
 
@@ -68,14 +68,14 @@ export function PartnerNameGate({
             <Button
               onClick={handleSubmit}
               disabled={name.trim().length === 0}
-              className="w-full bg-[#8B9F82] text-white hover:bg-[#7A8E71]"
+              className="w-full bg-moss text-white hover:bg-moss-light"
             >
               Continue
             </Button>
           </div>
         </div>
 
-        <p className="text-xs text-[#7A7A7A]">
+        <p className="text-xs text-ink-muted">
           Powered by Altared &middot; Wedding Planning Made Simple
         </p>
       </div>
