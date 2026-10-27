@@ -44,6 +44,8 @@ export async function scanQuotePhotos(
   const scan = await parseProposalFromImages(pages);
   if (!scan.vendorName && scan.totalCost == null) return { kind: "not_a_quote" };
 
+  const vendor = await matchOrAddVendor(db, userId, scan);
+
   // Keep the first page as the quote's file, like an uploaded PDF
   const first = pages[0];
   const filePath = `${crypto.randomUUID()}.${first.mimeType.split("/")[1]}`;
@@ -51,8 +53,6 @@ export async function scanQuotePhotos(
     .from("proposals")
     .upload(filePath, first.bytes, { contentType: first.mimeType, upsert: false });
   if (uploadError) throw new Error(`Quote upload failed: ${uploadError.message}`);
-
-  const vendor = await matchOrAddVendor(db, userId, scan);
 
   const { data: proposal, error } = await db
     .from("proposals")
@@ -75,7 +75,10 @@ export async function scanQuotePhotos(
     })
     .select("id")
     .single();
-  if (error) throw error;
+  if (error) {
+    await db.storage.from("proposals").remove([filePath]);
+    throw error;
+  }
 
   return { kind: "saved", proposalId: proposal.id, vendor, scan };
 }
@@ -103,7 +106,7 @@ async function matchOrAddVendor(db: Admin, userId: string, scan: ProposalScanRes
         deposit_amount: existing.deposit_amount ?? scan.depositAmount,
         deposit_due_date: existing.deposit_due_date ?? scan.depositDueDate,
         status: ["researching", "contacted", "meeting_scheduled"].includes(existing.status)
-          ? "proposal_received"
+          ? "quoted"
           : existing.status,
       })
       .eq("id", existing.id)
@@ -124,7 +127,7 @@ async function matchOrAddVendor(db: Admin, userId: string, scan: ProposalScanRes
       quoted_price: scan.totalCost,
       deposit_amount: scan.depositAmount,
       deposit_due_date: scan.depositDueDate,
-      status: "proposal_received",
+      status: "quoted",
       source: "other",
     })
     .select("id, name")

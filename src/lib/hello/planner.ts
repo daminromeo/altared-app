@@ -14,16 +14,16 @@ const MODEL = "claude-sonnet-5-5";
 const MAX_TOOL_ROUNDS = 6;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
-const VENDOR_STATUSES = [
+// What vendors_status_check allows (VendorStatus in types/vendor.ts is out of date)
+export const VENDOR_STATUSES = [
   "researching",
   "contacted",
+  "quoted",
   "meeting_scheduled",
-  "proposal_received",
   "negotiating",
   "booked",
-  "deposit_paid",
-  "completed",
   "declined",
+  "archived",
 ];
 
 const TOOLS: Anthropic.Tool[] = [
@@ -378,7 +378,7 @@ async function runTool(
           quoted_price: (input.quoted_price as number) ?? null,
           notes: (input.notes as string) ?? null,
           status,
-          is_booked: status === "booked" || status === "deposit_paid",
+          is_booked: status === "booked",
         })
         .select("id, name, status")
         .single();
