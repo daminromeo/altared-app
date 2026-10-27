@@ -102,6 +102,35 @@ export async function parseProposal(
   return extractJson(responseText);
 }
 
+/** Scans photos of a quote (one per page), e.g. ones texted to the planner. */
+export async function parseProposalFromImages(
+  images: { base64: string; mimeType: string }[]
+): Promise<ProposalScanResult> {
+  const openai = getOpenAI();
+
+  const response = await openai.responses.create({
+    model: "gpt-4o",
+    input: [
+      {
+        role: "user",
+        content: [
+          ...images.map((image) => ({
+            type: "input_image" as const,
+            image_url: `data:${image.mimeType};base64,${image.base64}`,
+            detail: "high" as const,
+          })),
+          {
+            type: "input_text",
+            text: `${PROPOSAL_ANALYZER_PROMPT}\n\nThese are photos of the document, one per page. If they are not a vendor quote, proposal, contract or invoice, set vendorName and totalCost to null and confidence to 0.`,
+          },
+        ],
+      },
+    ],
+  });
+
+  return extractJson(response.output_text);
+}
+
 export async function parseProposalFromText(
   text: string
 ): Promise<ProposalScanResult> {

@@ -95,6 +95,18 @@ const TOOLS: Anthropic.Tool[] = [
     },
   },
   {
+    name: "compare_vendors",
+    description:
+      "Side-by-side details for 2-4 of the couple's vendors, including what their scanned quotes include, payment schedules and cancellation terms. Pass vendor names as the couple said them.",
+    input_schema: {
+      type: "object",
+      properties: {
+        vendors: { type: "array", items: { type: "string" }, minItems: 2, maxItems: 4 },
+      },
+      required: ["vendors"],
+    },
+  },
+  {
     name: "add_vendor",
     description: "Add a vendor the couple is considering or has booked.",
     input_schema: {
@@ -148,6 +160,9 @@ How to reply:
 - When you change something, confirm what you did in one line.
 - If a request is ambiguous (several tasks match, no amount given), ask one short question instead of guessing.
 - For general planning advice, ground it in their date, budget, guest count and vendors.
+- To compare vendors, use compare_vendors, then give a clear pick or the one trade-off that decides it, based on what matters for their wedding. Don't just list numbers back.
+- Notes in [square brackets] come from Altared, not the couple (for example, a photo they sent that was scanned). Act on them but never quote them.
+- Some of your earlier texts were check-ins you sent on your own ("did you finish that task?"). When they answer one, follow through: mark the task done, update the vendor, or help with the next step.
 - Everything you add shows up in their Altared dashboard at altared.app.`;
 }
 
@@ -155,16 +170,21 @@ function dueDateIso(date: string) {
   return /^\d{4}-\d{2}-\d{2}$/.test(date) ? `${date}T12:00:00Z` : new Date(date).toISOString();
 }
 
-async function findCategory(db: Admin, userId: string, name?: string) {
+// "hair_makeup" and "Hair & Makeup" compare equal
+const normalize = (name: string) => name.toLowerCase().replace(/[^a-z0-9]/g, "");
+
+/** The couple's category closest to name (theirs or a default), or null. */
+export async function findCategory(db: Admin, userId: string, name?: string) {
   if (!name) return null;
   const { data } = await db
     .from("vendor_categories")
     .select("id, name")
     .or(`user_id.is.null,user_id.eq.${userId}`);
-  const wanted = name.trim().toLowerCase();
+  const wanted = normalize(name);
+  if (!wanted) return null;
   return (
-    data?.find((c) => c.name.toLowerCase() === wanted) ??
-    data?.find((c) => c.name.toLowerCase().includes(wanted) || wanted.includes(c.name.toLowerCase())) ??
+    data?.find((c) => normalize(c.name) === wanted) ??
+    data?.find((c) => normalize(c.name).includes(wanted) || wanted.includes(normalize(c.name))) ??
     null
   );
 }
@@ -210,6 +230,7 @@ async function runTool(
           description: (input.description as string) ?? null,
           due_date: dueDateIso(String(input.due_date)),
           reminder_type: "custom",
+          created_via: "text",
         })
         .select("id, title, due_date")
         .single();
@@ -312,6 +333,31 @@ async function runTool(
           .filter(Boolean)
           .some((field) => field!.toLowerCase().includes(q))
       );
+    }
+
+    case "compare_vendors": {
+      const wanted = (input.vendors as string[]).map((n) => normalize(n));
+      const { data, error } = await db
+        .from("vendors")
+        .select(
+          "id, name, company_name, status, rating, quoted_price, final_price, deposit_amount, deposit_due_date, is_booked, notes, vendor_categories(name), proposals(extracted_total_price, extracted_deposit_amount, extracted_deposit_due_date, extracted_services, extracted_payment_schedule, extracted_cancellation_policy, extracted_notes)"
+        )
+        .eq("user_id", userId);
+      if (error) throw error;
+      const matches = data.filter((v) =>
+        wanted.some((w) => {
+          const names = [v.name, v.company_name].filter(Boolean).map((n) => normalize(n!));
+          return names.some((n) => n.includes(w) || w.includes(n));
+        })
+      );
+      if (matches.length < 2) {
+        return {
+          error: "Couldn't find at least two of those vendors",
+          found: matches.map((v) => v.name),
+          theirVendors: data.map((v) => v.name),
+        };
+      }
+      return matches;
     }
 
     case "add_vendor": {

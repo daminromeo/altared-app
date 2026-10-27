@@ -42,6 +42,7 @@ interface ProfileData {
 interface NotificationPrefs {
   weekly_summary: boolean;
   task_reminders: boolean;
+  text_checkins: boolean;
 }
 
 // ── Component ─────────────────────────────────────────────────────────────────
@@ -61,6 +62,7 @@ export default function SettingsPage() {
     {
       weekly_summary: true,
       task_reminders: true,
+      text_checkins: true,
     }
   );
   const [notificationsLoading, setNotificationsLoading] = useState(true);
@@ -216,7 +218,7 @@ export default function SettingsPage() {
       if (res.ok) {
         const data = await res.json();
         if (data.preferences) {
-          setNotificationPrefs(data.preferences);
+          setNotificationPrefs((prev) => ({ ...prev, ...data.preferences }));
         }
       }
     } catch {
@@ -605,10 +607,10 @@ export default function SettingsPage() {
           <Card className="border-hairline">
             <CardHeader>
               <CardTitle className="text-ink">
-                Email Notifications
+                Notifications
               </CardTitle>
               <CardDescription className="text-ink-muted">
-                Choose which emails you&apos;d like to receive.
+                Choose which emails and texts you&apos;d like to receive.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -665,6 +667,37 @@ export default function SettingsPage() {
                   <span
                     className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition-transform ${
                       notificationPrefs.task_reminders
+                        ? "translate-x-5"
+                        : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
+
+              <Separator className="bg-hairline" />
+
+              {/* Text Check-ins */}
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-ink">Planner Check-ins by Text</p>
+                  <p className="text-sm text-ink-muted">
+                    Your planner texts now and then to follow up, like asking how a vendor call went. Only if you&apos;ve connected your phone.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={notificationPrefs.text_checkins}
+                  onClick={() => toggleNotif("text_checkins")}
+                  className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
+                    notificationPrefs.text_checkins
+                      ? "bg-moss"
+                      : "bg-hairline"
+                  }`}
+                >
+                  <span
+                    className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition-transform ${
+                      notificationPrefs.text_checkins
                         ? "translate-x-5"
                         : "translate-x-0"
                     }`}

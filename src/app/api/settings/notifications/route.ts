@@ -5,6 +5,7 @@ import { z } from "zod";
 const notificationPrefsSchema = z.object({
   weekly_summary: z.boolean(),
   task_reminders: z.boolean(),
+  text_checkins: z.boolean().default(true),
 });
 
 export async function GET() {
@@ -24,10 +25,11 @@ export async function GET() {
       .eq("id", user.id)
       .single();
 
-    const defaults = { weekly_summary: true, task_reminders: true };
+    const defaults = { weekly_summary: true, task_reminders: true, text_checkins: true };
+    const stored = profile?.notification_preferences as Record<string, boolean> | null;
 
     return NextResponse.json({
-      preferences: profile?.notification_preferences ?? defaults,
+      preferences: { ...defaults, ...stored },
     });
   } catch (err) {
     console.error("GET /api/settings/notifications error:", err);

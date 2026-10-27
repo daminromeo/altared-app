@@ -3,12 +3,14 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { ACCESS_PROFILE_COLUMNS, resolveAccess, type AccessProfile } from "@/lib/plan-access";
 import {
   getConversationHistory,
+  getConversationMessages,
   sendText,
   verifyHelloWebhook,
   type HelloEvent,
   type HelloMessageEvent,
 } from "@/lib/hello/client";
 import { replyToCouple } from "@/lib/hello/planner";
+import { describeQuoteResult, scanQuotePhotos } from "@/lib/hello/quote-photo";
 
 // The planner can take several model calls; the reply is sent after the 200.
 export const maxDuration = 60;
@@ -57,6 +59,16 @@ async function handleMessage(event: HelloMessageEvent) {
       return;
     }
 
+    // Where check-ins go, and when the couple last spoke (check-ins hold off mid-conversation)
+    await supabase
+      .from("profiles")
+      .update({
+        text_phone: event.from,
+        text_conversation_id: event.conversation_id,
+        text_last_inbound_at: new Date().toISOString(),
+      })
+      .eq("id", event.external_user_id);
+
     if (resolveAccess(profile as AccessProfile).locked) {
       await sendText(
         event.from,
@@ -75,11 +87,32 @@ async function handleMessage(event: HelloMessageEvent) {
       return;
     }
 
-    if (!event.text?.trim()) {
-      if (event.image_count) {
-        await sendText(event.from, "I can't read photos yet. Text me what you need and I'll help.");
-      }
-      return;
+    const caption = event.text?.trim() ?? "";
+    let latest = caption;
+
+    if (event.image_count) {
+      await sendText(event.from, "Got it, reading that now…");
+      const messages = await getConversationMessages(event.conversation_id);
+      const withPhotos = messages.filter((m) => m.role === "user" && m.images.length).at(-1);
+      const result = withPhotos
+        ? await scanQuotePhotos(supabase, event.external_user_id, withPhotos.images)
+        : ({ kind: "unreadable" } as const);
+      latest = describeQuoteResult(result, caption);
+    }
+
+    if (!latest) return;
+
+    // A reply like "it went great!" is usually answering the last check-in
+    const { data: checkin } = await supabase
+      .from("text_checkins")
+      .select("body, sent_at")
+      .eq("user_id", event.external_user_id)
+      .gte("sent_at", new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString())
+      .order("sent_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (checkin) {
+      latest = `[Your most recent check-in to them, sent ${checkin.sent_at.slice(0, 10)}: "${checkin.body}"]\n${latest}`;
     }
 
     const history = await getConversationHistory(event.conversation_id);
@@ -88,7 +121,7 @@ async function handleMessage(event: HelloMessageEvent) {
       event.external_user_id,
       profile,
       history,
-      event.text
+      latest
     );
     await sendText(event.from, reply);
   } catch (err) {

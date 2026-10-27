@@ -30,6 +30,9 @@ export interface Database {
           onboarding_completed: boolean;
           is_admin: boolean;
           notification_preferences: Json | null;
+          text_phone: string | null;
+          text_conversation_id: string | null;
+          text_last_inbound_at: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -53,6 +56,9 @@ export interface Database {
           onboarding_completed?: boolean;
           is_admin?: boolean;
           notification_preferences?: Json | null;
+          text_phone?: string | null;
+          text_conversation_id?: string | null;
+          text_last_inbound_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -76,6 +82,9 @@ export interface Database {
           onboarding_completed?: boolean;
           is_admin?: boolean;
           notification_preferences?: Json | null;
+          text_phone?: string | null;
+          text_conversation_id?: string | null;
+          text_last_inbound_at?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -437,6 +446,7 @@ export interface Database {
           due_date: string;
           is_completed: boolean;
           reminder_type: string | null;
+          created_via: string | null;
           created_at: string;
         };
         Insert: {
@@ -448,6 +458,7 @@ export interface Database {
           due_date: string;
           is_completed?: boolean;
           reminder_type?: string | null;
+          created_via?: string | null;
           created_at?: string;
         };
         Update: {
@@ -459,6 +470,7 @@ export interface Database {
           due_date?: string;
           is_completed?: boolean;
           reminder_type?: string | null;
+          created_via?: string | null;
           created_at?: string;
         };
         Relationships: [
@@ -563,6 +575,38 @@ export interface Database {
             columns: ["vendor_id"];
             isOneToOne: false;
             referencedRelation: "vendors";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+      text_checkins: {
+        Row: {
+          id: string;
+          user_id: string;
+          subject_key: string;
+          body: string;
+          sent_at: string;
+        };
+        Insert: {
+          id?: string;
+          user_id: string;
+          subject_key: string;
+          body: string;
+          sent_at?: string;
+        };
+        Update: {
+          id?: string;
+          user_id?: string;
+          subject_key?: string;
+          body?: string;
+          sent_at?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "text_checkins_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "profiles";
             referencedColumns: ["id"];
           }
         ];

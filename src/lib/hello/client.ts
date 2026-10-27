@@ -66,6 +66,37 @@ export async function createUserLinkCode(userId: string) {
   }) as Promise<{ sms_link: string; mode: "live" | "sandbox" }>;
 }
 
+export interface ConversationMessage {
+  id: string;
+  role: "user" | "assistant";
+  text: string;
+  /** Signed for one hour; download right away */
+  images: { url: string; mimeType: string }[];
+}
+
+/** Messages in a conversation, oldest first. */
+export async function getConversationMessages(
+  conversationId: string
+): Promise<ConversationMessage[]> {
+  const data = await helloFetch(
+    `/conversations/${encodeURIComponent(conversationId)}/messages`
+  );
+  const rows: Record<string, unknown>[] = Array.isArray(data)
+    ? data
+    : (data.messages ?? data.data ?? []);
+
+  return rows.map((row) => {
+    const direction = String(row.direction ?? row.role ?? row.sender ?? "");
+    const fromUs = /^(out|outbound|outgoing|assistant|agent|bot)/i.test(direction);
+    return {
+      id: String(row.id ?? ""),
+      role: fromUs ? "assistant" : "user",
+      text: typeof row.text === "string" ? row.text.trim() : "",
+      images: Array.isArray(row.images) ? (row.images as ConversationMessage["images"]) : [],
+    };
+  });
+}
+
 /**
  * Recent messages in a conversation, oldest first, for the planner's context.
  * Failures return an empty history so the planner still answers the latest text.
@@ -75,22 +106,10 @@ export async function getConversationHistory(
   limit = 12
 ): Promise<HistoryMessage[]> {
   try {
-    const data = await helloFetch(
-      `/conversations/${encodeURIComponent(conversationId)}/messages`
-    );
-    const rows: Record<string, unknown>[] = Array.isArray(data)
-      ? data
-      : (data.messages ?? data.data ?? []);
-
-    return rows
-      .map((row): HistoryMessage | null => {
-        const text = typeof row.text === "string" ? row.text.trim() : "";
-        if (!text) return null;
-        const direction = String(row.direction ?? row.role ?? row.sender ?? "");
-        const fromUs = /^(out|outbound|outgoing|assistant|agent|bot)/i.test(direction);
-        return { role: fromUs ? "assistant" : "user", text };
-      })
-      .filter((m): m is HistoryMessage => m !== null)
+    const messages = await getConversationMessages(conversationId);
+    return messages
+      .filter((m) => m.text)
+      .map(({ role, text }) => ({ role, text }))
       .slice(-limit);
   } catch (err) {
     console.error("hello history fetch failed:", err);
