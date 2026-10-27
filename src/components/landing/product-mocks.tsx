@@ -1,17 +1,9 @@
 // Product illustrations for the landing page, drawn in HTML so they stay crisp
-// and match the app. Figures are example data and labelled as such. Cards are
+// and match the app. Figures are illustrative. Cards are
 // light so they stand out against both the paper hero and the green bands.
 
 const CARD =
   "rounded-3xl border border-black/5 bg-white text-ink shadow-[0_30px_60px_-30px_rgba(11,16,13,0.45)]"
-
-function ExampleTag() {
-  return (
-    <span className="rounded-full bg-sage-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-moss">
-      Example
-    </span>
-  )
-}
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
@@ -23,10 +15,7 @@ function Label({ children }: { children: React.ReactNode }) {
 export function HeroQuoteCard({ className = "" }: { className?: string }) {
   return (
     <div className={`${CARD} w-[290px] p-4 text-[13px] ${className}`}>
-      <div className="flex items-center justify-between">
-        <Label>Florists · compare</Label>
-        <ExampleTag />
-      </div>
+      <Label>Florists · compare</Label>
       <div className="mt-3 flex items-start justify-between">
         <div>
           <p className="font-semibold">Bloom &amp; Co</p>
@@ -74,10 +63,7 @@ export function HeroReactionChip({ className = "" }: { className?: string }) {
 export function QuoteLinesCard() {
   return (
     <div className={`${CARD} w-full max-w-md p-6`}>
-      <div className="flex items-center justify-between">
-        <Label>Bloom &amp; Co · florist</Label>
-        <ExampleTag />
-      </div>
+      <Label>Bloom &amp; Co · florist</Label>
       <dl className="mt-4 grid grid-cols-[1fr_auto] gap-x-4 gap-y-2.5 text-sm">
         <dt>Ceremony and reception florals</dt>
         <dd className="tabular-nums">$3,800</dd>
@@ -104,10 +90,7 @@ export function PaymentsCard() {
   ]
   return (
     <div className={`${CARD} w-full max-w-md p-6`}>
-      <div className="flex items-center justify-between">
-        <Label>Coming up</Label>
-        <ExampleTag />
-      </div>
+      <Label>Coming up</Label>
       <ul className="mt-2 divide-y divide-hairline">
         {rows.map((row) => (
           <li key={row.title} className="flex items-center gap-3 py-3">
@@ -133,10 +116,7 @@ export function PaymentsCard() {
 export function ShareCard() {
   return (
     <div className={`${CARD} flex w-full max-w-md flex-col gap-3 p-6 text-sm`}>
-      <div className="flex items-center justify-between">
-        <Label>Shared with Jordan</Label>
-        <ExampleTag />
-      </div>
+      <Label>Shared with Jordan</Label>
       <p className="max-w-[85%] rounded-2xl rounded-bl-md bg-paper px-4 py-3">
         Bloom &amp; Co is $350 less all-in. Their portfolio is the one we loved.
       </p>
