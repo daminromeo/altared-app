@@ -55,10 +55,10 @@ function baseLayout(content: string): string {
           }
           .button {
             display: inline-block;
-            background-color: #8B9F82;
+            background-color: #2F4A3B;
             color: #ffffff !important;
-            padding: 12px 24px;
-            border-radius: 8px;
+            padding: 13px 26px;
+            border-radius: 999px;
             text-decoration: none;
             font-weight: 600;
             margin: 16px 0;
@@ -84,7 +84,7 @@ function baseLayout(content: string): string {
           .stat-value {
             font-size: 20px;
             font-weight: 700;
-            color: #2D2D2D;
+            color: #1C221E;
             margin-top: 4px;
           }
           .task-item {
@@ -310,6 +310,84 @@ export async function sendTaskReminder({
   return sendEmail({
     to,
     subject: `${subjectPrefix}${tasks.length} upcoming ${tasks.length === 1 ? "deadline" : "deadlines"} for your wedding`,
+    html,
+  });
+}
+
+// ── Trial Ending Email ─────────────────────────────────────────────────────
+
+interface TrialEndingData {
+  to: string;
+  name: string;
+  /** Which email in the sequence: four days left, or the last day */
+  stage: "day10" | "day13";
+  trialEndsAt: string;
+  price: number;
+  vendorCount: number;
+  quoteCount: number;
+  openTaskCount: number;
+}
+
+export async function sendTrialEnding({
+  to,
+  name,
+  stage,
+  trialEndsAt,
+  price,
+  vendorCount,
+  quoteCount,
+  openTaskCount,
+}: TrialEndingData) {
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "https://altared.app";
+  const endDate = new Date(trialEndsAt).toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    timeZone: "America/New_York",
+  });
+  const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+  const saved = [
+    vendorCount > 0 && plural(vendorCount, "vendor"),
+    quoteCount > 0 && plural(quoteCount, "quote"),
+    openTaskCount > 0 && plural(openTaskCount, "open task"),
+  ].filter(Boolean) as string[];
+
+  const savedHtml = saved.length
+    ? `<div class="stat-card">
+        <div class="stat-label">Saved in your plan</div>
+        <div class="stat-value">${saved.join(" · ")}</div>
+      </div>`
+    : `<p>You haven't added a quote yet. Before the trial ends, upload one and see its full cost, fees included. It takes a minute.</p>`;
+
+  const lead =
+    stage === "day10"
+      ? `Your free trial ends on ${endDate}.`
+      : `Your free trial ends tomorrow, ${endDate}.`;
+
+  const html = baseLayout(`
+    <h1>${stage === "day10" ? "4 days left in your free trial" : "Your free trial ends tomorrow"}</h1>
+    <p>Hi ${name}, ${lead} After that, Altared is locked until you get the Wedding Pass. Nothing you've added is deleted, and it's all there the moment you do.</p>
+    ${savedHtml}
+    <p><strong>The Wedding Pass keeps:</strong></p>
+    <ul>
+      <li>Every vendor, quote and budget line</li>
+      <li>AI quote scanning and side-by-side comparison</li>
+      <li>Your planning timeline and deposit reminders</li>
+      <li>Your partner's share link and reactions</li>
+    </ul>
+    <div style="text-align: center;">
+      <a href="${appUrl}/pass?from=email_${stage}" class="button">Get the Wedding Pass &middot; $${price}</a>
+    </div>
+    <p style="text-align: center; font-size: 13px; color: #6b7280;">One payment. No subscription. Lasts through your wedding.</p>
+  `);
+
+  return sendEmail({
+    to,
+    subject:
+      stage === "day10"
+        ? "4 days left in your Altared trial"
+        : "Your Altared trial ends tomorrow",
     html,
   });
 }
