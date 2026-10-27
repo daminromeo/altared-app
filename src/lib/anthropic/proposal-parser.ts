@@ -102,10 +102,17 @@ export async function parseProposal(
   return extractJson(responseText);
 }
 
+export interface PhotoScanResult extends ProposalScanResult {
+  /** True when the photos look like only part of the quote */
+  appearsIncomplete: boolean;
+  /** What looks cut off or missing, e.g. "text runs off the bottom of the screenshot" */
+  incompleteReason: string | null;
+}
+
 /** Scans photos of a quote (one per page), e.g. ones texted to the planner. */
 export async function parseProposalFromImages(
   images: { base64: string; mimeType: string }[]
-): Promise<ProposalScanResult> {
+): Promise<PhotoScanResult> {
   const openai = getOpenAI();
 
   const response = await openai.responses.create({
@@ -121,14 +128,25 @@ export async function parseProposalFromImages(
           })),
           {
             type: "input_text",
-            text: `${PROPOSAL_ANALYZER_PROMPT}\n\nThese are photos of the document, one per page. If they are not a vendor quote, proposal, contract or invoice, set vendorName and totalCost to null and confidence to 0.`,
+            text: `${PROPOSAL_ANALYZER_PROMPT}
+
+These are photos of the document, one per page. If they are not a vendor quote, proposal, contract or invoice, set vendorName and totalCost to null and confidence to 0.
+
+Also add these two fields to the JSON:
+  "appearsIncomplete": true if this looks like only part of the quote: text or a table running off the edge of the photo or screenshot, a page that clearly continues ("page 1 of 3", a sentence cut mid-way), collapsed or trimmed content (an email showing "..." or "show more"), or line items with no total. False if it looks like the whole thing, even if it's short. Something a quote simply doesn't mention (no cancellation policy) is not incomplete.
+  "incompleteReason": a short phrase saying what looks cut off, or null.`,
           },
         ],
       },
     ],
   });
 
-  return extractJson(response.output_text);
+  const result = extractJson(response.output_text) as PhotoScanResult;
+  return {
+    ...result,
+    appearsIncomplete: result.appearsIncomplete === true,
+    incompleteReason: result.incompleteReason ?? null,
+  };
 }
 
 export async function parseProposalFromText(

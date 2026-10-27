@@ -3,16 +3,16 @@ import type { Tables } from "./database";
 export type Vendor = Tables<"vendors">;
 export type VendorCategory = Tables<"vendor_categories">;
 
+// Matches vendors_status_check in the database
 export type VendorStatus =
   | "researching"
   | "contacted"
+  | "quoted"
   | "meeting_scheduled"
-  | "proposal_received"
   | "negotiating"
   | "booked"
-  | "deposit_paid"
-  | "completed"
-  | "declined";
+  | "declined"
+  | "archived";
 
 export type VendorSource =
   | "referral"

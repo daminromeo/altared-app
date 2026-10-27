@@ -5,7 +5,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { parseProposalFromImages } from "@/lib/anthropic/proposal-parser";
 import type { Database } from "@/lib/types/database";
-import type { ProposalScanResult } from "@/lib/types/proposal";
+import type { PhotoScanResult } from "@/lib/anthropic/proposal-parser";
 import type { ConversationMessage } from "./client";
 import { findCategory } from "./planner";
 
@@ -22,7 +22,7 @@ export type QuotePhotoResult =
       kind: "saved";
       proposalId: string;
       vendor: { id: string; name: string; isNew: boolean };
-      scan: ProposalScanResult;
+      scan: PhotoScanResult;
     };
 
 export async function scanQuotePhotos(
@@ -83,7 +83,7 @@ export async function scanQuotePhotos(
   return { kind: "saved", proposalId: proposal.id, vendor, scan };
 }
 
-async function matchOrAddVendor(db: Admin, userId: string, scan: ProposalScanResult) {
+async function matchOrAddVendor(db: Admin, userId: string, scan: PhotoScanResult) {
   const name = scan.vendorName?.trim() || "Unnamed vendor";
 
   const { data: existing } = await db
@@ -146,9 +146,12 @@ export function describeQuoteResult(result: QuotePhotoResult, caption: string) {
     return `[The couple texted a photo that isn't a vendor quote.${said} Respond to it naturally; if they meant to send a quote, ask for a clearer photo.]`;
   }
   const { vendor, scan } = result;
+  const partial = scan.appearsIncomplete
+    ? `\nThe photo looks like only part of the quote (${scan.incompleteReason ?? "some of it seems cut off"}). Say so up front, and ask them to send the full quote or contract: the PDF (they can upload it under Quotes in the dashboard) or screenshots of the rest. Don't flag things as missing that may just be cut off.`
+    : "";
   return `[The couple texted a photo of a quote. I scanned it, saved it under Quotes, and ${
     vendor.isNew ? `added ${vendor.name} as a new vendor` : `filed it under their existing vendor ${vendor.name}`
   }.${said}
 Scanned quote: ${JSON.stringify(scan)}
-Reply with: total, deposit and when it's due, then flag anything worth a second look, such as service charges, gratuity, overtime, travel, cake-cutting or corkage fees, taxes not included, or a strict cancellation policy. Keep it to a short text.]`;
+Reply with: total, deposit and when it's due, then flag anything worth a second look, such as service charges, gratuity, overtime, travel, cake-cutting or corkage fees, taxes not included, or a strict cancellation policy. Keep it to a short text.${partial}]`;
 }
