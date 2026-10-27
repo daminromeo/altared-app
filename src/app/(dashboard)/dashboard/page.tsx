@@ -11,6 +11,7 @@ import { BudgetBar, type CategorySpend } from '@/components/dashboard/budget-bar
 import { NextUp, type NextUpItem } from '@/components/dashboard/next-up'
 import { StarterPlanCard, type PlanTask } from '@/components/dashboard/starter-plan-card'
 import { DashboardUpgradeCard } from '@/components/dashboard/upgrade-card'
+import { TextPlannerPrompt } from '@/components/dashboard/text-planner-prompt'
 import { DashboardSkeleton } from '@/components/shared/loading-skeleton'
 import { useSubscription } from '@/lib/hooks/use-subscription'
 import { PLANS, TRIAL_LAUNCH_DATE } from '@/lib/stripe/config'
@@ -384,6 +385,7 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-6xl space-y-4 sm:space-y-5">
       <DashboardUpgradeCard vendors={data.vendors.length} quotes={data.quoteCount} />
+      <TextPlannerPrompt />
 
       <div className="flex flex-col gap-4 pb-1 pt-2 sm:flex-row sm:items-end sm:justify-between">
         <Countdown anchor={data.anchor} estimate={data.dateEstimate} location={data.location} />

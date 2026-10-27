@@ -217,7 +217,7 @@ export default function GetStartedPage() {
           { event: 'CompleteRegistration' }
         )
         clearDraft()
-        window.location.href = '/dashboard'
+        window.location.href = '/get-started/connect'
         return
       }
 

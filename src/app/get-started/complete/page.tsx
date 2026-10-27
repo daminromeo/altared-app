@@ -40,7 +40,7 @@ export default function GetStartedCompletePage() {
         clearDraft()
       }
 
-      router.push('/dashboard')
+      router.push('/get-started/connect')
     }
 
     saveAndRedirect()
