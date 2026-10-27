@@ -19,6 +19,7 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { ShareLinkManager } from "@/components/share/share-link-manager";
+import { TextPlannerCard } from "@/components/settings/text-planner-card";
 import { toast } from "sonner";
 import { rescheduleStarterPlan } from "@/lib/starter-plan";
 
@@ -336,6 +337,7 @@ export default function SettingsPage() {
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="billing">Billing</TabsTrigger>
           <TabsTrigger value="sharing">Sharing</TabsTrigger>
+          <TabsTrigger value="texting">Texting</TabsTrigger>
           <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
 
@@ -591,6 +593,11 @@ export default function SettingsPage() {
         {/* ── Sharing Tab ───────────────────────────────────────────────── */}
         <TabsContent value="sharing">
           <ShareLinkManager />
+        </TabsContent>
+
+        {/* ── Texting Tab ───────────────────────────────────────────────── */}
+        <TabsContent value="texting">
+          <TextPlannerCard />
         </TabsContent>
 
         {/* ── Notifications Tab ──────────────────────────────────────────── */}
