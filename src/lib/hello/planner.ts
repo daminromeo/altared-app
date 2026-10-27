@@ -107,6 +107,27 @@ const TOOLS: Anthropic.Tool[] = [
     },
   },
   {
+    name: "update_vendor",
+    description:
+      "Update one of the couple's vendors: where things stand, the price, deposit, contact info or a note. Call get_vendors first to find its id. Only pass the fields that changed.",
+    input_schema: {
+      type: "object",
+      properties: {
+        vendor_id: { type: "string" },
+        status: { type: "string", enum: VENDOR_STATUSES },
+        quoted_price: { type: "number", minimum: 0 },
+        final_price: { type: "number", minimum: 0 },
+        deposit_amount: { type: "number", minimum: 0 },
+        deposit_due_date: { type: "string", description: "YYYY-MM-DD" },
+        deposit_paid: { type: "boolean" },
+        email: { type: "string" },
+        phone: { type: "string" },
+        note: { type: "string", description: "Added to the vendor's notes, dated" },
+      },
+      required: ["vendor_id"],
+    },
+  },
+  {
     name: "add_vendor",
     description: "Add a vendor the couple is considering or has booked.",
     input_schema: {
@@ -358,6 +379,44 @@ async function runTool(
         };
       }
       return matches;
+    }
+
+    case "update_vendor": {
+      const { data: vendor } = await db
+        .from("vendors")
+        .select("id, notes")
+        .eq("id", String(input.vendor_id))
+        .eq("user_id", userId)
+        .maybeSingle();
+      if (!vendor) return { error: "No vendor with that id" };
+
+      const changes: Database["public"]["Tables"]["vendors"]["Update"] = {};
+      if (VENDOR_STATUSES.includes(input.status as string)) {
+        changes.status = input.status as string;
+        changes.is_booked = input.status === "booked";
+        if (input.status === "booked") changes.booked_date = now.toISOString().slice(0, 10);
+      }
+      for (const key of ["quoted_price", "final_price", "deposit_amount"] as const) {
+        if (typeof input[key] === "number") changes[key] = input[key] as number;
+      }
+      if (typeof input.deposit_paid === "boolean") changes.deposit_paid = input.deposit_paid;
+      if (input.deposit_due_date) changes.deposit_due_date = String(input.deposit_due_date);
+      if (input.email) changes.email = String(input.email);
+      if (input.phone) changes.phone = String(input.phone);
+      if (input.note) {
+        const line = `${now.toISOString().slice(0, 10)}: ${input.note}`;
+        changes.notes = vendor.notes ? `${vendor.notes}\n${line}` : line;
+      }
+
+      const { data, error } = await db
+        .from("vendors")
+        .update(changes)
+        .eq("id", vendor.id)
+        .eq("user_id", userId)
+        .select("id, name, status, quoted_price, deposit_paid")
+        .single();
+      if (error) throw error;
+      return data;
     }
 
     case "add_vendor": {

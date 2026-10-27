@@ -58,6 +58,7 @@ export const PLANS: Record<Plan["id"], Plan> = {
       { text: "Weighted scoring & AI recommendations", included: false },
       { text: "Share with your partner", included: false },
       { text: "AI quote scanning", included: false },
+      { text: "Text your planner", included: false },
     ],
     limits: {
       vendors: 10,
@@ -72,6 +73,7 @@ export const PLANS: Record<Plan["id"], Plan> = {
     description: "Pay once. Use everything through your wedding.",
     price: 49,
     features: [
+      { text: "Text your planner: quotes, budget, tasks", included: true },
       { text: "Unlimited vendors", included: true },
       { text: "Budget tracking by category", included: true },
       { text: "Compare up to 4 vendors side by side", included: true },

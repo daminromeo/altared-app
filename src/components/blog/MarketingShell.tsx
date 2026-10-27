@@ -24,7 +24,7 @@ export function Wordmark({ className = "" }: { className?: string }) {
   )
 }
 
-export function MarketingHeader({ ctaLabel = "Add quotes free", ctaHref = "/get-started" }) {
+export function MarketingHeader({ ctaLabel = "Start free", ctaHref = "/get-started" }) {
   return (
     <nav className="sticky top-0 z-50 border-b border-hairline bg-paper/85 backdrop-blur-lg">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-5 md:px-8">

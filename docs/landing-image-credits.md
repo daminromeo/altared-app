@@ -10,6 +10,7 @@ excluded because they need a paid license.
 | reception-tables.jpg | https://unsplash.com/photos/2IxNtgbd2R8 | Jonathan Borba |
 | bride-bouquet.jpg | https://unsplash.com/photos/436ZVxZOtEM | Alvin Mahmudov |
 | woodland-ceremony.jpg | https://unsplash.com/photos/iZlVIHqZJqE | Kelsey Booth |
+| hero-woodland.jpg | https://unsplash.com/photos/iZlVIHqZJqE (2400px, downloaded 2026-10-27) | Kelsey Booth |
 | rose-bouquet.jpg | https://unsplash.com/photos/BrnkFhpkirk | Jana Belonina |
 | dance-floor.jpg | https://unsplash.com/photos/q5FNF6EEE30 | Sarah Noltner |
 

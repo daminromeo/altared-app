@@ -3,17 +3,23 @@ import { MarketingFooter, MarketingHeader } from "@/components/blog/MarketingShe
 import Image from "next/image";
 import { ScrollReveal } from "@/components/landing/scroll-reveal";
 import {
-  HeroQuoteCard,
-  HeroReactionChip,
-  PaymentsCard,
-  QuoteLinesCard,
-  ShareCard,
+  BudgetCategoriesCard,
+  CHECKIN_THREAD,
+  CompareCard,
+  DashboardMock,
+  HERO_THREAD,
+  MessagesCard,
+  QuoteBreakdownCard,
+  TaskUpdateCard,
+  TextChip,
+  TextThread,
 } from "@/components/landing/product-mocks";
 import { PLANS, TRIAL_DAYS } from "@/lib/stripe/config";
 
-// The landing page leads with the job most visitors came to do: the blog's
-// biggest category is hidden costs, so the default headline is about quotes.
-// Blog CTAs and ads pass ?from=<category> to swap the headline and CTA.
+// The landing page leads with the whole plan (vendors, quotes, budget, to-dos)
+// and the planner you can text as the way into it: every visual is a screen
+// from the app, with the text that filled it beside it. Blog CTAs and ads pass
+// ?from=<category> to swap in a headline about the job that reader came for.
 
 interface Variant {
   line1: string;
@@ -23,14 +29,19 @@ interface Variant {
 }
 
 const DEFAULT_VARIANT: Variant = {
-  line1: "Every vendor quote.",
-  line2: "One calm plan.",
-  sub: "Add your quotes, see each vendor's full cost, and decide side by side with your partner.",
-  cta: "Add your vendor quotes free",
+  line1: "Your whole wedding plan.",
+  line2: "Just a text away.",
+  sub: "Vendors, quotes, budget and to-dos in one calm dashboard. Text your planner a photo of a quote or a quick update, and it's there.",
+  cta: "Start planning free",
 };
 
 const VARIANTS: Record<string, Variant> = {
-  "hidden-costs": DEFAULT_VARIANT,
+  "hidden-costs": {
+    line1: "Every vendor quote.",
+    line2: "One calm plan.",
+    sub: "Add any quote, or just text a photo of it, and see the full cost with the extras included. Then compare side by side with your partner.",
+    cta: "Add your vendor quotes free",
+  },
   contracts: {
     line1: "Every deposit and due date.",
     line2: "In one place.",
@@ -51,59 +62,82 @@ const VARIANTS: Record<string, Variant> = {
   },
 };
 
+// How the app and texting fit together
+const HOW = [
+  { title: "Text what happened", body: "A photo of a quote, a payment you made, a question about the budget." },
+  { title: "Your plan updates", body: "Vendors, budget and tasks get filed where they belong, as if you'd typed them in." },
+  { title: "See it all in one place", body: "Open the dashboard to check it, change it, or share it with your partner." },
+];
+
+// Each story is a screen from the app, with the text that filled it
 const STORIES = [
   {
-    eyebrow: "Compare",
-    title: "Quotes, compared",
-    accent: "on the full price.",
-    body: "Type in each quote and the extras the vendor mentioned, like service charges, overtime or delivery. Altared adds them up so vendors compare fairly.",
-    visual: <QuoteLinesCard />,
+    eyebrow: "Quotes",
+    title: "Every quote, read",
+    accent: "down to the fine print.",
+    body: "Upload a quote or text a photo of it. Altared pulls out each line, adds the extras like service charges and per-guest fees, and saves it with the vendor.",
+    visual: <QuoteBreakdownCard />,
+    chip: { text: "📷 Golden Hour quote. Anything weird in here?", className: "-top-12 right-2 md:-right-6" },
   },
   {
-    eyebrow: "Pay",
-    title: "Know what's due,",
-    accent: "and when.",
-    body: "Deposits and final payments for every vendor sit in one list. With the Wedding Pass, you also get an email a week before each deposit is due.",
-    visual: <PaymentsCard />,
+    eyebrow: "Budget",
+    title: "Know what's spent,",
+    accent: "and what's left.",
+    body: "Every category against what you set for it, updated as you book and pay. Log a payment in your dashboard, or just text it.",
+    visual: <BudgetCategoriesCard />,
+    chip: { text: "Paid the photographer deposit, $1,200", className: "-bottom-5 right-2 md:-right-8" },
   },
   {
     eyebrow: "Decide",
-    title: "Decide",
-    accent: "together.",
-    body: "Send your partner or parents a link to your shortlist. They see the quotes and leave reactions, without making an account.",
-    visual: <ShareCard />,
+    title: "Compare fairly.",
+    accent: "Decide together.",
+    body: "Line up vendors side by side, extras included, and get a straight recommendation. Send your partner or parents a link and they can react without an account.",
+    visual: <CompareCard />,
+    chip: { text: "Which florist should we book?", className: "-top-5 right-2 md:-right-6" },
   },
 ];
 
 // Photos: Unsplash License, see docs/landing-image-credits.md
 const ALSO = [
   {
-    title: "Budget by category",
-    body: "See what's committed and what's left for venue, food, photos and the rest.",
-    image: "/landing/reception-tables.jpg",
-    alt: "Reception tables set with white flowers and candles",
-  },
-  {
-    title: "Tasks and reminders",
-    body: "Keep tastings, fittings and follow-ups on one list.",
+    title: "A timeline from day one",
+    body: "Your plan starts with the usual planning steps, timed to your wedding date.",
     image: "/landing/bride-bouquet.jpg",
     alt: "A bride holding a white bouquet",
   },
   {
-    title: "One inbox for vendors",
-    body: "Keep vendor messages next to the vendor they're about.",
-    image: "/landing/woodland-ceremony.jpg",
-    alt: "An outdoor ceremony set up among pine trees",
+    title: "Deposits on time",
+    body: "An email a week before each deposit or payment is due.",
+    image: "/landing/reception-tables.jpg",
+    alt: "Reception tables set with white flowers and candles",
   },
   {
-    title: "AI quote scanning",
-    body: "Upload a vendor's proposal and AI pulls out the costs, schedule and terms.",
+    title: "One inbox for vendors",
+    body: "Vendor emails sit next to the vendor they're about.",
+    image: "/landing/hero-couple.jpg",
+    alt: "A bride and groom laughing as they walk hand in hand across a lawn",
+  },
+  {
+    title: "Shared with your partner",
+    body: "A link to your shortlist. They see the quotes and leave reactions.",
     image: "/landing/rose-bouquet.jpg",
     alt: "A bouquet of white roses and heather",
   },
 ];
 
 const FAQS = [
+  {
+    q: "Is my planner a real person?",
+    a: "No, it's AI. It knows wedding planning in depth: booking timelines, what vendors typically charge, and the fees and contract terms worth questioning. It answers from your own plan, so the advice fits your date, budget and vendors. Everything it adds or changes shows up in your dashboard, where you can check or edit it.",
+  },
+  {
+    q: "Do I need to download an app?",
+    a: "No. Connect your phone once from your dashboard, then text like you normally would. It works with iMessage on iPhone and with texting on Android.",
+  },
+  {
+    q: "Will it text me all the time?",
+    a: "No. It only checks in when there's something specific to ask about, never more than every few days, and you can turn check-ins off in Settings.",
+  },
   {
     q: "Is this a subscription?",
     a: `No. The Wedding Pass is one payment of $${PLANS.pass.price}. It lasts through your wedding, and there's nothing to cancel.`,
@@ -140,100 +174,157 @@ export default async function LandingPage({
 
       <ScrollReveal />
       <main className="overflow-x-clip">
-        {/* ── Hero: copy beside a photo with product cards floating over it ── */}
-        <section className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 pt-8 md:grid-cols-[1.15fr_1fr] md:gap-14 md:px-8 md:pb-24 md:pt-16">
-          <div className="flex flex-col gap-5">
-            <h1 className="font-display text-[2.6rem] font-bold leading-[0.98] tracking-[-0.055em] text-balance sm:text-6xl lg:text-[3.7rem]">
-              <span className="motion-rise block">{variant.line1}</span>
-              <span className="motion-rise block text-moss-light [animation-delay:120ms]">{variant.line2}</span>
-            </h1>
-            <p className="motion-rise max-w-[44ch] text-[17px] leading-relaxed text-ink-muted [animation-delay:240ms] md:text-lg">
-              {variant.sub}
-            </p>
-            <div className="motion-rise flex flex-col gap-3 pt-1 [animation-delay:340ms] sm:flex-row sm:items-center sm:gap-5">
-              <TrackedCTA
-                href={signupHref}
-                location="hero_primary"
-                className="lift inline-flex min-h-13 items-center justify-center rounded-full bg-moss px-7 py-3.5 font-display text-base font-bold text-white transition-colors hover:bg-moss-light"
-              >
-                {variant.cta}
-              </TrackedCTA>
-              <p className="text-center text-sm text-ink-muted sm:text-left">
-                Free for {TRIAL_DAYS} days. No card needed.
+        {/* ── Hero: over a ceremony photo, the dashboard with a text that just landed in it ── */}
+        <section className="relative isolate overflow-hidden text-[#F7F3EC]">
+          <Image
+            src="/landing/hero-woodland.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="-z-10 object-cover object-[50%_65%]"
+          />
+          <div className="absolute inset-0 -z-10 bg-gradient-to-b from-[#141a16]/85 via-[#141a16]/65 to-[#141a16]/45 md:bg-gradient-to-r md:from-[#141a16]/90 md:via-[#141a16]/60 md:to-[#141a16]/25" />
+          <div className="mx-auto grid max-w-6xl items-center gap-12 px-5 pb-16 pt-10 md:grid-cols-[1.05fr_1fr] md:gap-10 md:px-8 md:py-28">
+            <div className="flex flex-col gap-6">
+              <h1 className="font-display text-[2.9rem] font-bold leading-[0.96] tracking-[-0.055em] text-balance sm:text-7xl md:text-[3.4rem] xl:text-[4.5rem]">
+                <span className="motion-rise block">{variant.line1}</span>
+                <span className="motion-rise block text-champagne [animation-delay:120ms]">{variant.line2}</span>
+              </h1>
+              <p className="motion-rise max-w-[42ch] text-lg leading-relaxed text-[#E4E0D6] [animation-delay:240ms] md:text-xl xl:text-[1.35rem]">
+                {variant.sub}
               </p>
+              <div className="motion-rise flex flex-col gap-3 pt-1 [animation-delay:340ms] sm:flex-row sm:items-center sm:gap-5">
+                <TrackedCTA
+                  href={signupHref}
+                  location="hero_primary"
+                  className="lift inline-flex min-h-14 items-center justify-center whitespace-nowrap rounded-full bg-champagne px-8 py-4 font-display text-lg font-bold text-ink transition-opacity hover:opacity-90"
+                >
+                  {variant.cta}
+                </TrackedCTA>
+                <p className="text-center text-[15px] text-[#D9D4C8] sm:text-left">
+                  Free for {TRIAL_DAYS} days. No card needed.
+                </p>
+              </div>
             </div>
-          </div>
 
-          <div className="relative mx-auto w-full max-w-[460px] pb-14 md:pb-10">
-            <div className="motion-settle relative aspect-[4/5] overflow-hidden rounded-[2rem] [animation-delay:150ms]">
-              <Image
-                src="/landing/hero-couple.jpg"
-                alt="A bride and groom laughing as they walk hand in hand across a lawn"
-                fill
-                priority
-                sizes="(min-width: 768px) 460px, 100vw"
-                className="object-cover object-[50%_45%]"
+            <div className="relative mx-auto w-full max-w-[620px] pb-44 md:pb-36">
+              <DashboardMock className="motion-settle md:w-[88%] [animation-delay:150ms]" />
+              <MessagesCard
+                messages={HERO_THREAD}
+                className="motion-rise absolute -right-1 top-52 w-[270px] [animation-delay:650ms] md:right-0 md:top-52 md:w-[280px] xl:-right-4 xl:w-[320px]"
               />
             </div>
-            <HeroReactionChip className="motion-rise absolute -right-8 top-[7%] hidden [animation-delay:900ms] md:flex" />
-            <HeroQuoteCard className="motion-rise absolute bottom-0 left-3 [animation-delay:650ms] md:-left-12" />
           </div>
         </section>
 
-        {/* ── How it works: three moments ──────────────────────────────── */}
+        {/* ── How it works: a screen from the app, and the text that filled it ── */}
         <section id="how-it-works" className="scroll-mt-16 bg-moss text-[#F1EFE8]">
           <div className="mx-auto flex max-w-6xl flex-col gap-20 px-5 py-20 md:gap-28 md:px-8 md:py-28">
+            <div className="reveal mx-auto max-w-4xl text-center">
+              <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.05em] md:text-5xl">
+                Open your dashboard, or just text.
+                <br />
+                <span className="text-champagne">It&apos;s all one plan.</span>
+              </h2>
+              <ol className="mt-10 grid gap-3 text-left sm:grid-cols-3">
+                {HOW.map((step, i) => (
+                  <li
+                    key={step.title}
+                    className="flex gap-4 rounded-2xl border border-white/10 bg-white/[0.04] p-4 sm:block sm:p-5"
+                  >
+                    <span className="flex size-7 flex-none items-center justify-center rounded-full bg-champagne font-display text-sm font-bold text-ink">
+                      {i + 1}
+                    </span>
+                    <span className="block">
+                      <span className="block font-display text-lg font-bold tracking-[-0.02em] sm:mt-3">{step.title}</span>
+                      <span className="mt-1 block text-sm leading-relaxed text-[#C9D3C6]">{step.body}</span>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </div>
             {STORIES.map((story, i) => (
               <div
                 key={story.eyebrow}
-                className={`grid items-center gap-8 md:grid-cols-2 md:gap-16 ${i % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""}`}
+                className={`grid items-center gap-10 md:grid-cols-2 md:gap-16 ${i % 2 === 1 ? "md:[&>*:first-child]:order-2" : ""}`}
               >
                 <div className="reveal flex flex-col gap-4">
                   <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#B7C4B3]">
                     {i + 1} of 3 · {story.eyebrow}
                   </p>
-                  <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.05em] md:text-5xl">
+                  <h3 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.05em] md:text-5xl">
                     {story.title}
                     <br />
                     <span className="text-champagne">{story.accent}</span>
-                  </h2>
+                  </h3>
                   <p className="max-w-[46ch] text-[17px] leading-relaxed text-[#C9D3C6]">{story.body}</p>
                 </div>
                 <div className="reveal-side flex justify-center [transition-delay:150ms] md:justify-start">
-                  {story.visual}
+                  <div className="relative w-full max-w-md">
+                    {story.visual}
+                    <TextChip text={story.chip.text} className={`absolute ${story.chip.className}`} />
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
+        {/* ── Check-ins: the planner texts first ────────────────────────── */}
+        <section className="mx-auto max-w-6xl px-5 py-20 md:px-8 md:py-28">
+          <div className="grid items-center gap-12 md:grid-cols-[1fr_1.15fr] md:gap-16">
+            <div className="reveal flex flex-col gap-4">
+              <h2 className="font-display text-4xl font-bold leading-[1.02] tracking-[-0.05em] md:text-5xl">
+                It checks in,
+                <br />
+                <span className="text-moss-light">like a planner would.</span>
+              </h2>
+              <p className="max-w-[46ch] text-[17px] leading-relaxed text-ink-muted">
+                Every few days at most, about something specific in your plan: a call you had, a quote
+                that&apos;s waiting, a vendor you haven&apos;t started looking for. Answer in a few words and
+                your plan is up to date.
+              </p>
+              <p className="text-sm text-ink-muted">
+                Works with iMessage and Android texting. No app to download.
+              </p>
+            </div>
+            <div className="reveal-side flex flex-col items-center gap-5 [transition-delay:150ms] sm:flex-row sm:items-start sm:justify-center">
+              <TextThread messages={CHECKIN_THREAD} className="sm:max-w-[290px]" />
+              <TaskUpdateCard />
+            </div>
+          </div>
+        </section>
+
         {/* ── Everything else, with photography ────────────────────────── */}
-        <section className="mx-auto max-w-6xl px-5 py-20 md:px-8 md:py-24">
-          <h2 className="reveal font-display text-3xl font-bold tracking-[-0.045em] md:text-4xl">
-            Everything else, <span className="text-moss-light">in the same place.</span>
-          </h2>
-          <div className="mt-10 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
-            {ALSO.map((item, i) => (
-              <div
-                key={item.title}
-                className="reveal group flex flex-col gap-4"
-                style={{ transitionDelay: `${i * 110}ms` }}
-              >
-                <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
-                  <Image
-                    src={item.image}
-                    alt={item.alt}
-                    fill
-                    sizes="(min-width: 1024px) 260px, (min-width: 640px) 45vw, 100vw"
-                    className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05] motion-reduce:transition-none"
-                  />
+        <section className="border-t border-hairline">
+          <div className="mx-auto max-w-6xl px-5 py-20 md:px-8 md:py-24">
+            <h2 className="reveal font-display text-3xl font-bold tracking-[-0.045em] md:text-4xl">
+              And the rest of the plan, <span className="text-moss-light">in the same place.</span>
+            </h2>
+            <div className="mt-10 grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10 lg:grid-cols-4">
+              {ALSO.map((item, i) => (
+                <div
+                  key={item.title}
+                  className="reveal group flex flex-col gap-4"
+                  style={{ transitionDelay: `${i * 110}ms` }}
+                >
+                  <div className="relative aspect-[4/5] overflow-hidden rounded-2xl">
+                    <Image
+                      src={item.image}
+                      alt={item.alt}
+                      fill
+                      sizes="(min-width: 1024px) 260px, (min-width: 640px) 45vw, 100vw"
+                      className="object-cover transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05] motion-reduce:transition-none"
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-base font-bold tracking-[-0.02em]">{item.title}</h3>
+                    <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">{item.body}</p>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="font-display text-base font-bold tracking-[-0.02em]">{item.title}</h3>
-                  <p className="mt-1.5 text-sm leading-relaxed text-ink-muted">{item.body}</p>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </section>
 
@@ -247,8 +338,8 @@ export default async function LandingPage({
                 <span className="text-moss-light">Then pay once.</span>
               </h2>
               <p className="mt-4 max-w-[44ch] text-[17px] text-ink-muted">
-                Your first {TRIAL_DAYS} days include every feature, with no card needed. If Altared
-                helps, the Wedding Pass keeps it all through your wedding.
+                Your first {TRIAL_DAYS} days include everything, texting your planner too, with no card
+                needed. If Altared helps, the Wedding Pass keeps it all through your wedding.
               </p>
             </div>
 
