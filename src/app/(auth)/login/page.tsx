@@ -44,6 +44,13 @@ export default function LoginPage() {
     },
   })
 
+  // Where to go after signing in: the page that sent them here (an email's
+  // "Get the Wedding Pass" link, say), if it's a path on this site
+  function returnPath() {
+    const target = new URLSearchParams(window.location.search).get('redirect')
+    return target && /^\/(?![/\\])/.test(target) ? target : '/dashboard'
+  }
+
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true)
     setError(null)
@@ -59,7 +66,7 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/dashboard')
+    router.push(returnPath())
   }
 
   async function handleGoogleSignIn() {
@@ -69,7 +76,7 @@ export default function LoginPage() {
     const { error: oauthError } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/callback`,
+        redirectTo: `${window.location.origin}/callback?next=${encodeURIComponent(returnPath())}`,
       },
     })
 

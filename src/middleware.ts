@@ -1,7 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
-const protectedRoutes = ["/dashboard"];
+const protectedRoutes = ["/dashboard", "/pass"];
 const adminRoutes = ["/admin"];
 const authRoutes = ["/login"];
 
@@ -18,7 +18,7 @@ export async function middleware(request: NextRequest) {
 
   if ((isProtected || isAdmin) && !user) {
     const loginUrl = new URL("/login", request.url);
-    loginUrl.searchParams.set("redirect", pathname);
+    loginUrl.searchParams.set("redirect", pathname + request.nextUrl.search);
     return NextResponse.redirect(loginUrl);
   }
 

@@ -5,7 +5,9 @@ import { trackTikTokEvent } from '@/lib/tiktok/events'
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/dashboard'
+  // Only paths on this site, so the param can't send people elsewhere
+  const nextParam = searchParams.get('next')
+  const next = nextParam && /^\/(?![/\\])/.test(nextParam) ? nextParam : '/dashboard'
 
   if (code) {
     const supabase = await createClient()
