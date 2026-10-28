@@ -1,3 +1,4 @@
+import { ACCESS_PROFILE_COLUMNS, resolveAccess } from "@/lib/plan-access";
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { sendWeeklySummary } from "@/lib/resend/templates";
@@ -21,11 +22,13 @@ export async function GET(request: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  // Get all users who have weekly_summary enabled
+  // Couples with weekly_summary on. Couples who text their planner get
+  // check-ins instead, and a locked account has nothing to come back to yet.
   const { data: profiles, error: profilesError } = await supabase
     .from("profiles")
-    .select("id, email, full_name, total_budget, notification_preferences")
-    .not("email", "is", null);
+    .select(`id, email, full_name, total_budget, notification_preferences, ${ACCESS_PROFILE_COLUMNS}`)
+    .not("email", "is", null)
+    .is("text_phone", null);
 
   if (profilesError || !profiles) {
     console.error("Failed to fetch profiles:", profilesError);
@@ -33,6 +36,7 @@ export async function GET(request: NextRequest) {
   }
 
   const eligibleProfiles = profiles.filter((p) => {
+    if (resolveAccess(p).locked) return false;
     const prefs = p.notification_preferences as Record<string, boolean> | null;
     return prefs?.weekly_summary !== false; // default to true
   });
@@ -75,11 +79,8 @@ export async function GET(request: NextRequest) {
 
       const upcomingDeadlines = (vendorsWithDeposits ?? []).map((v) => ({
         vendorName: v.name,
-        description: "Deposit due",
-        dueDate: new Date(v.deposit_due_date).toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-        }),
+        description: "Deposit",
+        dueDate: v.deposit_due_date,
         amount: Number(v.deposit_amount) || undefined,
       }));
 
@@ -96,12 +97,28 @@ export async function GET(request: NextRequest) {
       for (const item of upcomingBudgetItems ?? []) {
         upcomingDeadlines.push({
           vendorName: item.description,
-          description: "Payment due",
-          dueDate: new Date(item.due_date).toLocaleDateString("en-US", {
-            month: "short",
-            day: "numeric",
-          }),
+          description: "Payment",
+          dueDate: item.due_date,
           amount: Number(item.actual_cost) || undefined,
+        });
+      }
+
+      // Open tasks due in the next two weeks (no longer emailed one by one)
+      const { data: upcomingTasks } = await supabase
+        .from("reminders")
+        .select("title, due_date, vendors(name)")
+        .eq("user_id", profile.id)
+        .eq("is_completed", false)
+        .gte("due_date", now.toISOString())
+        .lte("due_date", twoWeeksOut.toISOString());
+
+      for (const task of upcomingTasks ?? []) {
+        const vendor = task.vendors as unknown as { name: string } | null;
+        upcomingDeadlines.push({
+          vendorName: task.title,
+          description: vendor?.name ?? "Task",
+          dueDate: task.due_date.slice(0, 10),
+          amount: undefined,
         });
       }
 
@@ -115,14 +132,16 @@ export async function GET(request: NextRequest) {
           status: v.status.replace(/_/g, " ").replace(/\b\w/g, (c: string) => c.toUpperCase()),
         }));
 
-      // Skip sending if there's nothing to report
-      if (vendorCount === 0 && upcomingDeadlines.length === 0) {
+      // Only send when there's something to tell them
+      if (upcomingDeadlines.length === 0 && recentVendors.length === 0) {
         continue;
       }
+      upcomingDeadlines.sort((a, b) => a.dueDate.localeCompare(b.dueDate));
+      upcomingDeadlines.splice(8);
 
       await sendWeeklySummary({
         to: profile.email,
-        name: profile.full_name || "there",
+        name: profile.full_name?.split(" ")[0] || "there",
         vendorCount,
         bookedCount,
         totalBudget,

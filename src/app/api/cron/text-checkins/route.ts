@@ -64,18 +64,7 @@ export async function GET(request: NextRequest) {
         .eq("user_id", profile.id)
         .order("sent_at", { ascending: false });
 
-      const last = past?.[0];
-      if (last) {
-        const since = now.getTime() - new Date(last.sent_at).getTime();
-        const answered = lastInbound && lastInbound > new Date(last.sent_at);
-        const wait = (answered ? MIN_DAYS_BETWEEN_CHECKINS : DAYS_AFTER_UNANSWERED) * DAY_MS;
-        if (since < wait) {
-          results.push({ userId: profile.id, outcome: "too-soon" });
-          continue;
-        }
-      }
-
-      const candidates = await gatherCandidates(
+      let candidates = await gatherCandidates(
         supabase,
         profile as CheckinProfile,
         new Set((past ?? []).map((p) => p.subject_key)),
@@ -84,6 +73,22 @@ export async function GET(request: NextRequest) {
       if (candidates.length === 0) {
         results.push({ userId: profile.id, outcome: "nothing-to-ask" });
         continue;
+      }
+
+      // A payment coming due can't wait for the usual spacing: for couples
+      // who text, this replaces the reminder email
+      const payments = candidates.filter((c) => c.kind === "payment_due");
+      const last = past?.[0];
+      if (payments.length) {
+        candidates = payments;
+      } else if (last) {
+        const since = now.getTime() - new Date(last.sent_at).getTime();
+        const answered = lastInbound && lastInbound > new Date(last.sent_at);
+        const wait = (answered ? MIN_DAYS_BETWEEN_CHECKINS : DAYS_AFTER_UNANSWERED) * DAY_MS;
+        if (since < wait) {
+          results.push({ userId: profile.id, outcome: "too-soon" });
+          continue;
+        }
       }
 
       const history = profile.text_conversation_id

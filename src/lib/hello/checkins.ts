@@ -25,6 +25,7 @@ export interface CheckinCandidate {
   /** Unique per subject, e.g. task:<id>; a subject is only ever checked in on once */
   subject_key: string;
   kind:
+    | "payment_due"
     | "task_added_by_text"
     | "task_just_due"
     | "vendor_conversation"
@@ -102,6 +103,42 @@ export async function gatherCandidates(
       candidates.push(c);
     }
   };
+
+  // Deposits and payments due in the next few days. For couples who text,
+  // these replace the reminder emails, so they're offered first.
+  const today = now.toISOString().slice(0, 10);
+  const soon = new Date(now.getTime() + 3 * DAY_MS).toISOString().slice(0, 10);
+  const [deposits, payments] = await Promise.all([
+    db
+      .from("vendors")
+      .select("id, name, deposit_amount, deposit_due_date")
+      .eq("user_id", userId)
+      .eq("deposit_paid", false)
+      .gte("deposit_due_date", today)
+      .lte("deposit_due_date", soon),
+    db
+      .from("budget_items")
+      .select("id, description, due_date, estimated_cost, actual_cost")
+      .eq("user_id", userId)
+      .eq("is_paid", false)
+      .gte("due_date", today)
+      .lte("due_date", soon),
+  ]);
+  for (const v of deposits.data ?? []) {
+    add({
+      subject_key: `payment:vendor:${v.id}`,
+      kind: "payment_due",
+      detail: `${v.name} deposit${v.deposit_amount ? ` of $${v.deposit_amount}` : ""} is due ${v.deposit_due_date} and isn't marked paid.`,
+    });
+  }
+  for (const b of payments.data ?? []) {
+    const amount = b.actual_cost || b.estimated_cost;
+    add({
+      subject_key: `payment:budget:${b.id}`,
+      kind: "payment_due",
+      detail: `Payment for "${b.description}"${amount ? ` ($${amount})` : ""} is due ${b.due_date} and isn't marked paid.`,
+    });
+  }
 
   // Tasks they added by text a few days ago, and tasks that just came due
   const textTasks = await db
@@ -223,6 +260,8 @@ export async function writeCheckin(
     system: `You are the couple's wedding planner at Altared, and you text them like a person who knows their plans, not an app sending reminders. Today is ${now.toISOString().slice(0, 10)}.
 
 Pick the ONE moment below that a thoughtful planner would actually text about today, and write that text. Skip (subject_key null) if none of them feel natural, timely or useful.
+
+A payment_due moment always comes first and is never skipped: it's money they owe a vendor in the next few days, and you're how they hear about it. Say what's due, how much and when, and offer to mark it paid when they've sent it ("Bloom & Co's $950 deposit is due Friday. Want me to mark it paid once it's sent?").
 
 How it should sound:
 - Like a friend who's helping: "How'd the call with Bloom & Vine go?", "Did you get a chance to send the save-the-dates you mentioned?", "I noticed you haven't started looking for a florist yet. Want a hand getting started?"
