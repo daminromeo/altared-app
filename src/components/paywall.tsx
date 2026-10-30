@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { usePathname, useSearchParams } from 'next/navigation'
 import { useCheckout, useSubscription } from '@/lib/hooks/use-subscription'
 import { PLANS } from '@/lib/stripe/config'
+import { trackEvent } from '@/lib/analytics'
 
 export interface SavedPlanSummary {
   vendors: number
@@ -63,6 +64,10 @@ export function AccessGate({
 export function Paywall({ summary }: { summary: SavedPlanSummary | null }) {
   const checkout = useCheckout()
   const pass = PLANS.pass
+
+  useEffect(() => {
+    trackEvent('paywall_viewed', { location: 'trial_ended' })
+  }, [])
 
   const saved = summary
     ? [

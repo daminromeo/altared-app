@@ -22,6 +22,7 @@ import { ShareLinkManager } from "@/components/share/share-link-manager";
 import { TextPlannerCard } from "@/components/settings/text-planner-card";
 import { toast } from "sonner";
 import { rescheduleStarterPlan } from "@/lib/starter-plan";
+import { trackEvent } from "@/lib/analytics";
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -143,6 +144,17 @@ export default function SettingsPage() {
   useEffect(() => {
     fetchProfile();
   }, [fetchProfile]);
+
+  // Stripe sends a canceled Checkout back here. Record it once, then drop the flag
+  // so a reload doesn't count it again.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("canceled") !== "true") return;
+    trackEvent("checkout_canceled", { product: "wedding_pass" });
+    params.delete("canceled");
+    const qs = params.toString();
+    window.history.replaceState(null, "", window.location.pathname + (qs ? `?${qs}` : ""));
+  }, []);
 
   // ── Save profile ──────────────────────────────────────────────────────────
 
